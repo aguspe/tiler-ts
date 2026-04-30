@@ -9,3 +9,4 @@ export * from "./schema/time_window";
 export * from "./schema/snapshot";
 export * from "./widget";
 export { defineWidget, getWidget, listWidgets } from "./registry";
+export type * from "./store";
