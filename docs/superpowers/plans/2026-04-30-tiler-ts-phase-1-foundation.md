@@ -602,14 +602,21 @@ Expected: `Cannot find module './ulid'` — the function isn't defined yet.
 
 Create `packages/core/src/ulid.ts`:
 ```ts
-import { ulid } from "ulidx";
+import { monotonicFactory } from "ulidx";
+
+const monotonicUlid = monotonicFactory();
 
 /**
  * Generate a new ULID. Time-sortable, opaque, 26 chars Crockford base-32.
  * Used for every Id field in the schema (Dashboard, Panel, DataSource, DataRecord).
+ *
+ * Uses ulidx's monotonic factory so that two calls within the same millisecond
+ * are still strictly ordered (incremented random suffix). Without this, two
+ * fast-consecutive ULIDs may sort arbitrarily relative to each other, which
+ * breaks any test asserting sortability.
  */
 export function newId(): string {
-  return ulid();
+  return monotonicUlid();
 }
 ```
 
