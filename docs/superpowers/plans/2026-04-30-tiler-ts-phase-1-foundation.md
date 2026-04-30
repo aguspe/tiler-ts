@@ -96,7 +96,7 @@ packages:
 {
   "$schema": "https://turbo.build/schema.json",
   "ui": "stream",
-  "globalDependencies": ["tsconfig.base.json", "biome.json", ".npmrc"],
+  "globalDependencies": ["tsconfig.base.json", ".npmrc"],
   "tasks": {
     "build": {
       "dependsOn": ["^build"],
@@ -131,7 +131,6 @@ packages:
     "strict":            true,
     "noUncheckedIndexedAccess": true,
     "exactOptionalPropertyTypes": true,
-    "esModuleInterop":   true,
     "skipLibCheck":      true,
     "forceConsistentCasingInFileNames": true,
     "isolatedModules":   true,
@@ -214,15 +213,25 @@ git commit -m "chore: bootstrap pnpm + turborepo monorepo"
 }
 ```
 
-- [ ] **Step 2: Run Biome on the empty repo**
+- [ ] **Step 2: Add `biome.json` to Turbo's `globalDependencies`**
+
+Edit `turbo.json` to include `"biome.json"` in `globalDependencies`:
+
+```json
+"globalDependencies": ["tsconfig.base.json", "biome.json", ".npmrc"],
+```
+
+(Task 1 deliberately omitted this entry because the file did not exist yet — adding it back here keeps `turbo run` cache invalidation correct when the Biome config changes.)
+
+- [ ] **Step 3: Run Biome on the empty repo**
 
 Run: `pnpm biome check .`
 Expected: `Checked 0 files in <1ms. No fixes applied.` (No source yet — the run validates that the config parses.)
 
-- [ ] **Step 3: Commit**
+- [ ] **Step 4: Commit**
 
 ```bash
-git add biome.json
+git add biome.json turbo.json
 git commit -m "chore: configure Biome lint + format"
 ```
 
