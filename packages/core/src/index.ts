@@ -10,3 +10,4 @@ export * from "./schema/snapshot";
 export * from "./widget";
 export { defineWidget, getWidget, listWidgets } from "./registry";
 export type * from "./store";
+export { MemoryStore } from "./memory_store";
