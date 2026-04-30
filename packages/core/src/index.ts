@@ -6,3 +6,4 @@ export * from "./schema/data_source";
 export * from "./schema/data_record";
 export * from "./schema/panel";
 export * from "./schema/time_window";
+export * from "./schema/snapshot";
