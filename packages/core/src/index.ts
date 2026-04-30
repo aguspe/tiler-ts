@@ -3,3 +3,4 @@ export { newId } from "./ulid";
 export * from "./schema/primitives";
 export * from "./schema/dashboard";
 export * from "./schema/data_source";
+export * from "./schema/data_record";
