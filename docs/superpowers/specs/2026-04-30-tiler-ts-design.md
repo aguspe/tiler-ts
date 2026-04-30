@@ -3,7 +3,14 @@
 **Status:** Approved (2026-04-30)
 **Author:** Augustin Gottlieb
 **Source project:** [aguspe/tiler](https://github.com/aguspe/tiler) (Rails engine, MIT)
-**Target repo:** `aguspe/tiler-ts` (TypeScript, MIT)
+**Target repo:** [`aguspe/tiler-ts`](https://github.com/aguspe/tiler-ts) (TypeScript, MIT, public from day one)
+**npm publish scope:** `@aguspe/tiler-*` (personal scope on the public registry)
+
+> **Scope-mapping note:** package names are written as `@tiler/<name>` throughout
+> this document for readability. The actual published name is `@aguspe/tiler-<name>`.
+> The mapping is 1:1 and applied at publish time via each `package.json`'s `name`
+> field. If the `@tiler` scope is later claimed by the project, packages can be
+> dual-published to both scopes without any source change.
 
 ---
 
@@ -77,10 +84,12 @@ skill once this spec is ratified.
 
 ### Open questions to resolve at plan-writing time
 
-- Does the user own the `@tiler` npm scope? If not, package names become
-  `@aguspe/tiler-*` everywhere. (Affects every package.json and every import.)
-- Public GitHub repo from day one, or private until v1.0.0?
-- Brand assets: reuse the Rails Tiler `app/assets/images/tiler/logo.svg`?
+- Brand assets: reuse the Rails Tiler `app/assets/images/tiler/logo.svg`, or
+  commission a new mark for the TS project? (Either works; only affects
+  `packages/*/README.md` headers and a future docs site.)
+
+(Resolved during brainstorming: scope = `@aguspe/tiler-*`; repo public from
+day one; license MIT.)
 
 ---
 
