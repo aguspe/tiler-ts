@@ -393,7 +393,6 @@ module.exports = {
   ],
   options: {
     doNotFollow: { path: "node_modules" },
-    tsConfig: { fileName: "tsconfig.base.json" },
     enhancedResolveOptions: {
       exportsFields: ["exports"],
       conditionNames: ["import", "require", "node", "default"],
@@ -403,15 +402,28 @@ module.exports = {
 };
 ```
 
-- [ ] **Step 2: Smoke run**
+(The `tsConfig` reference was deliberately omitted — when present, dep-cruiser invokes tsc against `tsconfig.base.json` which fails before any packages exist because `include` resolves to zero files. Dep-cruiser resolves TypeScript natively without it; the rules above are unaffected.)
 
-Run: `pnpm deps`
-Expected: `no dependency violations found (0 modules cruised)` — no `packages/` exist yet; the rules are validated by parsing the config.
+- [ ] **Step 2: Add a `.gitkeep` placeholder for `packages/`**
 
-- [ ] **Step 3: Commit**
+`pnpm deps` requires the `packages/` directory to exist:
 
 ```bash
-git add .dependency-cruiser.cjs
+mkdir -p packages
+touch packages/.gitkeep
+```
+
+Task 6 fills the directory with `packages/core/`; the `.gitkeep` can be removed at any later point but is harmless if left in.
+
+- [ ] **Step 3: Smoke run**
+
+Run: `pnpm deps`
+Expected: `✔ no dependency violations found (0 modules, 0 dependencies cruised)`.
+
+- [ ] **Step 4: Commit**
+
+```bash
+git add .dependency-cruiser.cjs packages/.gitkeep
 git commit -m "chore: add dependency-cruiser boundary rules"
 ```
 
