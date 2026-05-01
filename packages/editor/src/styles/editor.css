@@ -250,9 +250,54 @@
 /* gridstack overrides — no margin between tiles, ledger-paper feel */
 .grid-stack {
   background: var(--border);
+  position: relative; /* so the drop ghost can position absolutely inside */
 }
 .grid-stack-item-content {
   inset: 0 !important;
+}
+
+/* Drop preview — outlined cell highlight that snaps under the cursor as
+   the user drags a palette item over the grid. Inherits the primary
+   token so it tints with the active theme. */
+.tiler-drop-ghost {
+  position: absolute;
+  background: var(--primary-tint);
+  border: 2px dashed var(--primary);
+  border-radius: var(--radius-sm);
+  color: var(--primary);
+  font-family: var(--font-display);
+  font-size: var(--fs-body-sm);
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+  z-index: 5;
+  transition: top var(--dur-fast) var(--ease-snap),
+    left var(--dur-fast) var(--ease-snap),
+    width var(--dur-fast) var(--ease-snap),
+    height var(--dur-fast) var(--ease-snap);
+  opacity: 0.9;
+}
+
+/* Hidden, off-screen card used as the dataTransfer.setDragImage source.
+   Browsers require the image to be in the DOM at drag time, so we mount
+   it off-screen and remove it after one tick. */
+.tiler-drag-image {
+  position: absolute;
+  top: -10000px;
+  left: -10000px;
+  background: var(--paper-2);
+  color: var(--primary);
+  border: 2px solid var(--primary);
+  border-radius: var(--radius-sm);
+  padding: 14px 18px;
+  font-family: var(--font-display);
+  font-size: var(--fs-body-sm);
+  font-weight: 600;
+  box-shadow: var(--shadow-2);
+  pointer-events: none;
+  white-space: nowrap;
 }
 
 .tiler-panel {

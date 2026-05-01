@@ -8,8 +8,12 @@
 //      in Node anyway.
 // The matching stylesheet is imported by `src/client/main.tsx` for the same
 // reason (Node can't load `.css` during SSR).
-import { useEffect, useRef, type ReactNode } from "react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
 import type { Panel } from "@aguspe/tiler-core";
+import type { PaletteDragMeta } from "./TilerPalette";
+
+const GRID_COLUMNS = 12;
+const GRID_CELL_HEIGHT = 90;
 
 // Augment React's HTML attribute types so JSX accepts `gs-*` attributes that
 // gridstack reads directly from the DOM (e.g. gs-id, gs-x, gs-y, gs-w, gs-h).
@@ -37,6 +41,11 @@ export interface TilerGridstackProps {
     id: string,
     layout: { x: number; y: number; width: number; height: number },
   ) => void;
+  /**
+   * Set while a palette item is being dragged. Drives the drop ghost
+   * outline that snaps to the cell under the cursor. `null` hides it.
+   */
+  paletteDrag: PaletteDragMeta | null;
   children: ReactNode;
 }
 
@@ -55,14 +64,23 @@ interface GridStackWidgetLike {
   h?: number;
 }
 
+interface GhostBox {
+  x: number;
+  y: number;
+  w: number;
+  h: number;
+}
+
 export function TilerGridstack({
   panels,
   onPanelLayoutChanged,
+  paletteDrag,
   children,
 }: TilerGridstackProps): JSX.Element {
   const gridRef = useRef<HTMLDivElement>(null);
   const gridApiRef = useRef<GridLike | undefined>(undefined);
   const registeredIdsRef = useRef<Set<string>>(new Set());
+  const [ghost, setGhost] = useState<GhostBox | null>(null);
 
   // Keep a stable ref to the latest callback so the gridstack listener never
   // closes over a stale version without needing to be re-registered.
@@ -130,6 +148,48 @@ export function TilerGridstack({
     };
   }, []);
 
+  // Drop ghost — track the cell under the cursor while the user drags a
+  // palette item. The dragenter/dragover handlers must call
+  // `event.preventDefault()` for the drop event to fire (HTML5 contract).
+  useEffect(() => {
+    const root = gridRef.current;
+    if (!root) return;
+    if (!paletteDrag) {
+      setGhost(null);
+      return;
+    }
+
+    function updateFromEvent(e: DragEvent): void {
+      if (!root || !paletteDrag) return;
+      e.preventDefault();
+      const rect = root.getBoundingClientRect();
+      const colWidth = rect.width / GRID_COLUMNS;
+      const rawX = Math.floor((e.clientX - rect.left) / colWidth);
+      const rawY = Math.floor((e.clientY - rect.top) / GRID_CELL_HEIGHT);
+      const x = Math.max(0, Math.min(rawX, GRID_COLUMNS - paletteDrag.w));
+      const y = Math.max(0, rawY);
+      setGhost({ x, y, w: paletteDrag.w, h: paletteDrag.h });
+    }
+
+    function clear(): void {
+      setGhost(null);
+    }
+
+    root.addEventListener("dragenter", updateFromEvent);
+    root.addEventListener("dragover", updateFromEvent);
+    root.addEventListener("dragleave", (e) => {
+      // Only clear if the cursor actually left the grid (not a child).
+      if (e.target === root) clear();
+    });
+    root.addEventListener("drop", clear);
+    return () => {
+      root.removeEventListener("dragenter", updateFromEvent);
+      root.removeEventListener("dragover", updateFromEvent);
+      root.removeEventListener("dragleave", clear);
+      root.removeEventListener("drop", clear);
+    };
+  }, [paletteDrag]);
+
   // Reconcile gridstack with the current panels list. When React mounts a
   // new `.grid-stack-item` (palette drop, undo/redo replay, etc.) gridstack
   // doesn't know about it until we call `makeWidget(el)`. Conversely, when
@@ -161,9 +221,30 @@ export function TilerGridstack({
     }
   }, [panels]);
 
+  // Compute pixel position for the drop ghost from grid measurements.
+  // We read width at render time via gridRef.current.clientWidth to get
+  // accurate per-column width regardless of the page's flex layout.
+  const ghostStyle = ghost
+    ? (() => {
+        const root = gridRef.current;
+        const colWidth = root ? root.clientWidth / GRID_COLUMNS : 0;
+        return {
+          left: `${ghost.x * colWidth}px`,
+          top: `${ghost.y * GRID_CELL_HEIGHT}px`,
+          width: `${ghost.w * colWidth}px`,
+          height: `${ghost.h * GRID_CELL_HEIGHT}px`,
+        };
+      })()
+    : null;
+
   return (
     <div ref={gridRef} className="grid-stack">
       {children}
+      {ghost && ghostStyle && paletteDrag && (
+        <div className="tiler-drop-ghost" style={ghostStyle} aria-hidden="true">
+          + {paletteDrag.label}
+        </div>
+      )}
     </div>
   );
 }

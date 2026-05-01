@@ -10,7 +10,7 @@ import { TilerEditableTile } from "./TilerEditableTile";
 import { TilerGridstack } from "./TilerGridstack";
 import { TilerHistoryBar } from "./TilerHistoryBar";
 import { TilerNav } from "./TilerNav";
-import { TilerPalette } from "./TilerPalette";
+import { TilerPalette, type PaletteDragMeta } from "./TilerPalette";
 import { TilerThemeEditor } from "./TilerThemeEditor";
 import { TilerToolbar } from "./TilerToolbar";
 
@@ -52,6 +52,7 @@ export function TilerDashboardEditor({
 
   const [paletteOpen, setPaletteOpen] = useState(false);
   const [themeEditorOpen, setThemeEditorOpen] = useState(false);
+  const [paletteDrag, setPaletteDrag] = useState<PaletteDragMeta | null>(null);
 
   // Close the palette when the user clicks anywhere outside it (and away
   // from the toggle button itself, which already handles its own click).
@@ -147,6 +148,7 @@ export function TilerDashboardEditor({
             <div className="tiler-grid-wrap">
               <TilerGridstack
                 panels={state.panels}
+                paletteDrag={paletteDrag}
                 onPanelLayoutChanged={(id, layout) =>
                   store.getState().setPanelLayout(id, layout)
                 }
@@ -179,6 +181,8 @@ export function TilerDashboardEditor({
           <TilerPalette
             dashboardId={state.dashboard.id}
             onAdd={(panel) => store.getState().addPanel(panel)}
+            onDragStart={(meta) => setPaletteDrag(meta)}
+            onDragEnd={() => setPaletteDrag(null)}
           />
         )}
       </div>

@@ -18,7 +18,7 @@ beforeAll(() => {
 describe("TilerGridstack", () => {
   it("renders the grid-stack container", () => {
     const { container } = render(
-      <TilerGridstack panels={[]} onPanelLayoutChanged={() => {}}>
+      <TilerGridstack panels={[]} paletteDrag={null} onPanelLayoutChanged={() => {}}>
         {/* no children */}
       </TilerGridstack>,
     );
@@ -27,7 +27,7 @@ describe("TilerGridstack", () => {
 
   it("renders children inside the grid-stack container", () => {
     const { container } = render(
-      <TilerGridstack panels={[]} onPanelLayoutChanged={() => {}}>
+      <TilerGridstack panels={[]} paletteDrag={null} onPanelLayoutChanged={() => {}}>
         <div
           className="grid-stack-item"
           gs-id="p1"
