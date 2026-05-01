@@ -1,7 +1,7 @@
 import { render, screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
-import { PieChartExample } from "./example";
 import { PieChartWidget } from "./PieChartWidget";
+import { PieChartExample } from "./example";
 import { resolvePieChart } from "./resolve";
 
 describe("resolvePieChart", () => {

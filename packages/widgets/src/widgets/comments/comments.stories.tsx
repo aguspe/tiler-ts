@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react";
-import { CommentsExample } from "./example";
 import { CommentsWidget } from "./CommentsWidget";
+import { CommentsExample } from "./example";
 import { resolveComments } from "./resolve";
 
 const meta: Meta<typeof CommentsWidget> = {

@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react";
-import { resolveMetric } from "./resolve";
-import { MetricExample } from "./example";
 import { MetricWidget } from "./MetricWidget";
+import { MetricExample } from "./example";
+import { resolveMetric } from "./resolve";
 
 const meta: Meta<typeof MetricWidget> = {
   title: "Widgets/Metric",
@@ -12,7 +12,11 @@ export default meta;
 type Story = StoryObj<typeof MetricWidget>;
 
 const ex = MetricExample();
-const data = resolveMetric({ panel: ex.panel, records: ex.records, now: new Date(ex.panel.created_at) });
+const data = resolveMetric({
+  panel: ex.panel,
+  records: ex.records,
+  now: new Date(ex.panel.created_at),
+});
 
 export const Default: Story = {
   args: { panel: ex.panel, data },

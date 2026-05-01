@@ -1,7 +1,7 @@
 import { render, screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
-import { BarChartExample } from "./example";
 import { BarChartWidget } from "./BarChartWidget";
+import { BarChartExample } from "./example";
 import { resolveBarChart } from "./resolve";
 
 describe("resolveBarChart", () => {

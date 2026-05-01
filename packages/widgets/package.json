@@ -24,10 +24,7 @@
     },
     "./styles/tokens.css": "./dist/styles/tokens.css"
   },
-  "files": [
-    "dist",
-    "README.md"
-  ],
+  "files": ["dist", "README.md"],
   "scripts": {
     "build": "tsup",
     "test": "vitest run",

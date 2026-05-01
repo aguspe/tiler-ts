@@ -1,6 +1,6 @@
 import { defineWidget } from "@aguspe/tiler-core";
-import { NumberWithDeltaExample } from "./example";
 import { NumberWithDeltaWidget } from "./NumberWithDeltaWidget";
+import { NumberWithDeltaExample } from "./example";
 import { resolveNumberWithDelta } from "./resolve";
 import { NumberWithDeltaConfig } from "./schema";
 

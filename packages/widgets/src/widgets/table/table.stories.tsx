@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react";
+import { TableWidget } from "./TableWidget";
 import { TableExample } from "./example";
 import { resolveTable } from "./resolve";
-import { TableWidget } from "./TableWidget";
 
 const meta: Meta<typeof TableWidget> = {
   title: "Widgets/Table",

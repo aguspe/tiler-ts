@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react";
-import { BarChartExample } from "./example";
 import { BarChartWidget } from "./BarChartWidget";
+import { BarChartExample } from "./example";
 import { resolveBarChart } from "./resolve";
 
 const meta: Meta<typeof BarChartWidget> = {

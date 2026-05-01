@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react";
-import { MeterExample } from "./example";
 import { MeterWidget } from "./MeterWidget";
+import { MeterExample } from "./example";
 
 const meta: Meta<typeof MeterWidget> = {
   title: "Widgets/Meter",

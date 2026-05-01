@@ -1,8 +1,8 @@
 import { defineWidget } from "@aguspe/tiler-core";
+import { TableWidget } from "./TableWidget";
 import { TableExample } from "./example";
 import { resolveTable } from "./resolve";
 import { TableConfig } from "./schema";
-import { TableWidget } from "./TableWidget";
 
 defineWidget({
   meta: {

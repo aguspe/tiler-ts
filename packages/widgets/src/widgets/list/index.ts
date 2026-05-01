@@ -1,6 +1,6 @@
 import { defineWidget } from "@aguspe/tiler-core";
-import { ListExample } from "./example";
 import { ListWidget } from "./ListWidget";
+import { ListExample } from "./example";
 import { resolveList } from "./resolve";
 import { ListConfig } from "./schema";
 

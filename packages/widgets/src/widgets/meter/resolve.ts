@@ -1,9 +1,9 @@
 import {
+  type WidgetData,
+  type WidgetResolverArgs,
   aggregate,
   applyFilter,
   applyTimeWindow,
-  type WidgetData,
-  type WidgetResolverArgs,
 } from "@aguspe/tiler-core";
 import { MeterConfig } from "./schema";
 

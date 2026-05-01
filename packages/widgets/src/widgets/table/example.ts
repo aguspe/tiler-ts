@@ -34,7 +34,7 @@ export function TableExample(): { panel: Panel; records: DataRecord[] } {
     payload: {
       test_name: `tc_${String(i).padStart(3, "0")}`,
       suite: ["checkout", "auth", "search", "billing"][i % 4] ?? "other",
-      duration_ms: 80 + (i * 13) % 500,
+      duration_ms: 80 + ((i * 13) % 500),
       recorded_at: new Date(Date.parse(now) - i * 60_000).toISOString(),
     },
     recorded_at: new Date(Date.parse(now) - i * 60_000).toISOString(),

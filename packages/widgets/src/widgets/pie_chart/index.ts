@@ -1,6 +1,6 @@
 import { defineWidget } from "@aguspe/tiler-core";
-import { PieChartExample } from "./example";
 import { PieChartWidget } from "./PieChartWidget";
+import { PieChartExample } from "./example";
 import { resolvePieChart } from "./resolve";
 import { PieChartConfig } from "./schema";
 

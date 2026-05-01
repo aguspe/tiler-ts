@@ -1,6 +1,6 @@
 import { defineWidget } from "@aguspe/tiler-core";
-import { LineChartExample } from "./example";
 import { LineChartWidget } from "./LineChartWidget";
+import { LineChartExample } from "./example";
 import { resolveLineChart } from "./resolve";
 import { LineChartConfig } from "./schema";
 

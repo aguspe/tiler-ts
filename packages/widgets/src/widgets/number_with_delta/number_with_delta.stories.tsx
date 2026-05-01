@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react";
-import { NumberWithDeltaExample } from "./example";
 import { NumberWithDeltaWidget } from "./NumberWithDeltaWidget";
+import { NumberWithDeltaExample } from "./example";
 
 const meta: Meta<typeof NumberWithDeltaWidget> = {
   title: "Widgets/Number With Delta",

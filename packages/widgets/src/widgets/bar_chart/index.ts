@@ -1,6 +1,6 @@
 import { defineWidget } from "@aguspe/tiler-core";
-import { BarChartExample } from "./example";
 import { BarChartWidget } from "./BarChartWidget";
+import { BarChartExample } from "./example";
 import { resolveBarChart } from "./resolve";
 import { BarChartConfig } from "./schema";
 

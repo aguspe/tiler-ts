@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react";
+import { StatusGridWidget } from "./StatusGridWidget";
 import { StatusGridExample } from "./example";
 import { resolveStatusGrid } from "./resolve";
-import { StatusGridWidget } from "./StatusGridWidget";
 
 const meta: Meta<typeof StatusGridWidget> = {
   title: "Widgets/Status Grid",

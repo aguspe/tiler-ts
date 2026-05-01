@@ -1,7 +1,7 @@
 import { render, screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
-import { CommentsExample } from "./example";
 import { CommentsWidget } from "./CommentsWidget";
+import { CommentsExample } from "./example";
 import { resolveComments } from "./resolve";
 
 describe("resolveComments", () => {

@@ -1,7 +1,7 @@
 import { render, screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
-import { LineChartExample } from "./example";
 import { LineChartWidget } from "./LineChartWidget";
+import { LineChartExample } from "./example";
 import { resolveLineChart } from "./resolve";
 
 describe("resolveLineChart", () => {
@@ -19,9 +19,7 @@ describe("resolveLineChart", () => {
 describe("LineChartWidget", () => {
   it("renders empty-state text when empty", () => {
     const { panel } = LineChartExample();
-    render(
-      <LineChartWidget panel={panel} data={{ resolved: { series: [] }, empty: true }} />,
-    );
+    render(<LineChartWidget panel={panel} data={{ resolved: { series: [] }, empty: true }} />);
     expect(screen.getByText("No data in window.")).toBeInTheDocument();
   });
 });

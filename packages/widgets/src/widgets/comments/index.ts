@@ -1,6 +1,6 @@
 import { defineWidget } from "@aguspe/tiler-core";
-import { CommentsExample } from "./example";
 import { CommentsWidget } from "./CommentsWidget";
+import { CommentsExample } from "./example";
 import { resolveComments } from "./resolve";
 import { CommentsConfig } from "./schema";
 

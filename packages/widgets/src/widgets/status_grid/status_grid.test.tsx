@@ -1,8 +1,8 @@
 import { render, screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
+import { StatusGridWidget } from "./StatusGridWidget";
 import { StatusGridExample } from "./example";
 import { resolveStatusGrid } from "./resolve";
-import { StatusGridWidget } from "./StatusGridWidget";
 
 describe("resolveStatusGrid", () => {
   it("produces one cell per suite", () => {

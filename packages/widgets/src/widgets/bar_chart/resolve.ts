@@ -1,10 +1,10 @@
 import {
+  type WidgetData,
+  type WidgetResolverArgs,
   aggregate,
   applyFilter,
   applyTimeWindow,
   groupByColumn,
-  type WidgetData,
-  type WidgetResolverArgs,
 } from "@aguspe/tiler-core";
 import { BarChartConfig } from "./schema";
 

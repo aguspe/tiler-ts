@@ -1,11 +1,11 @@
 import {
+  type WidgetData,
+  type WidgetResolverArgs,
   aggregate,
   applyFilter,
   applyTimeWindow,
   bucketByTime,
   groupByColumn,
-  type WidgetData,
-  type WidgetResolverArgs,
 } from "@aguspe/tiler-core";
 import { LineChartConfig } from "./schema";
 

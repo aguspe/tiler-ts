@@ -15,8 +15,7 @@ export function Sparkline({
   const stepX = width / (values.length - 1);
   const points = values
     .map(
-      (v, i) =>
-        `${(i * stepX).toFixed(1)},${(height - ((v - min) / range) * height).toFixed(1)}`,
+      (v, i) => `${(i * stepX).toFixed(1)},${(height - ((v - min) / range) * height).toFixed(1)}`,
     )
     .join(" ");
   return (
@@ -25,7 +24,8 @@ export function Sparkline({
       height={height}
       viewBox={`0 0 ${width} ${height}`}
       preserveAspectRatio="none"
-      aria-hidden
+      role="img"
+      aria-label="Sparkline trend"
       style={{ display: "block" }}
     >
       <polyline points={points} fill="none" stroke={color} strokeWidth={1.5} />

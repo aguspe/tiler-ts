@@ -1,8 +1,8 @@
 import { defineWidget } from "@aguspe/tiler-core";
+import { StatusGridWidget } from "./StatusGridWidget";
 import { StatusGridExample } from "./example";
 import { resolveStatusGrid } from "./resolve";
 import { StatusGridConfig } from "./schema";
-import { StatusGridWidget } from "./StatusGridWidget";
 
 defineWidget({
   meta: {

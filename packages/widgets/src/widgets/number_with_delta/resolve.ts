@@ -1,10 +1,10 @@
 import {
+  type WidgetData,
+  type WidgetResolverArgs,
   aggregate,
   applyFilter,
   applyTimeWindow,
   bucketByTime,
-  type WidgetData,
-  type WidgetResolverArgs,
 } from "@aguspe/tiler-core";
 import { NumberWithDeltaConfig } from "./schema";
 

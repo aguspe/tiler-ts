@@ -39,8 +39,8 @@ describe("applyFilter", () => {
     expect(
       applyFilter([rec({ retried: true }), rec({ retried: false })], { retried: true }),
     ).toHaveLength(1);
-    expect(
-      applyFilter([rec({ priority: 1 }), rec({ priority: 2 })], { priority: 1 }),
-    ).toHaveLength(1);
+    expect(applyFilter([rec({ priority: 1 }), rec({ priority: 2 })], { priority: 1 })).toHaveLength(
+      1,
+    );
   });
 });

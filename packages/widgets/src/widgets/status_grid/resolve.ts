@@ -1,9 +1,9 @@
 import {
+  type WidgetData,
+  type WidgetResolverArgs,
   applyFilter,
   applyTimeWindow,
   groupByColumn,
-  type WidgetData,
-  type WidgetResolverArgs,
 } from "@aguspe/tiler-core";
 import { StatusGridConfig } from "./schema";
 

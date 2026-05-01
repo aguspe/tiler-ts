@@ -37,11 +37,6 @@ describe("registry smoke — all 14 widgets register", () => {
   it("config-only widgets are exactly 4", () => {
     const configOnly = listWidgets().filter((w) => !w.meta.requires_data_source);
     expect(configOnly).toHaveLength(4);
-    expect(configOnly.map((w) => w.meta.type).sort()).toEqual([
-      "clock",
-      "iframe",
-      "image",
-      "text",
-    ]);
+    expect(configOnly.map((w) => w.meta.type).sort()).toEqual(["clock", "iframe", "image", "text"]);
   });
 });

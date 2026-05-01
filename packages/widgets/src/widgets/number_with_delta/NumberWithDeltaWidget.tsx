@@ -1,7 +1,7 @@
 import type { Panel, WidgetData } from "@aguspe/tiler-core";
-import { NumberWithDeltaConfig } from "./schema";
-import type { NumberWithDeltaResolved } from "./resolve";
 import { Sparkline } from "./Sparkline";
+import type { NumberWithDeltaResolved } from "./resolve";
+import { NumberWithDeltaConfig } from "./schema";
 
 export function NumberWithDeltaWidget({
   panel,

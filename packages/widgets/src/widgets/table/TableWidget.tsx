@@ -24,11 +24,15 @@ export function TableWidget({
     : rows;
 
   return (
-    <div
-      style={{ display: "flex", flexDirection: "column", height: "100%", fontSize: "0.85rem" }}
-    >
+    <div style={{ display: "flex", flexDirection: "column", height: "100%", fontSize: "0.85rem" }}>
       <div style={{ flex: 1, overflow: "auto" }}>
-        <table style={{ width: "100%", borderCollapse: "collapse", fontFamily: "var(--tiler-font-mono)" }}>
+        <table
+          style={{
+            width: "100%",
+            borderCollapse: "collapse",
+            fontFamily: "var(--tiler-font-mono)",
+          }}
+        >
           <thead>
             <tr>
               {cfg.columns.map((c) => (

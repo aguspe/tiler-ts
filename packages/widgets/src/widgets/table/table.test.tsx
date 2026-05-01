@@ -1,9 +1,9 @@
 import { fireEvent, render, screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
+import { TableWidget } from "./TableWidget";
 import { TableExample } from "./example";
 import { formatCell } from "./format";
 import { resolveTable } from "./resolve";
-import { TableWidget } from "./TableWidget";
 
 describe("formatCell", () => {
   it("formats ms with rounding", () => {

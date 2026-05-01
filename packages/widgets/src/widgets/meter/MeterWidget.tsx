@@ -43,7 +43,12 @@ export function MeterWidget({
 
   return (
     <div style={{ display: "flex", flexDirection: "column", height: "100%", padding: 8 }}>
-      <svg viewBox="0 0 200 110" style={{ width: "100%", flex: 1 }} aria-hidden>
+      <svg
+        viewBox="0 0 200 110"
+        style={{ width: "100%", flex: 1 }}
+        role="img"
+        aria-label="Meter gauge"
+      >
         <path
           d={`M ${cx - r},${cy} A ${r},${r} 0 0 1 ${cx + r},${cy}`}
           fill="none"

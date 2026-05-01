@@ -1,6 +1,6 @@
 import { defineWidget } from "@aguspe/tiler-core";
-import { MetricExample } from "./example";
 import { MetricWidget } from "./MetricWidget";
+import { MetricExample } from "./example";
 import { resolveMetric } from "./resolve";
 import { MetricConfig } from "./schema";
 

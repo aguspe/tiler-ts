@@ -1,9 +1,9 @@
 import {
-  applyFilter,
-  applyTimeWindow,
   type DataRecord,
   type WidgetData,
   type WidgetResolverArgs,
+  applyFilter,
+  applyTimeWindow,
 } from "@aguspe/tiler-core";
 import { CommentsConfig } from "./schema";
 

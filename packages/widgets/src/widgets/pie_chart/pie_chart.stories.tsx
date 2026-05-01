@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react";
-import { PieChartExample } from "./example";
 import { PieChartWidget } from "./PieChartWidget";
+import { PieChartExample } from "./example";
 import { resolvePieChart } from "./resolve";
 
 const meta: Meta<typeof PieChartWidget> = {

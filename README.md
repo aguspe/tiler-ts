@@ -5,20 +5,27 @@
 A TypeScript port of [Tiler](https://github.com/aguspe/tiler) (Rails engine).
 Distributed as a set of npm packages under the `@aguspe/tiler-*` scope.
 
-## Status: Phase 1 — Foundation (`v0.0.1-phase-1`)
+## Status: Phase 2 — All 14 Widgets (`v0.0.2-phase-2`)
 
-This repository is in early development. Phase 1 ships:
+This repository is in early development. Phase 2 ships:
 
-- `@aguspe/tiler-core` — Zod schemas (`Dashboard`, `DataSource`, `DataRecord`,
-  `Panel`, `TimeWindow`, `TilerSnapshot`), the `WidgetDefinition` contract,
-  the `defineWidget` registry, the `TilerStore` interface, and a working
-  `MemoryStore` implementation.
-- `@aguspe/tiler-widgets` — 4 of 14 React widget components: **clock, text,
-  image, iframe**. Tokens stylesheet, chart-color helper, Storybook gallery.
+- `@aguspe/tiler-core` — Zod schemas, the `WidgetDefinition` contract, the
+  `defineWidget` registry, the `TilerStore` interface, the `MemoryStore`
+  implementation, **plus four shared resolver helpers**: `aggregate`,
+  `applyTimeWindow`, `applyFilter`, `groupByColumn` / `bucketByTime`.
+- `@aguspe/tiler-widgets` — **all 14 React widget components** in three
+  groups:
+  - Config-only (4): clock, text, image, iframe.
+  - Single-value (3): metric, number_with_delta (with hand-rolled SVG
+    sparkline), meter (with hand-rolled SVG arc).
+  - Tabular (4): list, status_grid, comments, table.
+  - Charts (3, recharts): line_chart, bar_chart, pie_chart.
+  - Tokens stylesheet, `chartColors` palette helper, shared `ChartFrame`
+    empty-state component, Storybook gallery covering every widget.
 
-Phases 2–7 will add the remaining 10 widgets (incl. metric, charts, table),
-the static viewer, the Playwright reporter, the Fastify server with sqlite
-store, the gridstack-based editor, the CLI, and v1.0.0 release.
+Phases 3–7 will add the static viewer, the Playwright reporter, the Fastify
+server with sqlite store, the gridstack-based editor, the CLI, and v1.0.0
+release.
 
 ## Quick start (development)
 
@@ -32,13 +39,14 @@ pnpm test
 pnpm --filter @aguspe/tiler-widgets storybook
 ```
 
-Open [http://localhost:6006](http://localhost:6006) for the widget gallery.
+Open [http://localhost:6006](http://localhost:6006) for the widget gallery
+(all 14 widgets, multiple stories each).
 
 ## Workspace pipeline
 
 | Command | What it does |
 |---|---|
-| `pnpm test` | Vitest across packages — currently 96 tests (71 core, 25 widgets) |
+| `pnpm test` | Vitest across packages — 163 tests (96 core, 67 widgets) |
 | `pnpm typecheck` | `tsc --noEmit` across packages |
 | `pnpm lint` | Biome lint + format check |
 | `pnpm format` | Biome format --write |
@@ -50,10 +58,10 @@ CI runs all of the above on every PR (Node 20 + 22, ubuntu + macos).
 
 ## Packages
 
-| Package | Status (v0.0.1-phase-1) |
+| Package | Status (v0.0.2-phase-2) |
 |---|---|
-| `@aguspe/tiler-core` | ✅ schemas + registry + MemoryStore |
-| `@aguspe/tiler-widgets` | ✅ 4 of 14 widgets + Storybook |
+| `@aguspe/tiler-core` | ✅ schemas + registry + MemoryStore + 4 resolver helpers |
+| `@aguspe/tiler-widgets` | ✅ all 14 widgets + Storybook |
 | `@aguspe/tiler-viewer` | ⏳ Phase 3 |
 | `@aguspe/tiler-editor` | ⏳ Phase 5 |
 | `@aguspe/tiler-server` | ⏳ Phase 4 |
@@ -64,6 +72,7 @@ CI runs all of the above on every PR (Node 20 + 22, ubuntu + macos).
 
 - Design spec: [`docs/superpowers/specs/2026-04-30-tiler-ts-design.md`](docs/superpowers/specs/2026-04-30-tiler-ts-design.md)
 - Phase 1 plan: [`docs/superpowers/plans/2026-04-30-tiler-ts-phase-1-foundation.md`](docs/superpowers/plans/2026-04-30-tiler-ts-phase-1-foundation.md)
+- Phase 2 plan: [`docs/superpowers/plans/2026-05-01-tiler-ts-phase-2-widgets.md`](docs/superpowers/plans/2026-05-01-tiler-ts-phase-2-widgets.md)
 
 ## License
 

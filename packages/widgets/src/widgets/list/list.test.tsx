@@ -1,7 +1,7 @@
 import { render, screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
-import { ListExample } from "./example";
 import { ListWidget } from "./ListWidget";
+import { ListExample } from "./example";
 import { resolveList } from "./resolve";
 
 describe("resolveList", () => {

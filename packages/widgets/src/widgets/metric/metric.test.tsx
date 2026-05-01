@@ -1,7 +1,7 @@
 import { render, screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
-import { MetricExample } from "./example";
 import { MetricWidget } from "./MetricWidget";
+import { MetricExample } from "./example";
 import { resolveMetric } from "./resolve";
 
 describe("resolveMetric", () => {
