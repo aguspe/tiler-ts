@@ -10,6 +10,7 @@ import "./widgets/list";
 import "./widgets/status_grid";
 import "./widgets/comments";
 import "./widgets/table";
+import "./widgets/line_chart";
 
 export const TILER_WIDGETS_VERSION = "0.0.1" as const;
 export { chartColors } from "./lib/chart-colors";
@@ -24,3 +25,4 @@ export { ListConfig, ListWidget } from "./widgets/list";
 export { StatusGridConfig, StatusGridWidget } from "./widgets/status_grid";
 export { CommentsConfig, CommentsWidget } from "./widgets/comments";
 export { TableConfig, TableWidget } from "./widgets/table";
+export { LineChartConfig, LineChartWidget } from "./widgets/line_chart";
