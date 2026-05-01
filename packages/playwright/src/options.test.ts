@@ -9,7 +9,11 @@ describe("ReporterOptions", () => {
     expect(opts.captureLogs).toBe(false);
     expect(opts.linkTraceFiles).toBe(true);
   });
-  it("rejects an outDir with absolute path", () => {
-    expect(ReporterOptions.safeParse({ outDir: "/etc/foo" }).success).toBe(false);
+  it("accepts both relative and absolute outDir", () => {
+    expect(ReporterOptions.safeParse({ outDir: "report" }).success).toBe(true);
+    expect(ReporterOptions.safeParse({ outDir: "/tmp/report" }).success).toBe(true);
+  });
+  it("rejects an empty outDir", () => {
+    expect(ReporterOptions.safeParse({ outDir: "" }).success).toBe(false);
   });
 });

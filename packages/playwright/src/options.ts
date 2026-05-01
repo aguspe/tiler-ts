@@ -1,11 +1,8 @@
 import { z } from "zod";
 
 export const ReporterOptions = z.object({
-  /** Output directory, relative to the project root. */
-  outDir: z
-    .string()
-    .refine((s) => !s.startsWith("/"), "outDir must be a relative path")
-    .default("tiler-report"),
+  /** Output directory. Relative paths are resolved against `process.cwd()`. */
+  outDir: z.string().min(1).default("tiler-report"),
   /** Preset name to load by default. */
   preset: z.string().default("test_automation"),
   /** Optional path to a tiler.config.ts (overrides preset). */
