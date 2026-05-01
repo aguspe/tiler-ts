@@ -726,6 +726,34 @@
 }
 
 /* ============================================================
+   Drawer preview pane — renders the widget with sample data so the
+   user can see their config changes in real time.
+   ============================================================ */
+.tiler-drawer-preview {
+  background: var(--paper-2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  height: 280px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+.tiler-drawer-preview > .tiler-panel {
+  border: none;
+  height: 100%;
+}
+.tiler-drawer-preview-empty {
+  display: flex;
+  flex: 1;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  color: var(--ink-3);
+  font-size: var(--fs-body-sm);
+  text-align: center;
+}
+
+/* ============================================================
    Theme editor
    ============================================================ */
 .tiler-theme-editor {
