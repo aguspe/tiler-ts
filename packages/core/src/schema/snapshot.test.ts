@@ -21,8 +21,23 @@ describe("TilerSnapshot", () => {
       panels: [],
       data_sources: [],
       records: [],
+      resolved: {},
     });
     expect(result.version).toBe(1);
+    expect(result.resolved).toEqual({});
+  });
+  it("defaults `resolved` to an empty object when omitted", () => {
+    const result = TilerSnapshot.parse({
+      version: 1,
+      generated_at: NOW,
+      dashboard: {
+        id: "d1", name: "QA", slug: "qa", description: null,
+        refresh_seconds: 0, settings: { tv_mode: false },
+        created_at: NOW, updated_at: NOW,
+      },
+      panels: [], data_sources: [], records: [],
+    });
+    expect(result.resolved).toEqual({});
   });
   it("rejects version=2", () => {
     expect(
@@ -42,6 +57,7 @@ describe("TilerSnapshot", () => {
         panels: [],
         data_sources: [],
         records: [],
+        resolved: {},
       }).success,
     ).toBe(false);
   });
