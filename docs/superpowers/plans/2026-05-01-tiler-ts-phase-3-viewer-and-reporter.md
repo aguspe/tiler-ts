@@ -1876,7 +1876,16 @@ git -C / commit --allow-empty -m "verify: playwright-static example produces wor
 
 ---
 
-## Task 16: Reporter self-test
+## Task 16: Reporter self-test (deferred — covered elsewhere)
+
+**Decision (2026-05-01):** Not implemented as a separate file. The reporter is already covered by:
+
+1. `packages/playwright/src/reporter.test.ts` (Task 13) — exercises the full `onBegin → onTestEnd × 2 → onEnd` flow with a mocked viewer dist. Asserts on the resulting `index.html` + `snapshot.json`.
+2. The `examples/playwright-static/` smoke run (Task 15) — runs against the real built viewer client bundle, confirming the pipeline produces a working dashboard end-to-end.
+
+A separate `spawnSync`-based meta-test (running `npx playwright test` against a synthesized config in a temp dir) was considered but adds complexity (`@playwright/test` resolution in the temp dir, browser-binary handling, etc.) without catching what the two existing tests miss. Reconsider in Phase 4 if regressions appear.
+
+**Original plan kept below for reference:**
 
 **Files:**
 - Create: `packages/playwright/test/self-test.spec.ts`
