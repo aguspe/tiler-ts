@@ -13,6 +13,7 @@ const ALL_TYPES = [
   "metric",
   "number_with_delta",
   "meter",
+  "list",
 ] as const;
 
 describe("registry smoke — registered widgets", () => {

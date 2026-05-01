@@ -6,6 +6,7 @@ import "./widgets/iframe";
 import "./widgets/metric";
 import "./widgets/number_with_delta";
 import "./widgets/meter";
+import "./widgets/list";
 
 export const TILER_WIDGETS_VERSION = "0.0.1" as const;
 export { chartColors } from "./lib/chart-colors";
@@ -16,3 +17,4 @@ export { IframeConfig, IframeWidget } from "./widgets/iframe";
 export { MetricConfig, MetricWidget } from "./widgets/metric";
 export { NumberWithDeltaConfig, NumberWithDeltaWidget } from "./widgets/number_with_delta";
 export { MeterConfig, MeterWidget } from "./widgets/meter";
+export { ListConfig, ListWidget } from "./widgets/list";
