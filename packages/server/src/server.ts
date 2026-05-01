@@ -1,5 +1,9 @@
 import { defineConfig, type ResolvedTilerConfig, type TilerConfig } from "@aguspe/tiler-core";
 import fastify, { type FastifyInstance } from "fastify";
+import { dashboardsPlugin } from "./routes/dashboards";
+import { ingestPlugin } from "./routes/ingest";
+import { panelsPlugin } from "./routes/panels";
+import { sourcesPlugin } from "./routes/sources";
 
 export interface CreateServerOptions extends TilerConfig {
   /** Skip auto-loading widget packages. Useful for tests. */
@@ -24,7 +28,7 @@ export interface TilerFastifyInstance extends FastifyInstance {
 export async function createServer(opts: CreateServerOptions): Promise<TilerFastifyInstance> {
   const cfg = defineConfig(opts);
   const logger = opts.logger ?? { level: "warn" };
-  const app = fastify({ logger }) as TilerFastifyInstance;
+  const app = fastify({ logger }) as unknown as TilerFastifyInstance;
   app.tilerConfig = cfg;
 
   // Ensure store schema is migrated. Idempotent for both MemoryStore and BetterSqliteStore.
@@ -35,12 +39,11 @@ export async function createServer(opts: CreateServerOptions): Promise<TilerFast
     return reply.redirect("/dashboards", 302);
   });
 
-  // Subsequent tasks register feature routes here:
-  //   await app.register(dashboardsRoutes, { prefix: "/api/dashboards" });
-  //   await app.register(panelsRoutes,     { prefix: "/api/panels" });
-  //   await app.register(sourcesRoutes,    { prefix: "/api/data_sources" });
-  //   await app.register(ingestRoutes,     { prefix: "/ingest" });
-  //   await app.register(viewerRoutes,     { prefix: "/dashboards" });
+  await app.register(dashboardsPlugin, { prefix: "/api/dashboards" });
+  await app.register(panelsPlugin, { prefix: "/api/panels" });
+  await app.register(sourcesPlugin, { prefix: "/api/data_sources" });
+  await app.register(ingestPlugin, { prefix: "/ingest" });
+  // await app.register(viewerRoutes, { prefix: "/dashboards" });
 
   return app;
 }
