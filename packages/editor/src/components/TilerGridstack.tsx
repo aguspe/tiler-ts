@@ -69,7 +69,20 @@ export function TilerGridstack({
       if (cancelled || !gridRef.current) return;
       const GridStack = mod.GridStack;
       const g = GridStack.init(
-        { column: 12, cellHeight: 80, margin: 6, float: true },
+        {
+          column: 12,
+          cellHeight: 90,
+          // Zero margin between tiles — the panels' right+bottom hairline
+          // borders form the grid lines, matching the Rails editor's
+          // ledger-paper feel. The grid's own background bleeds through
+          // for the missing left/top borders, giving each row/column its
+          // single dividing line.
+          margin: 0,
+          float: true,
+          // Only the panel header is the drag handle. The body remains
+          // free for clicks (e.g. interactive widgets).
+          handle: ".tiler-panel-header",
+        },
         gridRef.current,
       );
       grid = g;

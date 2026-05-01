@@ -35,45 +35,22 @@ export function TilerPalette({ dashboardId, onAdd }: TilerPaletteProps): JSX.Ele
   }
 
   return (
-    <aside
-      className="tiler-palette"
-      style={{
-        width: 220,
-        background: "var(--tiler-color-tile-header, #1a1f2c)",
-        color: "var(--tiler-color-text, #e6edf3)",
-        padding: 12,
-        borderRight: "1px solid rgba(255,255,255,0.08)",
-        display: "flex",
-        flexDirection: "column",
-        gap: 8,
-        overflow: "auto",
-      }}
-    >
-      <h2 style={{ margin: 0, fontSize: "0.85rem", textTransform: "uppercase", opacity: 0.7 }}>
-        Widgets
-      </h2>
+    <aside className="tiler-widget-palette" aria-label="Widget palette">
+      <h2 className="tiler-widget-palette-title">Widgets</h2>
       <ul
-        style={{ listStyle: "none", padding: 0, margin: 0, display: "flex", flexDirection: "column", gap: 4 }}
+        className="tiler-widget-palette-list"
         role="listbox"
         aria-label="Widget palette"
       >
         {widgets.map((w) => (
           <li
             key={w.meta.type}
+            className="tiler-widget-palette-item"
             draggable
             data-gs-widget-type={w.meta.type}
             onDragEnd={(e) => handleDragEnd(e, w.meta.type)}
             role="option"
             aria-selected={false}
-            style={{
-              padding: "8px 10px",
-              borderRadius: 6,
-              background: "var(--tiler-color-tile, #131722)",
-              cursor: "grab",
-              userSelect: "none",
-              fontSize: "0.85rem",
-              border: "1px solid rgba(255,255,255,0.06)",
-            }}
             title={w.meta.description ?? ""}
           >
             {w.meta.label}

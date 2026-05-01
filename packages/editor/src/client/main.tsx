@@ -1,6 +1,7 @@
 import "@aguspe/tiler-widgets";
 import "@aguspe/tiler-widgets/styles/tokens.css";
 import "gridstack/dist/gridstack.min.css";
+import "../styles/editor.css";
 import type {
   Dashboard,
   DataSource,

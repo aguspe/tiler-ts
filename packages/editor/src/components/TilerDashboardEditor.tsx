@@ -8,6 +8,7 @@ import { createEditorStore } from "../state/editor-store";
 import { TilerDrawer } from "./TilerDrawer";
 import { TilerEditableTile } from "./TilerEditableTile";
 import { TilerGridstack } from "./TilerGridstack";
+import { TilerNav } from "./TilerNav";
 import { TilerPalette } from "./TilerPalette";
 import { TilerThemeEditor } from "./TilerThemeEditor";
 import { TilerToolbar } from "./TilerToolbar";
@@ -31,7 +32,6 @@ export function TilerDashboardEditor({
   apiBaseUrl = "",
   csrfToken,
 }: TilerDashboardEditorProps): JSX.Element {
-  // Re-create the store when the dashboard id changes (e.g. user navigates).
   const store = useMemo(
     () => createEditorStore({ dashboard, panels }),
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -43,15 +43,28 @@ export function TilerDashboardEditor({
     [apiBaseUrl, csrfToken],
   );
 
-  // Subscribe to vanilla Zustand store with a tick counter.
   const [tick, setTick] = useState(0);
   useEffect(() => store.subscribe(() => setTick((t) => t + 1)), [store]);
   const state = store.getState();
 
-  const [paletteOpen, setPaletteOpen] = useState(true);
+  // Palette is hidden by default — the user opens it via the "+ Add Panel"
+  // button. This matches the Rails editor where the palette is an opt-in
+  // overlay, not a permanent side rail.
+  const [paletteOpen, setPaletteOpen] = useState(false);
   const [themeEditorOpen, setThemeEditorOpen] = useState(false);
 
-  // Compute resolved widget data whenever the store or inputs change.
+  // Mirror tv_mode onto <html data-tv-mode> so any global styles can react.
+  // Theme switching (light/dark) for TV displays goes through the same hook
+  // by writing data-theme="dark" — the token sheet has the dark overrides.
+  useEffect(() => {
+    const root = document.documentElement;
+    if (state.dashboard.settings.tv_mode) {
+      root.setAttribute("data-theme", "dark");
+    } else {
+      root.removeAttribute("data-theme");
+    }
+  }, [state.dashboard.settings.tv_mode]);
+
   const [resolved, setResolved] = useState<Record<string, WidgetData>>({});
   useEffect(() => {
     let cancelled = false;
@@ -70,38 +83,22 @@ export function TilerDashboardEditor({
     return () => {
       cancelled = true;
     };
-    // `tick` drives re-computation whenever the store mutates.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [tick, dataSources, records, state.dashboard, state.panels]);
 
   return (
-    <div
-      className="tiler-dashboard-editor"
-      style={{
-        display: "flex",
-        flexDirection: "column",
-        height: "100vh",
-        background: "var(--tiler-color-page, #0b0d12)",
-        color: "var(--tiler-color-text, #e6edf3)",
-        fontFamily: "var(--tiler-font-sans, system-ui)",
-      }}
-    >
-      <TilerToolbar
-        store={store}
-        api={api}
-        paletteOpen={paletteOpen}
-        onTogglePalette={() => setPaletteOpen((o) => !o)}
-        themeEditorOpen={themeEditorOpen}
-        onToggleThemeEditor={() => setThemeEditorOpen((o) => !o)}
-      />
-      <div style={{ display: "flex", flex: 1, minHeight: 0 }}>
-        {paletteOpen && (
-          <TilerPalette
-            dashboardId={state.dashboard.id}
-            onAdd={(panel) => store.getState().addPanel(panel)}
-          />
-        )}
-        <div style={{ flex: 1, padding: 16, overflow: "auto" }}>
+    <div className={`tiler-shell${paletteOpen ? " tiler-editing-mode" : ""}`}>
+      <TilerNav />
+      <main className="tiler-page">
+        <TilerToolbar
+          store={store}
+          api={api}
+          paletteOpen={paletteOpen}
+          onTogglePalette={() => setPaletteOpen((o) => !o)}
+          themeEditorOpen={themeEditorOpen}
+          onToggleThemeEditor={() => setThemeEditorOpen((o) => !o)}
+        />
+        <div className="tiler-grid-wrap">
           <TilerGridstack
             panels={state.panels}
             onPanelLayoutChanged={(id, layout) =>
@@ -130,7 +127,13 @@ export function TilerDashboardEditor({
             ))}
           </TilerGridstack>
         </div>
-      </div>
+      </main>
+      {paletteOpen && (
+        <TilerPalette
+          dashboardId={state.dashboard.id}
+          onAdd={(panel) => store.getState().addPanel(panel)}
+        />
+      )}
       <TilerDrawer store={store} api={api} />
       {themeEditorOpen && (
         <TilerThemeEditor

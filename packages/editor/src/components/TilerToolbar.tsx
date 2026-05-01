@@ -14,6 +14,13 @@ export interface TilerToolbarProps {
   onToggleThemeEditor: () => void;
 }
 
+/**
+ * Page header — Rails parity. Renders the inline-editable dashboard title,
+ * description, and the action row (Add Panel / Save / Undo / Redo / TV /
+ * Theme). The component name is kept as `TilerToolbar` so the existing
+ * test suite continues to drive it; it is conceptually the page-header
+ * from the Rails template.
+ */
 export function TilerToolbar({
   store,
   api,
@@ -59,8 +66,6 @@ export function TilerToolbar({
     const ds = store.getState().dashboard;
     try {
       await api.patchDashboard(ds.id, { name: ds.name, settings: ds.settings });
-      // Walk panels — for v0.0.5 we naively upsert every dirty panel.
-      // (Smarter diffing lands in Phase 6.)
       for (const panel of store.getState().panels) {
         await api.upsertPanel(panel);
       }
@@ -72,145 +77,97 @@ export function TilerToolbar({
 
   return (
     <header
-      className="tiler-toolbar"
-      style={{
-        display: "flex",
-        alignItems: "center",
-        gap: 12,
-        padding: "8px 16px",
-        background: "var(--tiler-color-tile-header, #1a1f2c)",
-        color: "var(--tiler-color-text, #e6edf3)",
-        borderBottom: "1px solid rgba(255,255,255,0.08)",
-        // tick is read so the component subscribes to store changes
-        "--tiler-toolbar-tick": String(tick),
-      } as React.CSSProperties}
+      className="tiler-page-header"
+      data-tick={tick}
     >
-      <button
-        type="button"
-        onClick={onTogglePalette}
-        aria-label="Toggle palette"
-        aria-pressed={paletteOpen}
-        style={toolbarButton(paletteOpen)}
-      >
-        ☰
-      </button>
-      {editingName ? (
-        <input
-          type="text"
-          value={nameDraft}
-          onChange={(e) => setNameDraft(e.target.value)}
-          onBlur={commitName}
-          onKeyDown={(e) => {
-            if (e.key === "Enter") commitName();
-            if (e.key === "Escape") {
-              setNameDraft(state.dashboard.name);
-              setEditingName(false);
-            }
-          }}
-          // biome-ignore lint/a11y/noAutofocus: inline rename
-          autoFocus
-          style={{
-            fontSize: "1rem",
-            fontWeight: 600,
-            padding: "4px 8px",
-            background: "var(--tiler-color-tile)",
-            color: "var(--tiler-color-text)",
-            border: "1px solid var(--tiler-color-accent)",
-            borderRadius: 4,
-            flex: 1,
-            maxWidth: 320,
-          }}
-          aria-label="Dashboard name"
-        />
-      ) : (
+      <div style={{ flex: 1, minWidth: 0 }}>
+        {editingName ? (
+          <input
+            type="text"
+            value={nameDraft}
+            onChange={(e) => setNameDraft(e.target.value)}
+            onBlur={commitName}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") commitName();
+              if (e.key === "Escape") {
+                setNameDraft(state.dashboard.name);
+                setEditingName(false);
+              }
+            }}
+            // biome-ignore lint/a11y/noAutofocus: inline rename
+            autoFocus
+            className="tiler-page-title-input"
+            aria-label="Dashboard name"
+          />
+        ) : (
+          <h1
+            className="tiler-page-title"
+            onDoubleClick={() => setEditingName(true)}
+            aria-label="Dashboard name (double-click to edit)"
+          >
+            {state.dashboard.name}
+          </h1>
+        )}
+        {state.dashboard.description && (
+          <p className="tiler-page-description">{state.dashboard.description}</p>
+        )}
+      </div>
+      <div className="tiler-page-actions">
         <button
           type="button"
-          onDoubleClick={() => setEditingName(true)}
-          style={{
-            background: "transparent",
-            border: "none",
-            color: "inherit",
-            fontSize: "1rem",
-            fontWeight: 600,
-            cursor: "text",
-            padding: "4px 8px",
-            flex: 1,
-            textAlign: "left",
-            maxWidth: 320,
-          }}
-          aria-label="Dashboard name (double-click to edit)"
+          className="tiler-btn"
+          onClick={() => store.getState().undo()}
+          disabled={state.undoStack.length === 0}
+          aria-label="Undo (Cmd+Z)"
         >
-          {state.dashboard.name}
+          ⟲ Undo
         </button>
-      )}
-      <span style={{ flex: 1 }} />
-      <button
-        type="button"
-        onClick={() => store.getState().undo()}
-        disabled={state.undoStack.length === 0}
-        aria-label="Undo (Cmd+Z)"
-        style={toolbarButton(false, state.undoStack.length === 0)}
-      >
-        ⟲ Undo
-      </button>
-      <button
-        type="button"
-        onClick={() => store.getState().redo()}
-        disabled={state.redoStack.length === 0}
-        aria-label="Redo (Cmd+Shift+Z)"
-        style={toolbarButton(false, state.redoStack.length === 0)}
-      >
-        ⟳ Redo
-      </button>
-      <button
-        type="button"
-        onClick={() => store.getState().toggleTvMode()}
-        aria-label="Toggle TV mode"
-        aria-pressed={state.dashboard.settings.tv_mode}
-        style={toolbarButton(state.dashboard.settings.tv_mode)}
-      >
-        TV
-      </button>
-      <button
-        type="button"
-        onClick={onToggleThemeEditor}
-        aria-label="Toggle theme editor"
-        aria-pressed={themeEditorOpen}
-        style={toolbarButton(themeEditorOpen)}
-      >
-        🎨
-      </button>
-      <button
-        type="button"
-        onClick={() => void handleSave()}
-        disabled={!state.dirty}
-        aria-label="Save"
-        style={{
-          padding: "6px 16px",
-          background: state.dirty ? "var(--tiler-color-accent)" : "var(--tiler-color-muted)",
-          color: "white",
-          border: "none",
-          borderRadius: 4,
-          cursor: state.dirty ? "pointer" : "not-allowed",
-          fontSize: "0.85rem",
-          fontWeight: 600,
-        }}
-      >
-        Save
-      </button>
+        <button
+          type="button"
+          className="tiler-btn"
+          onClick={() => store.getState().redo()}
+          disabled={state.redoStack.length === 0}
+          aria-label="Redo (Cmd+Shift+Z)"
+        >
+          ⟳ Redo
+        </button>
+        <button
+          type="button"
+          className="tiler-btn"
+          onClick={() => store.getState().toggleTvMode()}
+          aria-label="Toggle TV mode"
+          aria-pressed={state.dashboard.settings.tv_mode}
+        >
+          TV
+        </button>
+        <button
+          type="button"
+          className="tiler-btn"
+          onClick={onToggleThemeEditor}
+          aria-label="Toggle theme editor"
+          aria-pressed={themeEditorOpen}
+        >
+          🎨 Theme
+        </button>
+        <button
+          type="button"
+          className="tiler-btn tiler-btn-primary"
+          onClick={onTogglePalette}
+          aria-label="Toggle palette"
+          aria-pressed={paletteOpen}
+        >
+          {paletteOpen ? "Done" : "+ Add Panel"}
+        </button>
+        <button
+          type="button"
+          className="tiler-btn tiler-btn-success"
+          onClick={() => void handleSave()}
+          disabled={!state.dirty}
+          aria-label="Save"
+        >
+          Save
+        </button>
+      </div>
     </header>
   );
-}
-
-function toolbarButton(active: boolean, disabled = false): React.CSSProperties {
-  return {
-    padding: "6px 10px",
-    background: active ? "var(--tiler-color-accent)" : "transparent",
-    color: "inherit",
-    border: "1px solid rgba(255,255,255,0.15)",
-    borderRadius: 4,
-    cursor: disabled ? "not-allowed" : "pointer",
-    fontSize: "0.85rem",
-    opacity: disabled ? 0.5 : 1,
-  };
 }

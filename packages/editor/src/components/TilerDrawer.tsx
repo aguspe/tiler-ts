@@ -106,193 +106,95 @@ function DrawerContent({ store, api, panelId }: DrawerContentProps): JSX.Element
 
   return (
     <>
-      {/* Backdrop */}
+      <div className="tiler-drawer-backdrop" onClick={handleCancel} />
       <div
-        onClick={handleCancel}
-        style={{
-          position: "fixed",
-          inset: 0,
-          background: "rgba(0,0,0,0.4)",
-          zIndex: 100,
-        }}
-      />
-
-      {/* Slide-over panel */}
-      <div
+        className="tiler-drawer"
         role="dialog"
         aria-modal="true"
         aria-labelledby="drawer-heading"
-        style={{
-          position: "fixed",
-          top: 0,
-          right: 0,
-          bottom: 0,
-          width: 400,
-          zIndex: 101,
-          display: "flex",
-          flexDirection: "column",
-          background: "var(--tiler-color-tile, #131722)",
-          color: "var(--tiler-color-text, #e6edf3)",
-          boxShadow: "-4px 0 24px rgba(0,0,0,0.4)",
-        }}
       >
         <FocusLock>
-          {/* Header */}
-          <div
-            style={{
-              padding: "16px 20px",
-              borderBottom: "1px solid rgba(255,255,255,0.1)",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "space-between",
-              gap: 8,
-            }}
-          >
-            <h2
-              id="drawer-heading"
-              style={{ margin: 0, fontSize: "1rem", fontWeight: 600 }}
-            >
+          <header className="tiler-drawer-header">
+            <h2 id="drawer-heading" className="tiler-drawer-title">
               {widgetLabel}
             </h2>
             <button
+              type="button"
+              className="tiler-drawer-close"
               onClick={handleCancel}
               aria-label="Close drawer"
-              style={{
-                background: "transparent",
-                border: "none",
-                color: "inherit",
-                cursor: "pointer",
-                fontSize: "1.25rem",
-                lineHeight: 1,
-                padding: "2px 6px",
-                opacity: 0.7,
-              }}
             >
-              ✕
+              ×
             </button>
-          </div>
+          </header>
 
-          {/* Body */}
-          <div style={{ flex: 1, overflowY: "auto", padding: "20px" }}>
-            <div style={{ marginBottom: 16 }}>
-              <label
-                htmlFor="drawer-title"
-                style={{ display: "block", fontSize: "0.8rem", marginBottom: 4, opacity: 0.7 }}
-              >
-                Title
-              </label>
-              <input
-                id="drawer-title"
-                type="text"
-                value={titleDraft}
-                onChange={(e) => {
-                  setTitleDraft(e.target.value);
-                  setError(null);
-                }}
-                style={{
-                  width: "100%",
-                  boxSizing: "border-box",
-                  padding: "8px 10px",
-                  borderRadius: 6,
-                  border: "1px solid rgba(255,255,255,0.15)",
-                  background: "rgba(255,255,255,0.05)",
-                  color: "inherit",
-                  fontSize: "0.9rem",
-                }}
-              />
-            </div>
-
-            <div style={{ marginBottom: 16 }}>
-              <label
-                htmlFor="drawer-config"
-                style={{ display: "block", fontSize: "0.8rem", marginBottom: 4, opacity: 0.7 }}
-              >
-                Config (JSON)
-              </label>
-              <textarea
-                id="drawer-config"
-                value={configDraft}
-                rows={14}
-                onChange={(e) => {
-                  setConfigDraft(e.target.value);
-                  setError(null);
-                }}
-                spellCheck={false}
-                style={{
-                  width: "100%",
-                  boxSizing: "border-box",
-                  padding: "8px 10px",
-                  borderRadius: 6,
-                  border: "1px solid rgba(255,255,255,0.15)",
-                  background: "rgba(255,255,255,0.05)",
-                  color: "inherit",
-                  fontSize: "0.8rem",
-                  fontFamily: "monospace",
-                  resize: "vertical",
-                }}
-              />
-            </div>
-
-            {error !== null && (
-              <div
-                role="alert"
-                style={{
-                  padding: "8px 12px",
-                  borderRadius: 6,
-                  background: "rgba(239,68,68,0.15)",
-                  border: "1px solid rgba(239,68,68,0.4)",
-                  color: "#fca5a5",
-                  fontSize: "0.8rem",
-                }}
-              >
-                {error}
+          <div className="tiler-drawer-body">
+            <form className="tiler-form" onSubmit={(e) => e.preventDefault()}>
+              <div className="tiler-field">
+                <label htmlFor="drawer-title" className="tiler-label">
+                  Title
+                </label>
+                <input
+                  id="drawer-title"
+                  type="text"
+                  className="tiler-input"
+                  value={titleDraft}
+                  onChange={(e) => {
+                    setTitleDraft(e.target.value);
+                    setError(null);
+                  }}
+                />
               </div>
-            )}
-          </div>
 
-          {/* Footer */}
-          <div
-            style={{
-              padding: "16px 20px",
-              borderTop: "1px solid rgba(255,255,255,0.1)",
-              display: "flex",
-              gap: 8,
-              justifyContent: "flex-end",
-            }}
-          >
-            <button
-              onClick={handleCancel}
-              disabled={saving}
-              style={{
-                padding: "8px 16px",
-                borderRadius: 6,
-                border: "1px solid rgba(255,255,255,0.2)",
-                background: "transparent",
-                color: "inherit",
-                cursor: saving ? "not-allowed" : "pointer",
-                fontSize: "0.85rem",
-                opacity: saving ? 0.5 : 1,
-              }}
-            >
-              Cancel
-            </button>
-            <button
-              onClick={() => void handleSave()}
-              disabled={saving}
-              style={{
-                padding: "8px 16px",
-                borderRadius: 6,
-                border: "none",
-                background: "var(--tiler-color-accent, #3b82f6)",
-                color: "#fff",
-                cursor: saving ? "not-allowed" : "pointer",
-                fontSize: "0.85rem",
-                fontWeight: 600,
-                opacity: saving ? 0.7 : 1,
-              }}
-            >
-              {saving ? "Saving…" : "Save"}
-            </button>
+              <div className="tiler-field">
+                <label htmlFor="drawer-config" className="tiler-label">
+                  Config (JSON)
+                </label>
+                <textarea
+                  id="drawer-config"
+                  className="tiler-textarea"
+                  value={configDraft}
+                  rows={14}
+                  onChange={(e) => {
+                    setConfigDraft(e.target.value);
+                    setError(null);
+                  }}
+                  spellCheck={false}
+                />
+              </div>
+
+              {error !== null && (
+                <div role="alert" className="tiler-error">
+                  {error}
+                </div>
+              )}
+
+              <div
+                style={{
+                  display: "flex",
+                  gap: 8,
+                  justifyContent: "flex-end",
+                  marginTop: "var(--s-2)",
+                }}
+              >
+                <button
+                  type="button"
+                  className="tiler-btn"
+                  onClick={handleCancel}
+                  disabled={saving}
+                >
+                  Cancel
+                </button>
+                <button
+                  type="button"
+                  className="tiler-btn tiler-btn-primary"
+                  onClick={() => void handleSave()}
+                  disabled={saving}
+                >
+                  {saving ? "Saving…" : "Save"}
+                </button>
+              </div>
+            </form>
           </div>
         </FocusLock>
       </div>

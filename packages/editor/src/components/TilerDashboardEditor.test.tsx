@@ -1,6 +1,6 @@
 import "@aguspe/tiler-widgets";
 import type { Dashboard, DataSource, Panel } from "@aguspe/tiler-core";
-import { render, screen } from "@testing-library/react";
+import { fireEvent, render, screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 import { TilerDashboardEditor } from "./TilerDashboardEditor";
 
@@ -35,7 +35,7 @@ const PANEL: Panel = {
 const DATA_SOURCES: DataSource[] = [];
 
 describe("TilerDashboardEditor", () => {
-  it("renders the toolbar, palette, and tiles", () => {
+  it("renders the page header, tiles, and shows the palette only when Add Panel is toggled", () => {
     render(
       <TilerDashboardEditor
         dashboard={DASHBOARD}
@@ -43,11 +43,14 @@ describe("TilerDashboardEditor", () => {
         dataSources={DATA_SOURCES}
       />,
     );
-    // Toolbar shows dashboard name
+    // Page header shows dashboard name
     expect(screen.getByText("QA")).toBeInTheDocument();
-    // Palette lists the Clock widget entry
-    expect(screen.getByText("Clock")).toBeInTheDocument();
     // Tile title appears in the grid
     expect(screen.getByText("Build clock")).toBeInTheDocument();
+    // Palette is hidden by default (parity with the Rails editor)
+    expect(screen.queryByText("Clock")).not.toBeInTheDocument();
+    // Toggling the Add Panel button reveals the palette
+    fireEvent.click(screen.getByLabelText("Toggle palette"));
+    expect(screen.getByText("Clock")).toBeInTheDocument();
   });
 });
