@@ -5,6 +5,7 @@ import { ingestPlugin } from "./routes/ingest";
 import { panelsPlugin } from "./routes/panels";
 import { sourcesPlugin } from "./routes/sources";
 import { viewerPagesPlugin } from "./routes/viewer-pages";
+import { wsPlugin } from "./routes/ws";
 
 export interface CreateServerOptions extends TilerConfig {
   /** Skip auto-loading widget packages. Useful for tests. */
@@ -45,6 +46,7 @@ export async function createServer(opts: CreateServerOptions): Promise<TilerFast
   await app.register(sourcesPlugin, { prefix: "/api/data_sources" });
   await app.register(ingestPlugin, { prefix: "/ingest" });
   await app.register(viewerPagesPlugin);
+  await app.register(wsPlugin);
 
   return app;
 }
