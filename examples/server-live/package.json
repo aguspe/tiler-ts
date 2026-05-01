@@ -1,0 +1,17 @@
+{
+  "name": "tiler-ts-example-server-live",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "seed": "tsx seed.ts",
+    "start": "tsx start.ts"
+  },
+  "dependencies": {
+    "@aguspe/tiler-core": "workspace:*",
+    "@aguspe/tiler-server": "workspace:*",
+    "@aguspe/tiler-widgets": "workspace:*"
+  },
+  "devDependencies": {
+    "tsx": "^4.19.0"
+  }
+}
