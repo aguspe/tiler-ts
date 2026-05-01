@@ -18,3 +18,4 @@ export * from "./lib/group-bucket";
 export * from "./presets/types";
 export * from "./presets/test_automation";
 export * from "./lib/snapshot-builder";
+export * from "./config";
