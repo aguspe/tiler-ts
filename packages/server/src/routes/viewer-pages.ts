@@ -1,7 +1,12 @@
 import { readdirSync } from "node:fs";
 import { createRequire } from "node:module";
 import { dirname, resolve } from "node:path";
-import { type ResolvedTilerConfig, type TilerStore, buildSnapshot } from "@aguspe/tiler-core";
+import {
+  type ResolvedTilerConfig,
+  type TilerStore,
+  buildSnapshot,
+  listWidgets,
+} from "@aguspe/tiler-core";
 import { renderEditorHtml } from "@aguspe/tiler-editor";
 import "@aguspe/tiler-widgets"; // side effect: register all widgets
 import fastifyStatic from "@fastify/static";
@@ -164,22 +169,58 @@ export const viewerPagesPlugin: FastifyPluginAsync = async (app) => {
       );
   });
 
-  // Settings — placeholder.
+  // Settings — read-only server diagnostics.
   app.get("/settings", async (_req, reply) => {
+    const dashboards = await store.listDashboards();
+    const sources = await store.listDataSources();
+    let panelCount = 0;
+    for (const d of dashboards) {
+      const panels = await store.listPanels(d.id);
+      panelCount += panels.length;
+    }
+    const widgets = listWidgets();
+    const storeBackend = store.constructor.name;
+    const authMode = describeAuthMode(cfg.auth);
+    const widgetSummary = widgets
+      .map((w) => `<code class="t-mono" style="margin-right:8px">${escapeHtml(w.meta.type)}</code>`)
+      .join("");
+
+    const stat = (label: string, value: string): string =>
+      `<div class="tiler-card">
+        <p class="t-eyebrow" style="margin:0 0 6px">${escapeHtml(label)}</p>
+        <p style="font-family:var(--font-display);font-size:var(--fs-h2);font-weight:600;margin:0">${value}</p>
+      </div>`;
+
     const body = `
       <header class="tiler-page-header">
         <div>
           <h1 class="tiler-page-title">Settings</h1>
-          <p class="tiler-page-description">Server-wide configuration. Coming in v0.1.</p>
+          <p class="tiler-page-description">Server diagnostics. Configuration lives in <code class="t-mono">tiler.config.ts</code>.</p>
         </div>
       </header>
-      <div class="tiler-card">
-        <h3 style="font-family:var(--font-display);font-size:var(--fs-h3);font-weight:600;margin:0">Configured via tiler.config.ts</h3>
-        <p class="t-body-sm" style="color:var(--ink-3);margin:0">
-          Auth mode, store backend, public URL, and write-key rotation are
-          configured at boot. Edit your <code class="t-mono">tiler.config.ts</code>
-          and restart the server to change them.
-        </p>
+      <div class="tiler-card-grid" style="margin-bottom:var(--s-6)">
+        ${stat("Dashboards", String(dashboards.length))}
+        ${stat("Panels", String(panelCount))}
+        ${stat("Data sources", String(sources.length))}
+        ${stat("Widgets registered", String(widgets.length))}
+      </div>
+      <div class="tiler-card-grid">
+        <div class="tiler-card">
+          <p class="t-eyebrow" style="margin:0 0 6px">Store backend</p>
+          <code class="t-mono">${escapeHtml(storeBackend)}</code>
+        </div>
+        <div class="tiler-card">
+          <p class="t-eyebrow" style="margin:0 0 6px">Auth mode</p>
+          <code class="t-mono">${escapeHtml(authMode)}</code>
+        </div>
+        <div class="tiler-card">
+          <p class="t-eyebrow" style="margin:0 0 6px">Listening on</p>
+          <code class="t-mono">${escapeHtml(cfg.host)}:${cfg.port}</code>
+        </div>
+        <div class="tiler-card" style="grid-column:1 / -1">
+          <p class="t-eyebrow" style="margin:0 0 8px">Registered widgets</p>
+          <div>${widgetSummary}</div>
+        </div>
       </div>
     `;
     return reply
@@ -229,6 +270,14 @@ export const viewerPagesPlugin: FastifyPluginAsync = async (app) => {
     return reply.type("text/html").send(html);
   });
 };
+
+function describeAuthMode(auth: ResolvedTilerConfig["auth"]): string {
+  const flags: string[] = [];
+  if ("basic" in auth && auth.basic) flags.push("basic");
+  if ("hmac" in auth && auth.hmac) flags.push("hmac");
+  if ("custom" in auth && auth.custom) flags.push("custom");
+  return flags.length === 0 ? "none (open)" : flags.join(" + ");
+}
 
 function escapeHtml(s: string): string {
   return s

@@ -1,33 +1,37 @@
 import { useEffect, useState } from "react";
 import type { StoreApi } from "zustand/vanilla";
-import type { TilerApiClient } from "../api/client";
 import type { EditorState } from "../state/editor-store";
 
 export interface TilerToolbarProps {
   store: StoreApi<EditorState>;
-  api: TilerApiClient;
   /** Toggle visibility of the palette sidebar (parent owns the layout). */
   paletteOpen: boolean;
   onTogglePalette: () => void;
   /** Toggle visibility of the theme editor pane. */
   themeEditorOpen: boolean;
   onToggleThemeEditor: () => void;
+  /** Whether the dark theme is currently active. */
+  darkMode: boolean;
+  /** Toggle the dark theme independently of TV mode. */
+  onToggleDarkMode: () => void;
 }
 
 /**
  * Page header — Rails parity. Renders the inline-editable dashboard title,
- * description, and the action row (Add Panel / Save / Undo / Redo / TV /
- * Theme). The component name is kept as `TilerToolbar` so the existing
- * test suite continues to drive it; it is conceptually the page-header
- * from the Rails template.
+ * description, and the action row. The "+ Add Panel" button is the
+ * primary action and sits leftmost in the actions group.
+ *
+ * No explicit Save button: TilerDashboardEditor auto-saves on every store
+ * change.
  */
 export function TilerToolbar({
   store,
-  api,
   paletteOpen,
   onTogglePalette,
   themeEditorOpen,
   onToggleThemeEditor,
+  darkMode,
+  onToggleDarkMode,
 }: TilerToolbarProps): JSX.Element {
   const [tick, setTick] = useState(0);
   useEffect(() => store.subscribe(() => setTick((t) => t + 1)), [store]);
@@ -62,24 +66,8 @@ export function TilerToolbar({
     setEditingName(false);
   }
 
-  async function handleSave(): Promise<void> {
-    const ds = store.getState().dashboard;
-    try {
-      await api.patchDashboard(ds.id, { name: ds.name, settings: ds.settings });
-      for (const panel of store.getState().panels) {
-        await api.upsertPanel(panel);
-      }
-      store.getState().markClean();
-    } catch (err) {
-      console.error("[tiler-editor] save failed:", err);
-    }
-  }
-
   return (
-    <header
-      className="tiler-page-header"
-      data-tick={tick}
-    >
+    <header className="tiler-page-header" data-tick={tick}>
       <div style={{ flex: 1, minWidth: 0 }}>
         {editingName ? (
           <input
@@ -115,6 +103,15 @@ export function TilerToolbar({
       <div className="tiler-page-actions">
         <button
           type="button"
+          className="tiler-btn tiler-btn-primary"
+          onClick={onTogglePalette}
+          aria-label="Toggle palette"
+          aria-pressed={paletteOpen}
+        >
+          {paletteOpen ? "Done" : "+ Add Panel"}
+        </button>
+        <button
+          type="button"
           className="tiler-btn"
           onClick={() => store.getState().undo()}
           disabled={state.undoStack.length === 0}
@@ -134,11 +131,12 @@ export function TilerToolbar({
         <button
           type="button"
           className="tiler-btn"
-          onClick={() => store.getState().toggleTvMode()}
-          aria-label="Toggle TV mode"
-          aria-pressed={state.dashboard.settings.tv_mode}
+          onClick={onToggleDarkMode}
+          aria-label={darkMode ? "Switch to light mode" : "Switch to dark mode"}
+          aria-pressed={darkMode}
+          title={darkMode ? "Light mode" : "Dark mode"}
         >
-          TV
+          {darkMode ? "☀️" : "🌙"}
         </button>
         <button
           type="button"
@@ -146,26 +144,19 @@ export function TilerToolbar({
           onClick={onToggleThemeEditor}
           aria-label="Toggle theme editor"
           aria-pressed={themeEditorOpen}
+          title="Custom theme tokens"
         >
-          🎨 Theme
+          🎨
         </button>
         <button
           type="button"
-          className="tiler-btn tiler-btn-primary"
-          onClick={onTogglePalette}
-          aria-label="Toggle palette"
-          aria-pressed={paletteOpen}
+          className="tiler-btn"
+          onClick={() => store.getState().toggleTvMode()}
+          aria-label="Toggle TV mode"
+          aria-pressed={state.dashboard.settings.tv_mode}
+          title="TV / kiosk mode"
         >
-          {paletteOpen ? "Done" : "+ Add Panel"}
-        </button>
-        <button
-          type="button"
-          className="tiler-btn tiler-btn-success"
-          onClick={() => void handleSave()}
-          disabled={!state.dirty}
-          aria-label="Save"
-        >
-          Save
+          📺 TV
         </button>
       </div>
     </header>
