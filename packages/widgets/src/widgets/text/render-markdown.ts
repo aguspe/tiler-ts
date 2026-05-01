@@ -1,10 +1,10 @@
-import rehypeSanitize, { defaultSchema } from "rehype-sanitize";
+import rehypeSanitize, { defaultSchema, type Options } from "rehype-sanitize";
 import rehypeStringify from "rehype-stringify";
 import remarkParse from "remark-parse";
 import remarkRehype from "remark-rehype";
 import { unified } from "unified";
 
-const SAFE_SCHEMA = {
+const SAFE_SCHEMA: Options = {
   ...defaultSchema,
   attributes: {
     ...defaultSchema.attributes,

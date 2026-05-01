@@ -1,7 +1,7 @@
 import { render, screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
-import { ImageExample } from "./example";
 import { ImageWidget } from "./ImageWidget";
+import { ImageExample } from "./example";
 import { ImageConfig } from "./schema";
 
 describe("ImageConfig", () => {

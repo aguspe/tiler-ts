@@ -1,9 +1,10 @@
 import { z } from "zod";
 
-const SAFE_URL = z.string().refine(
-  (v) => v.startsWith("https://") || v.startsWith("/") || v.startsWith("./"),
-  { message: "URL must be https or a relative path" },
-);
+const SAFE_URL = z
+  .string()
+  .refine((v) => v.startsWith("https://") || v.startsWith("/") || v.startsWith("./"), {
+    message: "URL must be https or a relative path",
+  });
 
 export const SANDBOX_ALLOWLIST = [
   "allow-forms",

@@ -1,6 +1,6 @@
 import { defineWidget } from "@aguspe/tiler-core";
-import { IframeExample } from "./example";
 import { IframeWidget } from "./IframeWidget";
+import { IframeExample } from "./example";
 import { IframeConfig } from "./schema";
 
 defineWidget({

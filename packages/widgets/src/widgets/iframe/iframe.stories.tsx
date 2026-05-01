@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react";
-import { IframeExample } from "./example";
 import { IframeWidget } from "./IframeWidget";
+import { IframeExample } from "./example";
 
 const meta: Meta<typeof IframeWidget> = {
   title: "Widgets/Iframe",

@@ -1,7 +1,7 @@
 import { defineWidget } from "@aguspe/tiler-core";
+import { TextWidget } from "./TextWidget";
 import { TextExample } from "./example";
 import { TextConfig } from "./schema";
-import { TextWidget } from "./TextWidget";
 
 defineWidget({
   meta: {

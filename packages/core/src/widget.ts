@@ -34,10 +34,7 @@ export type WidgetResolver<TResolved> = (
   args: WidgetResolverArgs,
 ) => Promise<WidgetData<TResolved>> | WidgetData<TResolved>;
 
-export interface WidgetDefinition<
-  TConfig extends ZodTypeAny = ZodTypeAny,
-  TResolved = unknown,
-> {
+export interface WidgetDefinition<TConfig extends ZodTypeAny = ZodTypeAny, TResolved = unknown> {
   meta: WidgetMeta;
   configSchema: TConfig;
   resolve?: WidgetResolver<TResolved>;

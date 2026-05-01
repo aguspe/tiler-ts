@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react";
-import { ClockExample } from "./example";
 import { ClockWidget } from "./ClockWidget";
+import { ClockExample } from "./example";
 
 const meta: Meta<typeof ClockWidget> = {
   title: "Widgets/Clock",

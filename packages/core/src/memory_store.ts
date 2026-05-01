@@ -144,9 +144,7 @@ export class MemoryStore implements TilerStore {
     }
     if (opts.filter) {
       const filter = opts.filter;
-      result = result.filter((r) =>
-        Object.entries(filter).every(([k, v]) => r.payload[k] === v),
-      );
+      result = result.filter((r) => Object.entries(filter).every(([k, v]) => r.payload[k] === v));
     }
     if (opts.orderBy === "recorded_at_desc") {
       result.sort((a, b) => (a.recorded_at < b.recorded_at ? 1 : -1));

@@ -1,7 +1,7 @@
 import { render } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
-import { IframeExample } from "./example";
 import { IframeWidget } from "./IframeWidget";
+import { IframeExample } from "./example";
 import { IframeConfig, SANDBOX_ALLOWLIST } from "./schema";
 
 describe("IframeConfig", () => {

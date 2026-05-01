@@ -1,7 +1,7 @@
 import { render, screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
-import { TextExample } from "./example";
 import { TextWidget } from "./TextWidget";
+import { TextExample } from "./example";
 
 describe("TextWidget", () => {
   it("renders markdown headers and paragraphs", () => {

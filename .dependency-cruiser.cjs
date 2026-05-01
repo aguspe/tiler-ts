@@ -16,10 +16,13 @@ module.exports = {
         orphan: true,
         pathNot: [
           "(^|/)\\.[^/]+\\.(js|cjs|mjs|ts|json)$",
-          "\\.d\\.ts$",
+          "\\.d\\.[mc]?ts$",
           "(^|/)tsup\\.config\\.ts$",
           "(^|/)vitest\\.config\\.ts$",
           "(^|/)vite\\.config\\.ts$",
+          // store.ts is a type-only public API surface; consumed via `export type *`
+          // and import type {...} at compile time. Has no runtime importer by design.
+          "packages/core/src/store\\.ts$",
         ],
       },
       to: {},
@@ -27,23 +30,24 @@ module.exports = {
     {
       name: "core-is-leaf",
       severity: "error",
-      comment: "@aguspe/tiler-core is leaf-most: it must not depend on any other workspace package.",
+      comment:
+        "@aguspe/tiler-core is leaf-most: it must not depend on any other workspace package.",
       from: { path: "^packages/core/src" },
-      to:   { path: "^packages/(?!core)" },
+      to: { path: "^packages/(?!core)" },
     },
     {
       name: "playwright-not-server",
       severity: "error",
       comment: "@aguspe/tiler-playwright must not depend on @aguspe/tiler-server (CI cost).",
       from: { path: "^packages/playwright/src" },
-      to:   { path: "^packages/server" },
+      to: { path: "^packages/server" },
     },
     {
       name: "no-test-from-src",
       severity: "error",
       comment: "Source must not import from test files.",
       from: { pathNot: "\\.test\\.[tj]sx?$" },
-      to:   { path:    "\\.test\\.[tj]sx?$" },
+      to: { path: "\\.test\\.[tj]sx?$" },
     },
   ],
   options: {

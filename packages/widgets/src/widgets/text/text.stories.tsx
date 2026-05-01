@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react";
-import { TextExample } from "./example";
 import { TextWidget } from "./TextWidget";
+import { TextExample } from "./example";
 
 const meta: Meta<typeof TextWidget> = {
   title: "Widgets/Text",
@@ -21,7 +21,8 @@ export const HeadersAndLists: Story = {
     panel: {
       ...ex.panel,
       config: {
-        markdown: "# Sprint 12\n\n## Goals\n\n- Land tiler-ts core\n- Demo Phase 1\n\n**bold** and _italic_ text. [Docs](https://example.com).",
+        markdown:
+          "# Sprint 12\n\n## Goals\n\n- Land tiler-ts core\n- Demo Phase 1\n\n**bold** and _italic_ text. [Docs](https://example.com).",
         align: "left",
       },
     },

@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react";
-import { ImageExample } from "./example";
 import { ImageWidget } from "./ImageWidget";
+import { ImageExample } from "./example";
 
 const meta: Meta<typeof ImageWidget> = {
   title: "Widgets/Image",

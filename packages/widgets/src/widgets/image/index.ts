@@ -1,6 +1,6 @@
 import { defineWidget } from "@aguspe/tiler-core";
-import { ImageExample } from "./example";
 import { ImageWidget } from "./ImageWidget";
+import { ImageExample } from "./example";
 import { ImageConfig } from "./schema";
 
 defineWidget({
