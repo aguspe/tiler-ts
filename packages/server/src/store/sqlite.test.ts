@@ -42,7 +42,12 @@ describe("BetterSqliteStore — dashboards", () => {
 
   it("preserves created_at on subsequent upserts", async () => {
     const d1 = await store.upsertDashboard({ name: "A", slug: "a", description: null });
-    const d2 = await store.upsertDashboard({ id: d1.id, name: "A updated", slug: "a", description: null });
+    const d2 = await store.upsertDashboard({
+      id: d1.id,
+      name: "A updated",
+      slug: "a",
+      description: null,
+    });
     expect(d2.created_at).toBe(d1.created_at);
     expect(d2.name).toBe("A updated");
     expect(d2.updated_at >= d1.updated_at).toBe(true);
@@ -257,31 +262,69 @@ describe("BetterSqliteStore — records", () => {
       });
     }
 
-    const desc = await store.queryRecords({ dataSourceId: ds.id, orderBy: "recorded_at_desc", limit: 2 });
+    const desc = await store.queryRecords({
+      dataSourceId: ds.id,
+      orderBy: "recorded_at_desc",
+      limit: 2,
+    });
     expect(desc).toHaveLength(2);
     expect(desc[0]?.recorded_at).toBe("2024-03-01T00:00:00.000Z");
 
-    const asc = await store.queryRecords({ dataSourceId: ds.id, orderBy: "recorded_at_asc", limit: 2 });
+    const asc = await store.queryRecords({
+      dataSourceId: ds.id,
+      orderBy: "recorded_at_asc",
+      limit: 2,
+    });
     expect(asc).toHaveLength(2);
     expect(asc[0]?.recorded_at).toBe("2024-01-01T00:00:00.000Z");
   });
 
   it("queryRecords filters by payload key via filter option", async () => {
     const ds = await makeDs("src-flt");
-    await store.insertRecord({ data_source_id: ds.id, payload: { env: "prod" }, recorded_at: "2024-01-01T00:00:00.000Z", source_ref: null, ingested_via: "manual" });
-    await store.insertRecord({ data_source_id: ds.id, payload: { env: "staging" }, recorded_at: "2024-01-02T00:00:00.000Z", source_ref: null, ingested_via: "manual" });
+    await store.insertRecord({
+      data_source_id: ds.id,
+      payload: { env: "prod" },
+      recorded_at: "2024-01-01T00:00:00.000Z",
+      source_ref: null,
+      ingested_via: "manual",
+    });
+    await store.insertRecord({
+      data_source_id: ds.id,
+      payload: { env: "staging" },
+      recorded_at: "2024-01-02T00:00:00.000Z",
+      source_ref: null,
+      ingested_via: "manual",
+    });
 
     const results = await store.queryRecords({ dataSourceId: ds.id, filter: { env: "prod" } });
     expect(results).toHaveLength(1);
-    expect(results[0]?.payload["env"]).toBe("prod");
+    expect(results[0]?.payload.env).toBe("prod");
   });
 
   it("insertRecordsBatch returns count and persists all rows", async () => {
     const ds = await makeDs("src-batch");
     const count = await store.insertRecordsBatch([
-      { data_source_id: ds.id, payload: { i: 0 }, recorded_at: "2024-01-01T00:00:00.000Z", source_ref: null, ingested_via: "csv" },
-      { data_source_id: ds.id, payload: { i: 1 }, recorded_at: "2024-01-02T00:00:00.000Z", source_ref: null, ingested_via: "csv" },
-      { data_source_id: ds.id, payload: { i: 2 }, recorded_at: "2024-01-03T00:00:00.000Z", source_ref: null, ingested_via: "csv" },
+      {
+        data_source_id: ds.id,
+        payload: { i: 0 },
+        recorded_at: "2024-01-01T00:00:00.000Z",
+        source_ref: null,
+        ingested_via: "csv",
+      },
+      {
+        data_source_id: ds.id,
+        payload: { i: 1 },
+        recorded_at: "2024-01-02T00:00:00.000Z",
+        source_ref: null,
+        ingested_via: "csv",
+      },
+      {
+        data_source_id: ds.id,
+        payload: { i: 2 },
+        recorded_at: "2024-01-03T00:00:00.000Z",
+        source_ref: null,
+        ingested_via: "csv",
+      },
     ]);
     expect(count).toBe(3);
     const rows = await store.queryRecords({ dataSourceId: ds.id });
@@ -291,9 +334,27 @@ describe("BetterSqliteStore — records", () => {
   it("pruneRecords removes old records and returns count", async () => {
     const ds = await makeDs("src-prune");
     await store.insertRecordsBatch([
-      { data_source_id: ds.id, payload: { i: 0 }, recorded_at: "2023-01-01T00:00:00.000Z", source_ref: null, ingested_via: "manual" },
-      { data_source_id: ds.id, payload: { i: 1 }, recorded_at: "2023-06-01T00:00:00.000Z", source_ref: null, ingested_via: "manual" },
-      { data_source_id: ds.id, payload: { i: 2 }, recorded_at: "2025-01-01T00:00:00.000Z", source_ref: null, ingested_via: "manual" },
+      {
+        data_source_id: ds.id,
+        payload: { i: 0 },
+        recorded_at: "2023-01-01T00:00:00.000Z",
+        source_ref: null,
+        ingested_via: "manual",
+      },
+      {
+        data_source_id: ds.id,
+        payload: { i: 1 },
+        recorded_at: "2023-06-01T00:00:00.000Z",
+        source_ref: null,
+        ingested_via: "manual",
+      },
+      {
+        data_source_id: ds.id,
+        payload: { i: 2 },
+        recorded_at: "2025-01-01T00:00:00.000Z",
+        source_ref: null,
+        ingested_via: "manual",
+      },
     ]);
     const pruned = await store.pruneRecords({ olderThan: "2024-01-01T00:00:00.000Z" });
     expect(pruned).toBe(2);

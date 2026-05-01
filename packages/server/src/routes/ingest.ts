@@ -1,4 +1,4 @@
-import type { TilerStore } from "@aguspe/tiler-core";
+import type { ResolvedTilerConfig, TilerStore } from "@aguspe/tiler-core";
 import type { FastifyPluginAsync } from "fastify";
 import rawBody from "fastify-raw-body";
 import { verifyHmac } from "../auth";
@@ -11,14 +11,14 @@ export const ingestPlugin: FastifyPluginAsync = async (app) => {
     runFirst: true,
   });
 
-  const cfg = (app as any).tilerConfig; // eslint-disable-line @typescript-eslint/no-explicit-any
-  const store = cfg.store as TilerStore;
+  const cfg = (app as unknown as { tilerConfig: ResolvedTilerConfig }).tilerConfig;
+  const store: TilerStore = cfg.store;
 
   app.post<{ Params: { source_slug: string } }>(
     "/:source_slug",
     { config: { rawBody: true } },
     async (req, reply) => {
-      const raw = (req as any).rawBody as string | undefined; // eslint-disable-line @typescript-eslint/no-explicit-any
+      const raw = (req as unknown as { rawBody?: string }).rawBody;
       const sigHeader = req.headers["x-tiler-signature"];
 
       if (typeof sigHeader !== "string" || typeof raw !== "string") {
@@ -35,7 +35,7 @@ export const ingestPlugin: FastifyPluginAsync = async (app) => {
       if (source.webhook_token) {
         secret = source.webhook_token;
       } else if (cfg.auth?.webhookSecret) {
-        secret = cfg.auth.webhookSecret as string;
+        secret = cfg.auth.webhookSecret;
       }
 
       if (!secret) {
@@ -67,10 +67,10 @@ export const ingestPlugin: FastifyPluginAsync = async (app) => {
       }
 
       const recordedAt =
-        typeof body["recorded_at"] === "string" ? body["recorded_at"] : new Date().toISOString();
+        typeof body.recorded_at === "string" ? body.recorded_at : new Date().toISOString();
 
       // Skew check
-      const skewMs: number = (cfg.auth?.recordedAtSkewMs as number | undefined) ?? 30 * 24 * 3_600_000;
+      const skewMs: number = cfg.auth?.recordedAtSkewMs ?? 30 * 24 * 3_600_000;
       const t = Date.parse(recordedAt);
       const now = Date.now();
 
@@ -82,7 +82,7 @@ export const ingestPlugin: FastifyPluginAsync = async (app) => {
         data_source_id: source.id,
         payload,
         recorded_at: recordedAt,
-        source_ref: typeof body["source_ref"] === "string" ? body["source_ref"] : null,
+        source_ref: typeof body.source_ref === "string" ? body.source_ref : null,
         ingested_via: "webhook",
       });
 

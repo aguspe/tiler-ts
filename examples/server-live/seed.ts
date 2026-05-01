@@ -26,7 +26,7 @@ async function main(): Promise<void> {
   }
 
   // 200 fake records spanning the last 7 days.
-  const sourceId = preset.dataSources[0]!.id;
+  const sourceId = preset.dataSources[0]?.id;
   const records = Array.from({ length: 200 }, (_, i) => ({
     id: newId(),
     data_source_id: sourceId,

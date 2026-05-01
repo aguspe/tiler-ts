@@ -1,7 +1,7 @@
 import { readdirSync } from "node:fs";
 import { createRequire } from "node:module";
 import { dirname, resolve } from "node:path";
-import { buildSnapshot, type ResolvedTilerConfig, type TilerStore } from "@aguspe/tiler-core";
+import { type ResolvedTilerConfig, type TilerStore, buildSnapshot } from "@aguspe/tiler-core";
 import "@aguspe/tiler-widgets"; // side effect: register all widgets
 import { renderToHtml } from "@aguspe/tiler-viewer";
 import fastifyStatic from "@fastify/static";

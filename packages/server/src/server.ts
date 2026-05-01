@@ -1,4 +1,4 @@
-import { defineConfig, type ResolvedTilerConfig, type TilerConfig } from "@aguspe/tiler-core";
+import { type ResolvedTilerConfig, type TilerConfig, defineConfig } from "@aguspe/tiler-core";
 import fastify, { type FastifyInstance } from "fastify";
 import { dashboardsPlugin } from "./routes/dashboards";
 import { ingestPlugin } from "./routes/ingest";

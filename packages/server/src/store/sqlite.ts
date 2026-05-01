@@ -1,6 +1,4 @@
-import Database from "better-sqlite3";
 import {
-  newId,
   type Dashboard,
   type DashboardInput,
   type DataRecord,
@@ -12,65 +10,69 @@ import {
   type PanelInput,
   type RecordQuery,
   type TilerStore,
+  newId,
 } from "@aguspe/tiler-core";
+import Database from "better-sqlite3";
 import { migrate } from "./migrations";
 
 // ─── row → domain helpers ─────────────────────────────────────────────────────
 
 function rowToDashboard(row: Record<string, unknown>): Dashboard {
   return {
-    id: row["id"] as string,
-    name: row["name"] as string,
-    slug: row["slug"] as string,
-    description: (row["description"] as string | null) ?? null,
-    refresh_seconds: row["refresh_seconds"] as number,
-    settings: JSON.parse(row["settings"] as string) as Dashboard["settings"],
-    created_at: row["created_at"] as string,
-    updated_at: row["updated_at"] as string,
+    id: row.id as string,
+    name: row.name as string,
+    slug: row.slug as string,
+    description: (row.description as string | null) ?? null,
+    refresh_seconds: row.refresh_seconds as number,
+    settings: JSON.parse(row.settings as string) as Dashboard["settings"],
+    created_at: row.created_at as string,
+    updated_at: row.updated_at as string,
   };
 }
 
 function rowToDataSource(row: Record<string, unknown>): DataSource {
   return {
-    id: row["id"] as string,
-    name: row["name"] as string,
-    slug: row["slug"] as string,
-    description: (row["description"] as string | null) ?? null,
-    schema_definition: JSON.parse(row["schema_definition"] as string) as DataSource["schema_definition"],
-    ingestion_methods: JSON.parse(row["ingestion_methods"] as string) as IngestionMethod[],
-    webhook_token: (row["webhook_token"] as string | null) ?? null,
-    active: (row["active"] as number) === 1,
-    created_at: row["created_at"] as string,
-    updated_at: row["updated_at"] as string,
+    id: row.id as string,
+    name: row.name as string,
+    slug: row.slug as string,
+    description: (row.description as string | null) ?? null,
+    schema_definition: JSON.parse(
+      row.schema_definition as string,
+    ) as DataSource["schema_definition"],
+    ingestion_methods: JSON.parse(row.ingestion_methods as string) as IngestionMethod[],
+    webhook_token: (row.webhook_token as string | null) ?? null,
+    active: (row.active as number) === 1,
+    created_at: row.created_at as string,
+    updated_at: row.updated_at as string,
   };
 }
 
 function rowToDataRecord(row: Record<string, unknown>): DataRecord {
   return {
-    id: row["id"] as string,
-    data_source_id: row["data_source_id"] as string,
-    payload: JSON.parse(row["payload"] as string) as Record<string, unknown>,
-    recorded_at: row["recorded_at"] as string,
-    source_ref: (row["source_ref"] as string | null) ?? null,
-    ingested_via: row["ingested_via"] as IngestionMethod,
-    created_at: row["created_at"] as string,
+    id: row.id as string,
+    data_source_id: row.data_source_id as string,
+    payload: JSON.parse(row.payload as string) as Record<string, unknown>,
+    recorded_at: row.recorded_at as string,
+    source_ref: (row.source_ref as string | null) ?? null,
+    ingested_via: row.ingested_via as IngestionMethod,
+    created_at: row.created_at as string,
   };
 }
 
 function rowToPanel(row: Record<string, unknown>): Panel {
   return {
-    id: row["id"] as string,
-    dashboard_id: row["dashboard_id"] as string,
-    data_source_id: (row["data_source_id"] as string | null) ?? null,
-    title: row["title"] as string,
-    widget_type: row["widget_type"] as string,
-    x: row["x"] as number,
-    y: row["y"] as number,
-    width: row["width"] as number,
-    height: row["height"] as number,
-    config: JSON.parse(row["config"] as string) as Panel["config"],
-    created_at: row["created_at"] as string,
-    updated_at: row["updated_at"] as string,
+    id: row.id as string,
+    dashboard_id: row.dashboard_id as string,
+    data_source_id: (row.data_source_id as string | null) ?? null,
+    title: row.title as string,
+    widget_type: row.widget_type as string,
+    x: row.x as number,
+    y: row.y as number,
+    width: row.width as number,
+    height: row.height as number,
+    config: JSON.parse(row.config as string) as Panel["config"],
+    created_at: row.created_at as string,
+    updated_at: row.updated_at as string,
   };
 }
 
@@ -102,14 +104,17 @@ export class BetterSqliteStore implements TilerStore {
   // ─── dashboards ────────────────────────────────────────────────────────────
 
   async listDashboards(): Promise<Dashboard[]> {
-    const rows = this.db.prepare("SELECT * FROM tiler_dashboards").all() as Record<string, unknown>[];
+    const rows = this.db.prepare("SELECT * FROM tiler_dashboards").all() as Record<
+      string,
+      unknown
+    >[];
     return rows.map(rowToDashboard);
   }
 
   async getDashboard(slug: string): Promise<Dashboard | null> {
-    const row = this.db
-      .prepare("SELECT * FROM tiler_dashboards WHERE slug = ?")
-      .get(slug) as Record<string, unknown> | undefined;
+    const row = this.db.prepare("SELECT * FROM tiler_dashboards WHERE slug = ?").get(slug) as
+      | Record<string, unknown>
+      | undefined;
     return row ? rowToDashboard(row) : null;
   }
 
@@ -144,9 +149,10 @@ export class BetterSqliteStore implements TilerStore {
         created_at,
         now,
       );
-    const row = this.db
-      .prepare("SELECT * FROM tiler_dashboards WHERE id = ?")
-      .get(id) as Record<string, unknown>;
+    const row = this.db.prepare("SELECT * FROM tiler_dashboards WHERE id = ?").get(id) as Record<
+      string,
+      unknown
+    >;
     return rowToDashboard(row);
   }
 
@@ -166,9 +172,9 @@ export class BetterSqliteStore implements TilerStore {
   async upsertPanel(input: PanelInput): Promise<Panel> {
     const now = new Date().toISOString();
     const id = input.id ?? newId();
-    const existing = this.db
-      .prepare("SELECT created_at FROM tiler_panels WHERE id = ?")
-      .get(id) as { created_at: string } | undefined;
+    const existing = this.db.prepare("SELECT created_at FROM tiler_panels WHERE id = ?").get(id) as
+      | { created_at: string }
+      | undefined;
     const created_at = existing?.created_at ?? now;
     this.db
       .prepare(
@@ -202,9 +208,10 @@ export class BetterSqliteStore implements TilerStore {
         created_at,
         now,
       );
-    const row = this.db
-      .prepare("SELECT * FROM tiler_panels WHERE id = ?")
-      .get(id) as Record<string, unknown>;
+    const row = this.db.prepare("SELECT * FROM tiler_panels WHERE id = ?").get(id) as Record<
+      string,
+      unknown
+    >;
     return rowToPanel(row);
   }
 
@@ -215,14 +222,17 @@ export class BetterSqliteStore implements TilerStore {
   // ─── data sources ──────────────────────────────────────────────────────────
 
   async listDataSources(): Promise<DataSource[]> {
-    const rows = this.db.prepare("SELECT * FROM tiler_data_sources").all() as Record<string, unknown>[];
+    const rows = this.db.prepare("SELECT * FROM tiler_data_sources").all() as Record<
+      string,
+      unknown
+    >[];
     return rows.map(rowToDataSource);
   }
 
   async getDataSource(slug: string): Promise<DataSource | null> {
-    const row = this.db
-      .prepare("SELECT * FROM tiler_data_sources WHERE slug = ?")
-      .get(slug) as Record<string, unknown> | undefined;
+    const row = this.db.prepare("SELECT * FROM tiler_data_sources WHERE slug = ?").get(slug) as
+      | Record<string, unknown>
+      | undefined;
     return row ? rowToDataSource(row) : null;
   }
 
@@ -268,9 +278,10 @@ export class BetterSqliteStore implements TilerStore {
         created_at,
         now,
       );
-    const row = this.db
-      .prepare("SELECT * FROM tiler_data_sources WHERE id = ?")
-      .get(id) as Record<string, unknown>;
+    const row = this.db.prepare("SELECT * FROM tiler_data_sources WHERE id = ?").get(id) as Record<
+      string,
+      unknown
+    >;
     return rowToDataSource(row);
   }
 
@@ -299,9 +310,10 @@ export class BetterSqliteStore implements TilerStore {
         input.ingested_via,
         now,
       );
-    const row = this.db
-      .prepare("SELECT * FROM tiler_data_records WHERE id = ?")
-      .get(id) as Record<string, unknown>;
+    const row = this.db.prepare("SELECT * FROM tiler_data_records WHERE id = ?").get(id) as Record<
+      string,
+      unknown
+    >;
     return rowToDataRecord(row);
   }
 
@@ -354,9 +366,7 @@ export class BetterSqliteStore implements TilerStore {
 
     if (opts.filter !== undefined) {
       const filter = opts.filter;
-      result = result.filter((r) =>
-        Object.entries(filter).every(([k, v]) => r.payload[k] === v),
-      );
+      result = result.filter((r) => Object.entries(filter).every(([k, v]) => r.payload[k] === v));
     }
 
     if (opts.limit !== undefined) {

@@ -1,4 +1,4 @@
-import type { TilerStore } from "@aguspe/tiler-core";
+import type { ResolvedTilerConfig, TilerStore } from "@aguspe/tiler-core";
 import type { FastifyPluginAsync } from "fastify";
 import { z } from "zod";
 import { makeBasicAuthHook, makeCsrfHook } from "../auth";
@@ -27,8 +27,8 @@ export const PanelUpdate = PanelCreate.partial();
 // ---------------------------------------------------------------------------
 
 export const panelsPlugin: FastifyPluginAsync = async (app) => {
-  const cfg = (app as any).tilerConfig; // eslint-disable-line @typescript-eslint/no-explicit-any
-  const store = cfg.store as TilerStore;
+  const cfg = (app as unknown as { tilerConfig: ResolvedTilerConfig }).tilerConfig;
+  const store: TilerStore = cfg.store;
   const auth = [makeBasicAuthHook(cfg.auth), makeCsrfHook(cfg.auth)];
 
   // POST / — create panel
@@ -37,7 +37,7 @@ export const panelsPlugin: FastifyPluginAsync = async (app) => {
     if (!parsed.success) {
       return reply.code(400).send({ error: "validation error", issues: parsed.error.issues });
     }
-    const panel = await store.upsertPanel(parsed.data);
+    const panel = await store.upsertPanel(parsed.data as Parameters<TilerStore["upsertPanel"]>[0]);
     return reply.code(201).send(panel);
   });
 
@@ -65,7 +65,7 @@ export const panelsPlugin: FastifyPluginAsync = async (app) => {
     }
 
     const merged = { ...existing, ...parsed.data };
-    const updated = await store.upsertPanel(merged);
+    const updated = await store.upsertPanel(merged as Parameters<TilerStore["upsertPanel"]>[0]);
     return reply.code(200).send(updated);
   });
 

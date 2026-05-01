@@ -1,7 +1,7 @@
 import { MemoryStore } from "@aguspe/tiler-core";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { signBody } from "../auth";
-import { createServer, type TilerFastifyInstance } from "../server";
+import { type TilerFastifyInstance, createServer } from "../server";
 
 // ---------------------------------------------------------------------------
 // Setup helpers
@@ -224,11 +224,12 @@ describe("ingest", () => {
     });
 
     const sources = await store.listDataSources();
-    const source = sources.find((s) => s.slug === "runs")!;
+    const source = sources.find((s) => s.slug === "runs");
+    if (!source) throw new Error("expected runs source");
     const records = await store.queryRecords({ dataSourceId: source.id });
     expect(records).toHaveLength(1);
-    expect(records[0]!.payload["duration_ms"]).toBe(99.9);
-    expect(records[0]!.ingested_via).toBe("webhook");
+    expect(records[0]?.payload.duration_ms).toBe(99.9);
+    expect(records[0]?.ingested_via).toBe("webhook");
   });
 });
 

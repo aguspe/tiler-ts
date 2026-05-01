@@ -5,33 +5,55 @@
 A TypeScript port of [Tiler](https://github.com/aguspe/tiler) (Rails engine).
 Distributed as a set of npm packages under the `@aguspe/tiler-*` scope.
 
-## Status: Phase 3 — Static Reporter (`v0.0.3-phase-3`)
+## Status: Phase 4 — Live Server (`v0.0.4-phase-4`)
 
-This release ships the first end-user-shipping feature: **a Playwright reporter
-that emits a self-contained static dashboard at the end of every test run.**
-The reporter replaces Playwright's HTML reporter — a `tiler-report/` folder
-appears next to your tests with a fully-rendered dashboard you can open with
-`file://` or upload as a CI artifact.
+This release ships the live counterpart to the static reporter. Run the
+`@aguspe/tiler-server` Fastify app, get sqlite persistence, HMAC-signed
+webhook ingestion, manual entry, CSV import, and live updates pushed over
+WebSocket — all in a single Node process.
 
-### What's in v0.0.3
+### What's in v0.0.4
 
-- `@aguspe/tiler-core` — adds the `testAutomationPreset` (the QA cockpit
-  dashboard config: 9 panels = total runs + failures w/ delta + avg duration +
-  build clock + status pie + duration trend line + per-suite status grid +
-  failures-by-suite bar + recent failures list) and `buildSnapshot()` (runs
-  every panel's resolver server-side and bakes the result into the snapshot).
-- `@aguspe/tiler-widgets` — unchanged from Phase 2: all 14 widgets.
-- `@aguspe/tiler-viewer` — read-only React app. SSR via `renderToHtml` (Node);
-  client-side hydration via a Vite-built bundle that ships pre-built in the
-  npm package.
-- `@aguspe/tiler-playwright` — implements Playwright's `Reporter` interface.
-  Drop into `playwright.config.ts` reporters, get `tiler-report/index.html`
-  on every test run.
+- `@aguspe/tiler-server` — Fastify 5 + better-sqlite3 + @fastify/websocket.
+  - HTTP API: full CRUD on dashboards / panels / data sources at `/api/*`.
+  - HMAC-signed webhook ingestion at `POST /ingest/:source_slug`.
+  - Manual entry + CSV import at `POST /api/data_sources/:slug/{records,import_csv}`.
+  - SSR'd dashboard pages at `/dashboards/:slug` (read-only — editor lands in Phase 5).
+  - Pre-built viewer bundle served from `/assets/*`.
+  - WebSocket live updates at `/ws` — clients subscribe by slug, see resolver-diff pushes per refresh tick.
+  - Optional HTTP basic auth + CSRF (off by default; enable in `tiler.config.ts`).
+- `@aguspe/tiler-core` — adds `defineConfig()` for typed `tiler.config.ts`.
+- `examples/server-live/` — runnable demo: `pnpm seed && pnpm start`.
 
-Phases 4–7 will add the Fastify server with sqlite store, the gridstack-based
-editor, the CLI, and v1.0.0 release.
+Phases 5–7 will add the gridstack-based editor, the CLI (`tiler` binary), and v1.0.0 release.
 
-## Quick start
+## Quick start (live mode)
+
+```ts
+// tiler.config.ts
+import { defineConfig } from "@aguspe/tiler-core";
+import { BetterSqliteStore } from "@aguspe/tiler-server/sqlite";
+
+export default defineConfig({
+  store: new BetterSqliteStore({ path: "./tiler.db" }),
+  port: 4567,
+  auth: { webhookSecret: process.env.TILER_WEBHOOK_SECRET! },
+  widgets: ["@aguspe/tiler-widgets"],
+  presets: ["test_automation"],
+});
+```
+
+```ts
+// start.ts
+import "@aguspe/tiler-widgets";
+import { createServer } from "@aguspe/tiler-server";
+import config from "./tiler.config";
+
+const app = await createServer({ store: config.store, auth: config.auth });
+await app.listen({ host: config.host, port: config.port });
+```
+
+## Quick start (Playwright reporter)
 
 In a Playwright project:
 
@@ -39,11 +61,9 @@ In a Playwright project:
 npm install -D @aguspe/tiler-playwright
 ```
 
-Edit `playwright.config.ts`:
-
 ```ts
+// playwright.config.ts
 import { defineConfig } from "@playwright/test";
-
 export default defineConfig({
   reporter: [["@aguspe/tiler-playwright", { outDir: "tiler-report" }]],
 });
@@ -53,47 +73,32 @@ Run your tests, then open `tiler-report/index.html`.
 
 ## Examples
 
-- [`examples/playwright-static/`](examples/playwright-static/) — a runnable
-  Playwright project demonstrating the reporter end-to-end.
-
-## Quick start (development)
-
-Requirements: Node 20.18+ and pnpm 9.12+ (pinned via `packageManager` and
-checked at install time).
-
-```bash
-pnpm install
-pnpm build
-pnpm test
-pnpm --filter @aguspe/tiler-widgets storybook
-```
-
-Open [http://localhost:6006](http://localhost:6006) for the widget gallery
-(all 14 widgets, multiple stories each).
+- [`examples/playwright-static/`](examples/playwright-static/) — Playwright reporter demo.
+- [`examples/server-live/`](examples/server-live/) — Fastify server demo with sqlite + seeded data + curl webhook examples.
 
 ## Workspace pipeline
 
 | Command | What it does |
 |---|---|
-| `pnpm test` | Vitest across packages — 200+ tests covering schemas, resolvers, widgets, SSR, reporter |
+| `pnpm test` | Vitest across packages — 270+ tests covering schemas, resolvers, widgets, SSR, reporter, server routes, sqlite store, refresh manager |
 | `pnpm typecheck` | `tsc --noEmit` across packages |
 | `pnpm lint` | Biome lint + format check |
 | `pnpm format` | Biome format --write |
 | `pnpm build` | tsup + Vite builds for each package |
 | `pnpm size` | size-limit budget enforcement |
-| `pnpm -w deps` | dependency-cruiser boundary checks |
+| `pnpm deps` | dependency-cruiser boundary checks |
 
 CI runs all of the above on every PR (Node 20 + 22, ubuntu + macos).
 
 ## Packages
 
-| Package | Status (v0.0.3-phase-3) |
+| Package | Status (v0.0.4-phase-4) |
 |---|---|
-| `@aguspe/tiler-core` | ✅ schemas + registry + MemoryStore + helpers + presets + buildSnapshot |
+| `@aguspe/tiler-core` | ✅ schemas + registry + MemoryStore + helpers + presets + buildSnapshot + defineConfig |
 | `@aguspe/tiler-widgets` | ✅ all 14 widgets + Storybook |
 | `@aguspe/tiler-viewer` | ✅ SSR + client hydration bundle |
 | `@aguspe/tiler-playwright` | ✅ Reporter + test_automation preset |
-| `@aguspe/tiler-server` | ⏳ Phase 4 |
+| `@aguspe/tiler-server` | ✅ Fastify + sqlite + ingestion + WebSocket |
 | `@aguspe/tiler-editor` | ⏳ Phase 5 |
 | `@aguspe/tiler-cli` | ⏳ Phase 6 |
 
@@ -103,6 +108,7 @@ CI runs all of the above on every PR (Node 20 + 22, ubuntu + macos).
 - Phase 1 plan: [`docs/superpowers/plans/2026-04-30-tiler-ts-phase-1-foundation.md`](docs/superpowers/plans/2026-04-30-tiler-ts-phase-1-foundation.md)
 - Phase 2 plan: [`docs/superpowers/plans/2026-05-01-tiler-ts-phase-2-widgets.md`](docs/superpowers/plans/2026-05-01-tiler-ts-phase-2-widgets.md)
 - Phase 3 plan: [`docs/superpowers/plans/2026-05-01-tiler-ts-phase-3-viewer-and-reporter.md`](docs/superpowers/plans/2026-05-01-tiler-ts-phase-3-viewer-and-reporter.md)
+- Phase 4 plan: [`docs/superpowers/plans/2026-05-01-tiler-ts-phase-4-server.md`](docs/superpowers/plans/2026-05-01-tiler-ts-phase-4-server.md)
 
 ## License
 

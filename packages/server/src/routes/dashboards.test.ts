@@ -1,6 +1,6 @@
 import { MemoryStore } from "@aguspe/tiler-core";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
-import { createServer, type TilerFastifyInstance } from "../server";
+import { type TilerFastifyInstance, createServer } from "../server";
 
 // ---------------------------------------------------------------------------
 // Helpers

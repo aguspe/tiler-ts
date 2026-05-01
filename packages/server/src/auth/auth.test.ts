@@ -1,15 +1,13 @@
 import { MemoryStore } from "@aguspe/tiler-core";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
-import { createServer, type TilerFastifyInstance } from "../server";
+import { type TilerFastifyInstance, createServer } from "../server";
 import { makeBasicAuthHook, makeCsrfHook } from "./index";
 
 describe("makeBasicAuthHook", () => {
   it("is a no-op when cfg.basic is unset", async () => {
     const hook = makeBasicAuthHook({});
     // Calling it with throwaway args should not throw or send anything.
-    await expect(
-      hook({ headers: {} } as never, {} as never),
-    ).resolves.toBeUndefined();
+    await expect(hook({ headers: {} } as never, {} as never)).resolves.toBeUndefined();
   });
 });
 

@@ -1,4 +1,4 @@
-import type { TilerStore } from "@aguspe/tiler-core";
+import type { ResolvedTilerConfig, TilerStore } from "@aguspe/tiler-core";
 import type { FastifyPluginAsync } from "fastify";
 import Papa from "papaparse";
 import { z } from "zod";
@@ -42,8 +42,8 @@ export const DataRecordManualInput = z.object({
 // ---------------------------------------------------------------------------
 
 export const sourcesPlugin: FastifyPluginAsync = async (app) => {
-  const cfg = (app as any).tilerConfig; // eslint-disable-line @typescript-eslint/no-explicit-any
-  const store = cfg.store as TilerStore;
+  const cfg = (app as unknown as { tilerConfig: ResolvedTilerConfig }).tilerConfig;
+  const store: TilerStore = cfg.store;
   const auth = [makeBasicAuthHook(cfg.auth), makeCsrfHook(cfg.auth)];
 
   // Register a content-type parser for text/csv so Fastify doesn't reject it
@@ -69,7 +69,9 @@ export const sourcesPlugin: FastifyPluginAsync = async (app) => {
     if (!parsed.success) {
       return reply.code(400).send({ error: "validation error", issues: parsed.error.issues });
     }
-    const source = await store.upsertDataSource(parsed.data);
+    const source = await store.upsertDataSource(
+      parsed.data as Parameters<TilerStore["upsertDataSource"]>[0],
+    );
     return reply.code(201).send(source);
   });
 
@@ -87,7 +89,9 @@ export const sourcesPlugin: FastifyPluginAsync = async (app) => {
     }
 
     const merged = { ...existing, ...parsed.data };
-    const updated = await store.upsertDataSource(merged);
+    const updated = await store.upsertDataSource(
+      merged as Parameters<TilerStore["upsertDataSource"]>[0],
+    );
     return reply.code(200).send(updated);
   });
 
@@ -144,7 +148,10 @@ export const sourcesPlugin: FastifyPluginAsync = async (app) => {
         return reply.code(400).send({ error: "empty or non-string CSV body" });
       }
 
-      const result = Papa.parse<Record<string, string>>(csvText, { header: true, skipEmptyLines: true });
+      const result = Papa.parse<Record<string, string>>(csvText, {
+        header: true,
+        skipEmptyLines: true,
+      });
 
       if (result.errors.length > 0) {
         return reply
@@ -154,8 +161,8 @@ export const sourcesPlugin: FastifyPluginAsync = async (app) => {
 
       const inputs = result.data.map((row) => {
         const recorded_at =
-          typeof row["recorded_at"] === "string" && row["recorded_at"].length > 0
-            ? row["recorded_at"]
+          typeof row.recorded_at === "string" && row.recorded_at.length > 0
+            ? row.recorded_at
             : new Date().toISOString();
 
         const payload: Record<string, unknown> = {};

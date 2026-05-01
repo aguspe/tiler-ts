@@ -1,17 +1,10 @@
 import { MemoryStore } from "@aguspe/tiler-core";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
-import { createServer, type TilerFastifyInstance } from "../server";
+import { type TilerFastifyInstance, createServer } from "../server";
 
 // ---------------------------------------------------------------------------
 // Helpers
 // ---------------------------------------------------------------------------
-
-function makeCsrfHeaders(token: string): Record<string, string> {
-  return {
-    "x-tiler-csrf": token,
-    Cookie: `tiler-csrf=${token}`,
-  };
-}
 
 const BASE_SOURCE_PAYLOAD = {
   name: "Runs",
@@ -176,7 +169,7 @@ describe("sources", () => {
     // Verify records are actually stored via the store directly
     const sources = await store.listDataSources();
     const source = sources.find((s) => s.slug === "runs");
-    const storedRecords = await store.queryRecords({ dataSourceId: source!.id });
+    const storedRecords = await store.queryRecords({ dataSourceId: source?.id });
     expect(storedRecords).toHaveLength(3);
   });
 

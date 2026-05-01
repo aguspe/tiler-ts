@@ -1,5 +1,5 @@
 import { buildSnapshot } from "@aguspe/tiler-core";
-import type { TilerStore } from "@aguspe/tiler-core";
+import type { ResolvedTilerConfig, TilerStore } from "@aguspe/tiler-core";
 import type { FastifyPluginAsync } from "fastify";
 import { z } from "zod";
 import { makeBasicAuthHook, makeCsrfHook } from "../auth";
@@ -41,8 +41,8 @@ export const DashboardUpdate = DashboardCreate.partial();
 // ---------------------------------------------------------------------------
 
 export const dashboardsPlugin: FastifyPluginAsync = async (app) => {
-  const cfg = (app as any).tilerConfig; // eslint-disable-line @typescript-eslint/no-explicit-any
-  const store = cfg.store as TilerStore;
+  const cfg = (app as unknown as { tilerConfig: ResolvedTilerConfig }).tilerConfig;
+  const store: TilerStore = cfg.store;
   const auth = [makeBasicAuthHook(cfg.auth), makeCsrfHook(cfg.auth)];
 
   // GET / — list all dashboards
@@ -88,7 +88,9 @@ export const dashboardsPlugin: FastifyPluginAsync = async (app) => {
     if (!parsed.success) {
       return reply.code(400).send({ error: "validation error", issues: parsed.error.issues });
     }
-    const dashboard = await store.upsertDashboard(parsed.data);
+    const dashboard = await store.upsertDashboard(
+      parsed.data as Parameters<TilerStore["upsertDashboard"]>[0],
+    );
     return reply.code(201).send(dashboard);
   });
 
@@ -108,7 +110,9 @@ export const dashboardsPlugin: FastifyPluginAsync = async (app) => {
     }
 
     const merged = { ...existing, ...parsed.data };
-    const updated = await store.upsertDashboard(merged);
+    const updated = await store.upsertDashboard(
+      merged as Parameters<TilerStore["upsertDashboard"]>[0],
+    );
     return reply.code(200).send(updated);
   });
 
