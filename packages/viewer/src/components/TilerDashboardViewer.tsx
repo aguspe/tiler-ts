@@ -1,4 +1,4 @@
-import type { TilerSnapshot } from "@aguspe/tiler-core";
+import type { TilerSnapshot, WidgetData } from "@aguspe/tiler-core";
 import type { CSSProperties } from "react";
 import { TilerWidgetTile } from "./TilerWidgetTile";
 
@@ -52,7 +52,9 @@ export function TilerDashboardViewer({
           >
             <TilerWidgetTile
               panel={panel}
-              data={snapshot.resolved[panel.id] ?? { resolved: null, empty: true }}
+              data={
+                (snapshot.resolved[panel.id] ?? { resolved: null, empty: true }) as WidgetData
+              }
             />
           </div>
         ))}
