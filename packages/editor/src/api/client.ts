@@ -58,9 +58,10 @@ export function createApiClient(opts: TilerApiClientOptions = {}): TilerApiClien
 
   return {
     upsertPanel: (panel) => {
-      if (panel.id) {
-        return request<Panel>("PATCH", `/api/panels/${panel.id}`, panel);
-      }
+      // Always POST — the server's panel handler is an upsert. Going via
+      // PATCH would 404 for client-generated ids that the server hasn't
+      // seen yet (e.g. a panel just dropped from the palette and being
+      // auto-saved before the round-trip completes).
       return request<Panel>("POST", "/api/panels", panel);
     },
     deletePanel: async (id) => {

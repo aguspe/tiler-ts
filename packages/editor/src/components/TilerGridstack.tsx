@@ -31,12 +31,7 @@ declare module "react" {
 }
 
 export interface TilerGridstackProps {
-  /**
-   * The current panel list. Passed in for symmetry with the parent component
-   * (TilerDashboardEditor renders children with gs-* attributes derived from
-   * this array), but not consumed directly inside this wrapper — gridstack
-   * reads layout from the DOM attributes on the child elements.
-   */
+  /** The current panel list — drives reconciliation of widgets-with-gridstack. */
   panels: Panel[];
   onPanelLayoutChanged: (
     id: string,
@@ -45,12 +40,29 @@ export interface TilerGridstackProps {
   children: ReactNode;
 }
 
+interface GridLike {
+  destroy: (removeDOM: boolean) => void;
+  makeWidget: (el: HTMLElement) => unknown;
+  removeWidget: (el: HTMLElement, removeDOM?: boolean, triggerEvent?: boolean) => unknown;
+  on: (event: string, cb: (event: unknown, items: GridStackWidgetLike[]) => void) => void;
+}
+
+interface GridStackWidgetLike {
+  id?: string;
+  x?: number;
+  y?: number;
+  w?: number;
+  h?: number;
+}
+
 export function TilerGridstack({
-  panels: _panels, // eslint-disable-line @typescript-eslint/no-unused-vars
+  panels,
   onPanelLayoutChanged,
   children,
 }: TilerGridstackProps): JSX.Element {
   const gridRef = useRef<HTMLDivElement>(null);
+  const gridApiRef = useRef<GridLike | undefined>(undefined);
+  const registeredIdsRef = useRef<Set<string>>(new Set());
 
   // Keep a stable ref to the latest callback so the gridstack listener never
   // closes over a stale version without needing to be re-registered.
@@ -59,10 +71,10 @@ export function TilerGridstack({
     onChangeRef.current = onPanelLayoutChanged;
   }, [onPanelLayoutChanged]);
 
+  // Mount-once: bring gridstack up over whatever children React rendered.
   useEffect(() => {
     if (!gridRef.current) return;
 
-    let grid: { destroy: (removeDOM: boolean) => void } | undefined;
     let cancelled = false;
 
     void import("gridstack").then((mod) => {
@@ -74,21 +86,29 @@ export function TilerGridstack({
           cellHeight: 90,
           // Zero margin between tiles — the panels' right+bottom hairline
           // borders form the grid lines, matching the Rails editor's
-          // ledger-paper feel. The grid's own background bleeds through
-          // for the missing left/top borders, giving each row/column its
-          // single dividing line.
+          // ledger-paper feel.
           margin: 0,
           float: true,
-          // Only the panel header is the drag handle. The body remains
-          // free for clicks (e.g. interactive widgets).
-          handle: ".tiler-panel-header",
+          // The whole tile body is the drag handle (Rails parity).
+          // Clicks that don't move propagate up to the panel header's own
+          // onClick, which opens the config drawer.
+          handle: ".grid-stack-item-content",
         },
         gridRef.current,
-      );
-      grid = g;
+      ) as unknown as GridLike;
+      gridApiRef.current = g;
+
+      // Seed `registeredIdsRef` with whatever children gridstack just
+      // discovered on init — those are the SSR-rendered panels.
+      for (const el of gridRef.current.querySelectorAll<HTMLElement>(
+        ".grid-stack-item",
+      )) {
+        const id = el.getAttribute("gs-id");
+        if (id) registeredIdsRef.current.add(id);
+      }
+
       g.on("change", (_event, items) => {
         for (const item of items) {
-          // item.id is string | undefined per GridStackWidget; skip items without id.
           if (typeof item.id !== "string") continue;
           onChangeRef.current(item.id, {
             x: item.x ?? 0,
@@ -104,9 +124,42 @@ export function TilerGridstack({
       cancelled = true;
       // Pass `false` so gridstack does NOT remove DOM nodes — React's
       // reconciler owns the children and will clean them up itself.
-      grid?.destroy(false);
+      gridApiRef.current?.destroy(false);
+      gridApiRef.current = undefined;
+      registeredIdsRef.current.clear();
     };
-  }, []); // mount-once: gridstack reads gs-* attributes from child DOM nodes
+  }, []);
+
+  // Reconcile gridstack with the current panels list. When React mounts a
+  // new `.grid-stack-item` (palette drop, undo/redo replay, etc.) gridstack
+  // doesn't know about it until we call `makeWidget(el)`. Conversely, when
+  // a panel is removed we tell gridstack so it stops tracking the node
+  // (its tracking state is what positions / resizes the layout).
+  useEffect(() => {
+    const grid = gridApiRef.current;
+    const root = gridRef.current;
+    if (!grid || !root) return;
+
+    const currentIds = new Set(panels.map((p) => p.id));
+
+    // Register newly mounted children.
+    for (const el of root.querySelectorAll<HTMLElement>(".grid-stack-item")) {
+      const id = el.getAttribute("gs-id");
+      if (!id) continue;
+      if (!registeredIdsRef.current.has(id)) {
+        grid.makeWidget(el);
+        registeredIdsRef.current.add(id);
+      }
+    }
+
+    // Drop tracking for panels that no longer exist in the store.
+    for (const id of registeredIdsRef.current) {
+      if (currentIds.has(id)) continue;
+      const el = root.querySelector<HTMLElement>(`[gs-id="${id}"]`);
+      if (el) grid.removeWidget(el, false, false);
+      registeredIdsRef.current.delete(id);
+    }
+  }, [panels]);
 
   return (
     <div ref={gridRef} className="grid-stack">

@@ -35,7 +35,7 @@ describe("createApiClient — upsertPanel", () => {
     expect(init.method).toBe("POST");
   });
 
-  it("PATCHes when an id is provided", async () => {
+  it("POSTs to /api/panels even when an id is supplied (server upserts)", async () => {
     mockFetch.mockResolvedValue({
       ok: true,
       status: 200,
@@ -55,8 +55,8 @@ describe("createApiClient — upsertPanel", () => {
       config: {},
     });
     const [url, init] = mockFetch.mock.calls[0]!;
-    expect(url).toBe("/api/panels/p1");
-    expect(init.method).toBe("PATCH");
+    expect(url).toBe("/api/panels");
+    expect(init.method).toBe("POST");
   });
 
   it("attaches CSRF + basic auth headers when configured", async () => {

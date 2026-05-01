@@ -53,6 +53,23 @@ export function TilerDashboardEditor({
   const [paletteOpen, setPaletteOpen] = useState(false);
   const [themeEditorOpen, setThemeEditorOpen] = useState(false);
 
+  // Close the palette when the user clicks anywhere outside it (and away
+  // from the toggle button itself, which already handles its own click).
+  // Listening on `mousedown` lets the click finish on the original target
+  // before the palette unmounts.
+  useEffect(() => {
+    if (!paletteOpen) return;
+    function onMouseDown(e: MouseEvent): void {
+      const target = e.target;
+      if (!(target instanceof Element)) return;
+      if (target.closest(".tiler-widget-palette")) return;
+      if (target.closest('[aria-label="Toggle palette"]')) return;
+      setPaletteOpen(false);
+    }
+    document.addEventListener("mousedown", onMouseDown);
+    return () => document.removeEventListener("mousedown", onMouseDown);
+  }, [paletteOpen]);
+
   // Dark mode is independent of TV mode. We initialize from
   // `prefers-color-scheme` on first mount but the user can override at
   // any time via the toolbar toggle. The choice is mirrored to
