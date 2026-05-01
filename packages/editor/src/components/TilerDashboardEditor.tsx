@@ -111,6 +111,28 @@ export function TilerDashboardEditor({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [tick, dataSources, records, state.dashboard, state.panels]);
 
+  // Most-used data source among existing panels — passed to the palette
+  // so a freshly-dropped widget that requires data is auto-linked to a
+  // sensible source rather than landing without one. Falls back to the
+  // first available source if no panel has chosen yet.
+  const defaultDataSourceId = useMemo(() => {
+    const counts = new Map<string, number>();
+    for (const p of state.panels) {
+      if (p.data_source_id) {
+        counts.set(p.data_source_id, (counts.get(p.data_source_id) ?? 0) + 1);
+      }
+    }
+    let best: string | null = null;
+    let bestCount = 0;
+    for (const [id, count] of counts) {
+      if (count > bestCount) {
+        best = id;
+        bestCount = count;
+      }
+    }
+    return best ?? dataSources[0]?.id ?? null;
+  }, [state.panels, dataSources]);
+
   const tvMode = state.dashboard.settings.tv_mode;
   const shellClasses = [
     "tiler-shell",
@@ -180,6 +202,7 @@ export function TilerDashboardEditor({
         {paletteOpen && (
           <TilerPalette
             dashboardId={state.dashboard.id}
+            defaultDataSourceId={defaultDataSourceId}
             onAdd={(panel) => store.getState().addPanel(panel)}
             onDragStart={(meta) => setPaletteDrag(meta)}
             onDragEnd={() => setPaletteDrag(null)}

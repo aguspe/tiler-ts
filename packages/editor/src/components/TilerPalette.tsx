@@ -19,9 +19,13 @@ export interface TilerPaletteProps {
   onAdd: (panel: Panel) => void;
   onDragStart?: (meta: PaletteDragMeta) => void;
   onDragEnd?: () => void;
+  /**
+   * Default data source assigned to a newly-dropped widget when the
+   * widget requires one. Pass the dashboard's most-used source so new
+   * panels render real data immediately.
+   */
+  defaultDataSourceId?: string | null;
 }
-
-const DEFAULT_DATA_SOURCE_ID: string | null = null;
 const GRID_COLUMNS = 12;
 const GRID_CELL_HEIGHT = 90;
 
@@ -45,6 +49,7 @@ export function TilerPalette({
   onAdd,
   onDragStart,
   onDragEnd,
+  defaultDataSourceId = null,
 }: TilerPaletteProps): JSX.Element {
   const widgets = listWidgets();
   const now = new Date().toISOString();
@@ -94,17 +99,24 @@ export function TilerPalette({
       event.clientY,
       widget.meta.default_size.w,
     );
+    // Seed the new panel with the widget's canonical example so it
+    // renders something usable immediately, rather than landing as an
+    // empty "No data" tile that the user has to configure manually.
+    // Only the *config* and *title* come from the example — the grid
+    // position, dashboard_id and data_source_id stay specific to where
+    // the user dropped the widget.
+    const example = widget.example();
     const newPanel: Panel = {
       id: newId(),
       dashboard_id: dashboardId,
-      data_source_id: widget.meta.requires_data_source ? null : DEFAULT_DATA_SOURCE_ID,
-      title: widget.meta.label,
+      data_source_id: widget.meta.requires_data_source ? defaultDataSourceId : null,
+      title: example.panel.title || widget.meta.label,
       widget_type: widgetType,
       x,
       y,
       width: widget.meta.default_size.w,
       height: widget.meta.default_size.h,
-      config: {},
+      config: example.panel.config,
       created_at: now,
       updated_at: now,
     };
