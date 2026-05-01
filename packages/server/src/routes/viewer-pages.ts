@@ -15,9 +15,19 @@ function resolveEditorClientDir(): string {
   return resolve(dirname(serverEntry), "../client");
 }
 
-function findAsset(dir: string, ext: ".js" | ".css"): string | undefined {
+function findEntryJs(dir: string): string | undefined {
+  // Vite splits the bundle into an entry + zero or more vendor chunks.
+  // The editor's vite.config names them `editor-entry-<hash>.js` vs
+  // `editor-chunk-<hash>.js`, so we filter by the `editor-entry-` prefix.
   for (const entry of readdirSync(dir)) {
-    if (entry.endsWith(ext) && !entry.endsWith(".map")) return entry;
+    if (entry.startsWith("editor-entry-") && entry.endsWith(".js")) return entry;
+  }
+  return undefined;
+}
+
+function findCss(dir: string): string | undefined {
+  for (const entry of readdirSync(dir)) {
+    if (entry.endsWith(".css") && !entry.endsWith(".map")) return entry;
   }
   return undefined;
 }
@@ -37,8 +47,8 @@ export const viewerPagesPlugin: FastifyPluginAsync = async (app) => {
   const store: TilerStore = cfg.store;
 
   const editorClientDir = cfg.viewerClientDir ?? resolveEditorClientDir();
-  const jsAsset = findAsset(editorClientDir, ".js");
-  const cssAsset = findAsset(editorClientDir, ".css");
+  const jsAsset = findEntryJs(editorClientDir);
+  const cssAsset = findCss(editorClientDir);
 
   // Serve editor's prebuilt client bundle from /assets/*.
   await app.register(fastifyStatic, {

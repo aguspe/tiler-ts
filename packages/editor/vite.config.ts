@@ -9,9 +9,11 @@ export default defineConfig({
     rollupOptions: {
       input: { editor: "src/client/main.tsx" },
       output: {
-        entryFileNames: "editor-[hash].js",
+        // Distinct prefixes let the server pick the entry deterministically
+        // when there are vendor chunks (e.g. gridstack splits off ~85kB).
+        entryFileNames: "editor-entry-[hash].js",
+        chunkFileNames: "editor-chunk-[hash].js",
         assetFileNames: "editor-[hash].[ext]",
-        chunkFileNames: "editor-[hash].js",
       },
     },
     sourcemap: true,
