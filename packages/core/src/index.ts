@@ -11,3 +11,4 @@ export * from "./widget";
 export { defineWidget, getWidget, listWidgets } from "./registry";
 export type * from "./store";
 export { MemoryStore } from "./memory_store";
+export * from "./lib/aggregate";
