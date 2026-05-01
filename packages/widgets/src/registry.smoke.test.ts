@@ -19,6 +19,7 @@ const ALL_TYPES = [
   "table",
   "line_chart",
   "bar_chart",
+  "pie_chart",
 ] as const;
 
 describe("registry smoke — registered widgets", () => {
