@@ -1,0 +1,4 @@
+node_modules/
+tiler-report/
+test-results/
+playwright-report/
