@@ -1,3 +1,12 @@
 [
-  { "name": "@aguspe/tiler-viewer (server, esm)", "path": "dist/server/index.js", "limit": "20 KB" }
+  {
+    "name": "@aguspe/tiler-viewer (server, esm)",
+    "path": "dist/server/index.js",
+    "limit": "20 KB"
+  },
+  {
+    "name": "@aguspe/tiler-viewer (client bundle)",
+    "path": "dist/client/viewer-*.js",
+    "limit": "250 KB"
+  }
 ]
