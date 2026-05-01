@@ -1,13 +1,13 @@
 import { mkdirSync, writeFileSync } from "node:fs";
 import { dirname, resolve } from "node:path";
 import {
-  buildSnapshot,
-  MemoryStore,
-  testAutomationPreset,
   type Dashboard,
   type DataRecord,
   type DataSource,
+  MemoryStore,
   type Panel,
+  buildSnapshot,
+  testAutomationPreset,
 } from "@aguspe/tiler-core";
 import "@aguspe/tiler-widgets"; // register all widgets
 import { renderToHtml } from "@aguspe/tiler-viewer";
@@ -73,7 +73,9 @@ export default class TilerReporter implements PlaywrightReporter {
     this.store = new MemoryStore();
     const preset = testAutomationPreset({ now: this.startedAt });
     this.dashboard = preset.dashboard;
-    this.dataSource = preset.dataSources[0]!;
+    const ds = preset.dataSources[0];
+    if (!ds) throw new Error("[tiler-playwright] preset must include at least one data source");
+    this.dataSource = ds;
     this.panels = preset.panels;
     this.records = [];
   }
@@ -93,8 +95,7 @@ export default class TilerReporter implements PlaywrightReporter {
     const outDir = resolve(this.opts.outDir);
     mkdirSync(outDir, { recursive: true });
 
-    const viewerClientDir =
-      this.viewerClientDirOverride ?? resolveViewerClientDir();
+    const viewerClientDir = this.viewerClientDirOverride ?? resolveViewerClientDir();
 
     const { jsEntry, cssEntry } = copyClientAssets({ viewerClientDir, outDir });
 

@@ -7,7 +7,7 @@ A minimal Playwright project demonstrating the `@aguspe/tiler-playwright` report
 ```bash
 pnpm install   # from monorepo root
 pnpm --filter tiler-ts-example-playwright-static exec playwright install chromium
-pnpm --filter tiler-ts-example-playwright-static test
+pnpm --filter tiler-ts-example-playwright-static demo
 open tiler-report/index.html
 ```
 

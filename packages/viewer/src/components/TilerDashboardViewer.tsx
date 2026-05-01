@@ -52,9 +52,7 @@ export function TilerDashboardViewer({
           >
             <TilerWidgetTile
               panel={panel}
-              data={
-                (snapshot.resolved[panel.id] ?? { resolved: null, empty: true }) as WidgetData
-              }
+              data={(snapshot.resolved[panel.id] ?? { resolved: null, empty: true }) as WidgetData}
             />
           </div>
         ))}

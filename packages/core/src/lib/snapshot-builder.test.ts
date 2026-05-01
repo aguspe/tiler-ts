@@ -93,12 +93,9 @@ describe("buildSnapshot", () => {
       example: () => ({ panel: {} as never, records: [] }),
     });
     const preset = testAutomationPreset({ now: NOW });
-    const panels = [
-      {
-        ...preset.panels[0],
-        widget_type: "explode",
-      },
-    ];
+    const sourcePanel = preset.panels[0];
+    if (!sourcePanel) throw new Error("preset must have at least one panel");
+    const panels = [{ ...sourcePanel, widget_type: "explode" }];
     const snapshot = await buildSnapshot({
       dashboard: preset.dashboard,
       dataSources: preset.dataSources,
@@ -106,7 +103,7 @@ describe("buildSnapshot", () => {
       records: [],
       now: NOW,
     });
-    const entry = snapshot.resolved[panels[0]!.id];
+    const entry = snapshot.resolved[panels[0]?.id ?? ""];
     expect(entry?.empty).toBe(true);
     expect(entry?.resolved).toMatchObject({ error: "boom" });
   });

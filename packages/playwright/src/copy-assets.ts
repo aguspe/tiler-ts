@@ -34,8 +34,7 @@ export function copyClientAssets(input: CopyClientAssetsInput): CopyClientAssets
 
   if (!jsEntry) {
     throw new Error(
-      `[@aguspe/tiler-playwright] No JS bundle found in ${input.viewerClientDir}. ` +
-        "Did you run `pnpm --filter @aguspe/tiler-viewer build:client`?",
+      `[@aguspe/tiler-playwright] No JS bundle found in ${input.viewerClientDir}. Did you run \`pnpm --filter @aguspe/tiler-viewer build:client\`?`,
     );
   }
   return cssEntry ? { jsEntry, cssEntry } : { jsEntry };

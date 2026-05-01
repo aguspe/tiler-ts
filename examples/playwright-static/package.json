@@ -3,7 +3,7 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "test": "playwright test"
+    "demo": "playwright test"
   },
   "dependencies": {
     "@aguspe/tiler-playwright": "workspace:*",

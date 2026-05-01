@@ -31,11 +31,18 @@ describe("TilerSnapshot", () => {
       version: 1,
       generated_at: NOW,
       dashboard: {
-        id: "d1", name: "QA", slug: "qa", description: null,
-        refresh_seconds: 0, settings: { tv_mode: false },
-        created_at: NOW, updated_at: NOW,
+        id: "d1",
+        name: "QA",
+        slug: "qa",
+        description: null,
+        refresh_seconds: 0,
+        settings: { tv_mode: false },
+        created_at: NOW,
+        updated_at: NOW,
       },
-      panels: [], data_sources: [], records: [],
+      panels: [],
+      data_sources: [],
+      records: [],
     });
     expect(result.resolved).toEqual({});
   });

@@ -1,4 +1,4 @@
-import { getWidget, type Panel, type WidgetData } from "@aguspe/tiler-core";
+import { type Panel, type WidgetData, getWidget } from "@aguspe/tiler-core";
 
 export function TilerWidgetTile({
   panel,
