@@ -9,10 +9,17 @@ export function MetricWidget({
   data: WidgetData<number>;
 }): JSX.Element {
   const cfg = MetricConfig.parse(panel.config);
-  const formatted = data.resolved.toLocaleString(undefined, {
-    minimumFractionDigits: cfg.decimals,
-    maximumFractionDigits: cfg.decimals,
-  });
+  // `aggregate` returns null when the filtered record set is empty (e.g. no
+  // matching rows in the configured time window). Render a placeholder so
+  // the widget remains visible instead of crashing the SSR.
+  const value = data.resolved;
+  const formatted =
+    value == null
+      ? "—"
+      : value.toLocaleString(undefined, {
+          minimumFractionDigits: cfg.decimals,
+          maximumFractionDigits: cfg.decimals,
+        });
   return (
     <div
       className="tiler-metric"

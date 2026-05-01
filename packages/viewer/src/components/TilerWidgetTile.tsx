@@ -34,7 +34,26 @@ export function TilerWidgetTile({
       </header>
       <div className="tiler-tile__body" style={{ flex: 1, minHeight: 0, overflow: "hidden" }}>
         {widget ? (
-          <widget.component panel={panel} data={data} />
+          // Resolvers signal "no data" via `empty: true` and typically hand
+          // back `resolved: null`. Render a neutral placeholder here so each
+          // widget's render code can assume `resolved` is populated.
+          data.empty || data.resolved == null ? (
+            <div
+              style={{
+                padding: 12,
+                opacity: 0.5,
+                fontSize: "0.85rem",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                height: "100%",
+              }}
+            >
+              No data
+            </div>
+          ) : (
+            <widget.component panel={panel} data={data} />
+          )
         ) : (
           <div style={{ padding: 12, opacity: 0.6, fontSize: "0.85rem" }}>
             Unknown widget: {panel.widget_type}

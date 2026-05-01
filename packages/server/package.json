@@ -28,7 +28,10 @@
       "require": "./dist/store/sqlite.cjs"
     }
   },
-  "files": ["dist", "README.md"],
+  "files": [
+    "dist",
+    "README.md"
+  ],
   "scripts": {
     "build": "tsup",
     "test": "vitest run",
@@ -36,6 +39,7 @@
   },
   "dependencies": {
     "@aguspe/tiler-core": "workspace:*",
+    "@aguspe/tiler-editor": "workspace:^",
     "@aguspe/tiler-viewer": "workspace:*",
     "@aguspe/tiler-widgets": "workspace:*",
     "@fastify/cookie": "^11.0.0",

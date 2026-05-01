@@ -2,16 +2,16 @@ import { readdirSync } from "node:fs";
 import { createRequire } from "node:module";
 import { dirname, resolve } from "node:path";
 import { type ResolvedTilerConfig, type TilerStore, buildSnapshot } from "@aguspe/tiler-core";
+import { renderEditorHtml } from "@aguspe/tiler-editor";
 import "@aguspe/tiler-widgets"; // side effect: register all widgets
-import { renderToHtml } from "@aguspe/tiler-viewer";
 import fastifyStatic from "@fastify/static";
 import type { FastifyPluginAsync } from "fastify";
 
 const RECORDS_LOOKBACK_MS = 30 * 24 * 3600_000;
 
-function resolveViewerClientDir(): string {
+function resolveEditorClientDir(): string {
   const r = createRequire(import.meta.url);
-  const serverEntry = r.resolve("@aguspe/tiler-viewer");
+  const serverEntry = r.resolve("@aguspe/tiler-editor");
   return resolve(dirname(serverEntry), "../client");
 }
 
@@ -24,26 +24,30 @@ function findAsset(dir: string, ext: ".js" | ".css"): string | undefined {
 
 /**
  * Plugin:
- *   - Serves `/assets/*` from `@aguspe/tiler-viewer/dist/client/`.
- *   - Renders `/dashboards/:slug` as SSR'd HTML using the viewer.
+ *   - Serves `/assets/*` from `@aguspe/tiler-editor/dist/client/`.
+ *   - Renders `/dashboards/:slug` as SSR'd HTML using the editor.
  *   - Renders `/dashboards` as a minimal list page linking to each dashboard.
+ *
+ * Phase 5 swap: the editor SSR shell replaces the read-only viewer at
+ * `/dashboards/:slug`. The editor's Vite-built client bundle hydrates over
+ * the SSR'd HTML and provides drag/resize/drop/drawer/palette behaviors.
  */
 export const viewerPagesPlugin: FastifyPluginAsync = async (app) => {
   const cfg = (app as unknown as { tilerConfig: ResolvedTilerConfig }).tilerConfig;
   const store: TilerStore = cfg.store;
 
-  const viewerClientDir = cfg.viewerClientDir ?? resolveViewerClientDir();
-  const jsAsset = findAsset(viewerClientDir, ".js");
-  const cssAsset = findAsset(viewerClientDir, ".css");
+  const editorClientDir = cfg.viewerClientDir ?? resolveEditorClientDir();
+  const jsAsset = findAsset(editorClientDir, ".js");
+  const cssAsset = findAsset(editorClientDir, ".css");
 
-  // Serve viewer's prebuilt client bundle from /assets/*.
+  // Serve editor's prebuilt client bundle from /assets/*.
   await app.register(fastifyStatic, {
-    root: viewerClientDir,
+    root: editorClientDir,
     prefix: "/assets/",
     index: false,
   });
 
-  // List page.
+  // List page (still a tiny static HTML page; full dashboard chooser is editor's job in v0.5+).
   app.get("/dashboards", async (_req, reply) => {
     const dashboards = await store.listDashboards();
     const items = dashboards
@@ -68,7 +72,7 @@ ${items.length > 0 ? `<ul>${items}</ul>` : `<p style="opacity:0.7">No dashboards
     return reply.type("text/html").send(body);
   });
 
-  // Detail page.
+  // Detail page (SSR'd editor).
   app.get<{ Params: { slug: string } }>("/dashboards/:slug", async (req, reply) => {
     const dashboard = await store.getDashboard(req.params.slug);
     if (!dashboard) return reply.code(404).send({ error: "not found" });
@@ -77,17 +81,17 @@ ${items.length > 0 ? `<ul>${items}</ul>` : `<p style="opacity:0.7">No dashboards
     const referencedSourceIds = new Set(
       panels.map((p) => p.data_source_id).filter((x): x is string => x !== null),
     );
-    const dataSources = allSources.filter((s) => referencedSourceIds.has(s.id));
+    const referencedSources = allSources.filter((s) => referencedSourceIds.has(s.id));
     const since = new Date(Date.now() - RECORDS_LOOKBACK_MS).toISOString();
     const recordBatches = await Promise.all(
-      dataSources.map((s) =>
+      referencedSources.map((s) =>
         store.queryRecords({ dataSourceId: s.id, since, orderBy: "recorded_at_desc" }),
       ),
     );
     const records = recordBatches.flat();
     const snapshot = await buildSnapshot({
       dashboard,
-      dataSources,
+      dataSources: referencedSources,
       panels,
       records,
       now: new Date(),
@@ -96,9 +100,14 @@ ${items.length > 0 ? `<ul>${items}</ul>` : `<p style="opacity:0.7">No dashboards
     if (!jsAsset) {
       return reply
         .code(500)
-        .send({ error: `viewer client bundle not found in ${viewerClientDir}` });
+        .send({ error: `editor client bundle not found in ${editorClientDir}` });
     }
-    const html = renderToHtml(snapshot, {
+    const html = renderEditorHtml({
+      dashboard,
+      // Pass *all* sources so the drawer's source dropdown isn't artificially narrowed.
+      dataSources: allSources,
+      panels,
+      snapshot,
       clientAssetPath: `/assets/${jsAsset}`,
       ...(cssAsset && { cssAssetPath: `/assets/${cssAsset}` }),
     });

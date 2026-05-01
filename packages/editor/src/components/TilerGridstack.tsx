@@ -1,5 +1,13 @@
-import { GridStack } from "gridstack";
-import "gridstack/dist/gridstack.min.css";
+// Note: gridstack is loaded lazily inside `useEffect` so the module never
+// evaluates during SSR. Two reasons:
+//   1. The package only ships CJS (`main: dist/gridstack.js`, no `exports`
+//      map / no ESM build), and Node's ESM loader can't synthesize the
+//      `GridStack` named export — `import { GridStack } from "gridstack"`
+//      throws `does not provide an export named 'GridStack'` under tsx.
+//   2. The library touches `document` at module load, which is undefined
+//      in Node anyway.
+// The matching stylesheet is imported by `src/client/main.tsx` for the same
+// reason (Node can't load `.css` during SSR).
 import { useEffect, useRef, type ReactNode } from "react";
 import type { Panel } from "@aguspe/tiler-core";
 
@@ -54,28 +62,36 @@ export function TilerGridstack({
   useEffect(() => {
     if (!gridRef.current) return;
 
-    const grid = GridStack.init(
-      { column: 12, cellHeight: 80, margin: 6, float: true },
-      gridRef.current,
-    );
+    let grid: { destroy: (removeDOM: boolean) => void } | undefined;
+    let cancelled = false;
 
-    grid.on("change", (_event, items) => {
-      for (const item of items) {
-        // item.id is string | undefined per GridStackWidget; skip items without id.
-        if (typeof item.id !== "string") continue;
-        onChangeRef.current(item.id, {
-          x: item.x ?? 0,
-          y: item.y ?? 0,
-          width: item.w ?? 1,
-          height: item.h ?? 1,
-        });
-      }
+    void import("gridstack").then((mod) => {
+      if (cancelled || !gridRef.current) return;
+      const GridStack = mod.GridStack;
+      const g = GridStack.init(
+        { column: 12, cellHeight: 80, margin: 6, float: true },
+        gridRef.current,
+      );
+      grid = g;
+      g.on("change", (_event, items) => {
+        for (const item of items) {
+          // item.id is string | undefined per GridStackWidget; skip items without id.
+          if (typeof item.id !== "string") continue;
+          onChangeRef.current(item.id, {
+            x: item.x ?? 0,
+            y: item.y ?? 0,
+            width: item.w ?? 1,
+            height: item.h ?? 1,
+          });
+        }
+      });
     });
 
     return () => {
+      cancelled = true;
       // Pass `false` so gridstack does NOT remove DOM nodes — React's
       // reconciler owns the children and will clean them up itself.
-      grid.destroy(false);
+      grid?.destroy(false);
     };
   }, []); // mount-once: gridstack reads gs-* attributes from child DOM nodes
 

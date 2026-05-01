@@ -183,6 +183,9 @@ importers:
       '@aguspe/tiler-core':
         specifier: workspace:*
         version: link:../core
+      '@aguspe/tiler-editor':
+        specifier: workspace:^
+        version: link:../editor
       '@aguspe/tiler-viewer':
         specifier: workspace:*
         version: link:../viewer
