@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import type { StoreApi } from "zustand/vanilla";
 import type { TilerApiClient } from "../api/client";
 import type { EditorState } from "../state/editor-store";
+import { XIcon } from "./Icons";
 
 export interface TilerDrawerProps {
   store: StoreApi<EditorState>;
@@ -124,7 +125,7 @@ function DrawerContent({ store, api, panelId }: DrawerContentProps): JSX.Element
               onClick={handleCancel}
               aria-label="Close drawer"
             >
-              ×
+              <XIcon size={18} />
             </button>
           </header>
 

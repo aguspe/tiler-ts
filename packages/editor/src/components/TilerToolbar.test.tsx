@@ -53,7 +53,7 @@ describe("TilerToolbar", () => {
     const store = createEditorStore({ dashboard: DASHBOARD, panels: [] });
     render(<TilerToolbar store={store} {...RENDER_PROPS} />);
     const addBtn = screen.getByLabelText("Toggle palette");
-    expect(addBtn).toHaveTextContent("+ Add Panel");
+    expect(addBtn).toHaveTextContent("Add Panel");
     expect(addBtn).toHaveClass("tiler-btn-primary");
     // Other action buttons render after Add Panel in DOM order.
     const actions = addBtn.parentElement?.querySelectorAll("button");
@@ -66,10 +66,11 @@ describe("TilerToolbar", () => {
     expect(screen.queryByLabelText("Save")).not.toBeInTheDocument();
   });
 
-  it("Undo button is disabled when undoStack is empty", () => {
+  it("does not render undo/redo buttons (they live in TilerHistoryBar)", () => {
     const store = createEditorStore({ dashboard: DASHBOARD, panels: [] });
     render(<TilerToolbar store={store} {...RENDER_PROPS} />);
-    expect(screen.getByLabelText("Undo (Cmd+Z)")).toBeDisabled();
+    expect(screen.queryByLabelText("Undo (Cmd+Z)")).not.toBeInTheDocument();
+    expect(screen.queryByLabelText("Redo (Cmd+Shift+Z)")).not.toBeInTheDocument();
   });
 
   it("TV mode button toggles the store flag", () => {

@@ -15,6 +15,23 @@
   color: var(--ink);
 }
 
+/* The body row hosts the centered page on the left and (when editing)
+   the slide-in widget palette as a flex sibling on the right. Putting
+   them in a flex row means the palette PUSHES the page narrower on
+   open, instead of overlaying it. */
+.tiler-shell-body {
+  display: flex;
+  flex: 1;
+  min-height: 0;
+}
+.tiler-shell-main {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: auto;
+}
+
 /* ============================================================
    Top nav
    ============================================================ */
@@ -197,9 +214,23 @@
   font-size: 12px;
 }
 
+/* Icon-only square button — matches the height of text buttons but
+   collapses padding so the SVG sits on its own. */
 .tiler-btn-icon {
-  padding: 6px 10px;
-  font-size: 14px;
+  padding: 7px 8px;
+  width: 32px;
+  height: 32px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+.tiler-btn-icon svg {
+  display: block;
+}
+/* Inline SVGs inside text buttons — give them a small right margin via
+   the parent's gap (set on .tiler-btn). */
+.tiler-btn svg {
+  flex-shrink: 0;
 }
 
 .tiler-btn[aria-pressed="true"] {
@@ -336,24 +367,30 @@
 }
 
 /* ============================================================
-   Widget palette (right floating sidebar, edit mode only)
+   Widget palette — flex sibling that PUSHES the dashboard narrower
+   when open (slides in from the right; not an overlay).
    ============================================================ */
 .tiler-widget-palette {
-  position: fixed;
-  top: 100px;
-  right: 24px;
-  width: 220px;
-  max-height: calc(100vh - 160px);
+  flex: 0 0 280px;
+  align-self: stretch;
   background: var(--paper-2);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-lg);
-  padding: 12px;
-  box-shadow: var(--shadow-3);
+  border-left: 1px solid var(--border);
+  padding: 20px 16px;
   overflow: auto;
-  z-index: 40;
   display: flex;
   flex-direction: column;
   gap: 8px;
+  animation: tiler-palette-slide-in var(--dur-base) var(--ease-snap);
+}
+@keyframes tiler-palette-slide-in {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
 }
 
 .tiler-widget-palette-title {
@@ -404,12 +441,61 @@
 }
 
 @media (max-width: 720px) {
-  .tiler-widget-palette {
-    position: static;
-    width: 100%;
-    max-height: 40vh;
-    margin-bottom: var(--s-4);
+  .tiler-shell-body {
+    flex-direction: column;
   }
+  .tiler-widget-palette {
+    flex: 0 0 auto;
+    max-height: 40vh;
+    border-left: none;
+    border-top: 1px solid var(--border);
+  }
+}
+
+/* ============================================================
+   Floating history bar (undo/redo)
+   ============================================================ */
+.tiler-history-bar {
+  position: fixed;
+  bottom: 16px;
+  left: 16px;
+  display: flex;
+  gap: 4px;
+  background: var(--paper-2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-pill);
+  padding: 4px;
+  box-shadow: var(--shadow-2);
+  z-index: 30;
+}
+.tiler-history-btn {
+  width: 32px;
+  height: 32px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: none;
+  border-radius: var(--radius-pill);
+  color: var(--ink);
+  cursor: pointer;
+  transition: background var(--dur-fast) var(--ease-snap),
+    color var(--dur-fast) var(--ease-snap);
+}
+.tiler-history-btn:hover:not(:disabled) {
+  background: var(--paper-3);
+}
+.tiler-history-btn:focus-visible {
+  outline: none;
+  box-shadow: var(--shadow-focus);
+}
+.tiler-history-btn:disabled {
+  color: var(--ink-4);
+  cursor: not-allowed;
+}
+/* Hide the history bar in TV mode along with the rest of the chrome. */
+.tiler-shell.tiler-tv-mode .tiler-history-bar {
+  display: none;
 }
 
 /* ============================================================

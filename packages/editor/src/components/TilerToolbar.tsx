@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import type { StoreApi } from "zustand/vanilla";
 import type { EditorState } from "../state/editor-store";
+import { MoonIcon, MonitorIcon, PaletteIcon, PlusIcon, SunIcon, XIcon } from "./Icons";
 
 export interface TilerToolbarProps {
   store: StoreApi<EditorState>;
@@ -17,12 +18,14 @@ export interface TilerToolbarProps {
 }
 
 /**
- * Page header — Rails parity. Renders the inline-editable dashboard title,
- * description, and the action row. The "+ Add Panel" button is the
- * primary action and sits leftmost in the actions group.
+ * Page header. Inline-editable dashboard title on the left, primary
+ * "+ Add Panel" action plus secondary toggles on the right. Undo/redo
+ * lives in `TilerHistoryBar` (floating, bottom-left) — keyboard
+ * shortcuts (Cmd+Z / Cmd+Shift+Z) are wired here so they work whether
+ * the bar is mounted or not.
  *
- * No explicit Save button: TilerDashboardEditor auto-saves on every store
- * change.
+ * No explicit Save button: TilerDashboardEditor auto-saves on every
+ * store change.
  */
 export function TilerToolbar({
   store,
@@ -39,7 +42,8 @@ export function TilerToolbar({
   const [editingName, setEditingName] = useState(false);
   const [nameDraft, setNameDraft] = useState(state.dashboard.name);
 
-  // Cmd/Ctrl+Z and Cmd/Ctrl+Shift+Z keyboard shortcuts.
+  // Cmd/Ctrl+Z and Cmd/Ctrl+Shift+Z keyboard shortcuts (active independent
+  // of whether the floating history bar is on screen).
   useEffect(() => {
     function handler(e: KeyboardEvent): void {
       if (!(e.metaKey || e.ctrlKey)) return;
@@ -108,55 +112,45 @@ export function TilerToolbar({
           aria-label="Toggle palette"
           aria-pressed={paletteOpen}
         >
-          {paletteOpen ? "Done" : "+ Add Panel"}
+          {paletteOpen ? (
+            <>
+              <XIcon /> Done
+            </>
+          ) : (
+            <>
+              <PlusIcon /> Add Panel
+            </>
+          )}
         </button>
         <button
           type="button"
-          className="tiler-btn"
-          onClick={() => store.getState().undo()}
-          disabled={state.undoStack.length === 0}
-          aria-label="Undo (Cmd+Z)"
-        >
-          ⟲ Undo
-        </button>
-        <button
-          type="button"
-          className="tiler-btn"
-          onClick={() => store.getState().redo()}
-          disabled={state.redoStack.length === 0}
-          aria-label="Redo (Cmd+Shift+Z)"
-        >
-          ⟳ Redo
-        </button>
-        <button
-          type="button"
-          className="tiler-btn"
+          className="tiler-btn tiler-btn-icon"
           onClick={onToggleDarkMode}
           aria-label={darkMode ? "Switch to light mode" : "Switch to dark mode"}
           aria-pressed={darkMode}
           title={darkMode ? "Light mode" : "Dark mode"}
         >
-          {darkMode ? "☀️" : "🌙"}
+          {darkMode ? <SunIcon /> : <MoonIcon />}
         </button>
         <button
           type="button"
-          className="tiler-btn"
+          className="tiler-btn tiler-btn-icon"
           onClick={onToggleThemeEditor}
           aria-label="Toggle theme editor"
           aria-pressed={themeEditorOpen}
-          title="Custom theme tokens"
+          title="Theme tokens"
         >
-          🎨
+          <PaletteIcon />
         </button>
         <button
           type="button"
-          className="tiler-btn"
+          className="tiler-btn tiler-btn-icon"
           onClick={() => store.getState().toggleTvMode()}
           aria-label="Toggle TV mode"
           aria-pressed={state.dashboard.settings.tv_mode}
           title="TV / kiosk mode"
         >
-          📺 TV
+          <MonitorIcon />
         </button>
       </div>
     </header>

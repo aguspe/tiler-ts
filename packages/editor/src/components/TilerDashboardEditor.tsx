@@ -8,6 +8,7 @@ import { createEditorStore, type EditorState } from "../state/editor-store";
 import { TilerDrawer } from "./TilerDrawer";
 import { TilerEditableTile } from "./TilerEditableTile";
 import { TilerGridstack } from "./TilerGridstack";
+import { TilerHistoryBar } from "./TilerHistoryBar";
 import { TilerNav } from "./TilerNav";
 import { TilerPalette } from "./TilerPalette";
 import { TilerThemeEditor } from "./TilerThemeEditor";
@@ -114,52 +115,57 @@ export function TilerDashboardEditor({
         </button>
       )}
       <TilerNav />
-      <main className="tiler-page">
-        <TilerToolbar
-          store={store}
-          paletteOpen={paletteOpen}
-          onTogglePalette={() => setPaletteOpen((o) => !o)}
-          themeEditorOpen={themeEditorOpen}
-          onToggleThemeEditor={() => setThemeEditorOpen((o) => !o)}
-          darkMode={darkMode}
-          onToggleDarkMode={() => setDarkMode((d) => !d)}
-        />
-        <div className="tiler-grid-wrap">
-          <TilerGridstack
-            panels={state.panels}
-            onPanelLayoutChanged={(id, layout) =>
-              store.getState().setPanelLayout(id, layout)
-            }
-          >
-            {state.panels.map((p) => (
-              <div
-                key={p.id}
-                className="grid-stack-item"
-                gs-id={p.id}
-                gs-x={p.x}
-                gs-y={p.y}
-                gs-w={p.width}
-                gs-h={p.height}
+      <div className="tiler-shell-body">
+        <div className="tiler-shell-main">
+          <main className="tiler-page">
+            <TilerToolbar
+              store={store}
+              paletteOpen={paletteOpen}
+              onTogglePalette={() => setPaletteOpen((o) => !o)}
+              themeEditorOpen={themeEditorOpen}
+              onToggleThemeEditor={() => setThemeEditorOpen((o) => !o)}
+              darkMode={darkMode}
+              onToggleDarkMode={() => setDarkMode((d) => !d)}
+            />
+            <div className="tiler-grid-wrap">
+              <TilerGridstack
+                panels={state.panels}
+                onPanelLayoutChanged={(id, layout) =>
+                  store.getState().setPanelLayout(id, layout)
+                }
               >
-                <div className="grid-stack-item-content">
-                  <TilerEditableTile
-                    panel={p}
-                    data={resolved[p.id] ?? { resolved: null, empty: true }}
-                    store={store}
-                    api={api}
-                  />
-                </div>
-              </div>
-            ))}
-          </TilerGridstack>
+                {state.panels.map((p) => (
+                  <div
+                    key={p.id}
+                    className="grid-stack-item"
+                    gs-id={p.id}
+                    gs-x={p.x}
+                    gs-y={p.y}
+                    gs-w={p.width}
+                    gs-h={p.height}
+                  >
+                    <div className="grid-stack-item-content">
+                      <TilerEditableTile
+                        panel={p}
+                        data={resolved[p.id] ?? { resolved: null, empty: true }}
+                        store={store}
+                        api={api}
+                      />
+                    </div>
+                  </div>
+                ))}
+              </TilerGridstack>
+            </div>
+          </main>
         </div>
-      </main>
-      {paletteOpen && (
-        <TilerPalette
-          dashboardId={state.dashboard.id}
-          onAdd={(panel) => store.getState().addPanel(panel)}
-        />
-      )}
+        {paletteOpen && (
+          <TilerPalette
+            dashboardId={state.dashboard.id}
+            onAdd={(panel) => store.getState().addPanel(panel)}
+          />
+        )}
+      </div>
+      {!tvMode && <TilerHistoryBar store={store} />}
       <TilerDrawer store={store} api={api} />
       {themeEditorOpen && (
         <TilerThemeEditor

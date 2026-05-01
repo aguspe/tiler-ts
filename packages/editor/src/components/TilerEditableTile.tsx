@@ -3,6 +3,7 @@ import { useEffect, useRef, useState } from "react";
 import type { StoreApi } from "zustand/vanilla";
 import type { TilerApiClient } from "../api/client";
 import type { EditorState } from "../state/editor-store";
+import { TrashIcon } from "./Icons";
 
 export interface TilerEditableTileProps {
   panel: Panel;
@@ -125,7 +126,7 @@ export function TilerEditableTile({
             }}
             aria-label={`Delete panel ${panel.title}`}
           >
-            ×
+            <TrashIcon size={14} />
           </button>
         </div>
       </header>
