@@ -49,7 +49,7 @@ function resolveViewerClientDir(): string {
 
 export default class TilerReporter implements PlaywrightReporter {
   private readonly opts: ReturnType<typeof ReporterOptions.parse>;
-  private readonly viewerClientDirOverride?: string;
+  private readonly viewerClientDirOverride: string | undefined;
 
   private store!: MemoryStore;
   private dashboard!: Dashboard;
