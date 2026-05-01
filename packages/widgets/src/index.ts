@@ -3,6 +3,7 @@ import "./widgets/clock";
 import "./widgets/text";
 import "./widgets/image";
 import "./widgets/iframe";
+import "./widgets/metric";
 
 export const TILER_WIDGETS_VERSION = "0.0.1" as const;
 export { chartColors } from "./lib/chart-colors";
@@ -10,3 +11,4 @@ export { ClockConfig, ClockWidget } from "./widgets/clock";
 export { TextConfig, TextWidget } from "./widgets/text";
 export { ImageConfig, ImageWidget } from "./widgets/image";
 export { IframeConfig, IframeWidget } from "./widgets/iframe";
+export { MetricConfig, MetricWidget } from "./widgets/metric";
