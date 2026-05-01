@@ -18,6 +18,7 @@ const ALL_TYPES = [
   "comments",
   "table",
   "line_chart",
+  "bar_chart",
 ] as const;
 
 describe("registry smoke — registered widgets", () => {
