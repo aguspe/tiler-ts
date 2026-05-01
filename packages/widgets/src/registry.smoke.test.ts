@@ -16,6 +16,7 @@ const ALL_TYPES = [
   "list",
   "status_grid",
   "comments",
+  "table",
 ] as const;
 
 describe("registry smoke — registered widgets", () => {

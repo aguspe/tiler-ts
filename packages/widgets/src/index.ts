@@ -9,6 +9,7 @@ import "./widgets/meter";
 import "./widgets/list";
 import "./widgets/status_grid";
 import "./widgets/comments";
+import "./widgets/table";
 
 export const TILER_WIDGETS_VERSION = "0.0.1" as const;
 export { chartColors } from "./lib/chart-colors";
@@ -22,3 +23,4 @@ export { MeterConfig, MeterWidget } from "./widgets/meter";
 export { ListConfig, ListWidget } from "./widgets/list";
 export { StatusGridConfig, StatusGridWidget } from "./widgets/status_grid";
 export { CommentsConfig, CommentsWidget } from "./widgets/comments";
+export { TableConfig, TableWidget } from "./widgets/table";
