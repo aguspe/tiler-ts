@@ -1,0 +1,4 @@
+[
+  { "name": "@aguspe/tiler-core (esm)", "path": "dist/index.js",  "limit": "30 KB" },
+  { "name": "@aguspe/tiler-core (cjs)", "path": "dist/index.cjs", "limit": "30 KB" }
+]
