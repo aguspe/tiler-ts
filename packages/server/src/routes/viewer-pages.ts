@@ -32,15 +32,54 @@ function findCss(dir: string): string | undefined {
   return undefined;
 }
 
+interface ShellContext {
+  cssAsset: string | undefined;
+  /** Slug of the active nav link (`dashboards` | `data-sources` | `settings`). */
+  activeNav: "dashboards" | "data-sources" | "settings";
+  title: string;
+}
+
+/**
+ * Renders a paper-themed page shell (top nav + page container) for the
+ * non-editor routes (`/dashboards`, `/settings`, `/data-sources`). The
+ * editor's own SSR helper handles `/dashboards/:slug`.
+ */
+function renderShellHtml(ctx: ShellContext, body: string): string {
+  const navLink = (slug: ShellContext["activeNav"], label: string, href: string): string =>
+    `<a class="tiler-nav-link" href="${href}"${slug === ctx.activeNav ? ' aria-current="page"' : ""}>${label}</a>`;
+
+  return `<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>${escapeHtml(ctx.title)} — tiler-ts</title>
+${ctx.cssAsset ? `<link rel="stylesheet" href="/assets/${ctx.cssAsset}">` : ""}
+</head>
+<body>
+<div class="tiler-shell">
+  <nav class="tiler-nav" aria-label="Primary">
+    <a class="tiler-nav-brand" href="/dashboards">tiler</a>
+    <div class="tiler-nav-links">
+      ${navLink("dashboards", "Dashboards", "/dashboards")}
+      ${navLink("data-sources", "Data Sources", "/data-sources")}
+      ${navLink("settings", "Settings", "/settings")}
+    </div>
+  </nav>
+  <main class="tiler-page">
+    ${body}
+  </main>
+</div>
+</body>
+</html>`;
+}
+
 /**
  * Plugin:
  *   - Serves `/assets/*` from `@aguspe/tiler-editor/dist/client/`.
  *   - Renders `/dashboards/:slug` as SSR'd HTML using the editor.
- *   - Renders `/dashboards` as a minimal list page linking to each dashboard.
- *
- * Phase 5 swap: the editor SSR shell replaces the read-only viewer at
- * `/dashboards/:slug`. The editor's Vite-built client bundle hydrates over
- * the SSR'd HTML and provides drag/resize/drop/drawer/palette behaviors.
+ *   - Renders `/dashboards`, `/data-sources`, `/settings` as paper-themed
+ *     index/placeholder pages.
  */
 export const viewerPagesPlugin: FastifyPluginAsync = async (app) => {
   const cfg = (app as unknown as { tilerConfig: ResolvedTilerConfig }).tilerConfig;
@@ -57,29 +96,95 @@ export const viewerPagesPlugin: FastifyPluginAsync = async (app) => {
     index: false,
   });
 
-  // List page (still a tiny static HTML page; full dashboard chooser is editor's job in v0.5+).
+  // Dashboards index — paper-themed card grid.
   app.get("/dashboards", async (_req, reply) => {
     const dashboards = await store.listDashboards();
-    const items = dashboards
-      .map(
-        (d) =>
-          `<li><a href="/dashboards/${d.slug}" style="color:var(--tiler-color-accent)">${escapeHtml(d.name)}</a></li>`,
-      )
-      .join("\n");
-    const body = `<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>tiler-ts dashboards</title>
-${cssAsset ? `<link rel="stylesheet" href="/assets/${cssAsset}">` : ""}
-</head>
-<body style="background:var(--tiler-color-page,#0b0d12);color:var(--tiler-color-text,#e6edf3);font-family:var(--tiler-font-sans,system-ui);padding:32px">
-<h1>Dashboards</h1>
-${items.length > 0 ? `<ul>${items}</ul>` : `<p style="opacity:0.7">No dashboards yet.</p>`}
-</body>
-</html>`;
-    return reply.type("text/html").send(body);
+    const cards =
+      dashboards.length === 0
+        ? `<p class="t-body-sm" style="color:var(--ink-3)">No dashboards yet.</p>`
+        : `<div class="tiler-card-grid">${dashboards
+            .map(
+              (d) =>
+                `<a class="tiler-card" href="/dashboards/${d.slug}">
+                  <h3 style="font-family:var(--font-display);font-size:var(--fs-h3);font-weight:600;margin:0">${escapeHtml(
+                    d.name,
+                  )}</h3>
+                  ${
+                    d.description
+                      ? `<p class="t-body-sm" style="color:var(--ink-3);margin:0">${escapeHtml(d.description)}</p>`
+                      : ""
+                  }
+                </a>`,
+            )
+            .join("")}</div>`;
+    const body = `
+      <header class="tiler-page-header">
+        <div>
+          <h1 class="tiler-page-title">Dashboards</h1>
+          <p class="tiler-page-description">All dashboards on this server.</p>
+        </div>
+      </header>
+      ${cards}
+    `;
+    return reply
+      .type("text/html")
+      .send(renderShellHtml({ cssAsset, activeNav: "dashboards", title: "Dashboards" }, body));
+  });
+
+  // Data sources — placeholder index.
+  app.get("/data-sources", async (_req, reply) => {
+    const sources = await store.listDataSources();
+    const list =
+      sources.length === 0
+        ? `<p class="t-body-sm" style="color:var(--ink-3)">No data sources registered.</p>`
+        : `<div class="tiler-card-grid">${sources
+            .map(
+              (s) =>
+                `<div class="tiler-card">
+                  <h3 style="font-family:var(--font-display);font-size:var(--fs-h3);font-weight:600;margin:0">${escapeHtml(
+                    s.name,
+                  )}</h3>
+                  <code class="t-mono" style="color:var(--ink-3)">${escapeHtml(s.slug)}</code>
+                </div>`,
+            )
+            .join("")}</div>`;
+    const body = `
+      <header class="tiler-page-header">
+        <div>
+          <h1 class="tiler-page-title">Data Sources</h1>
+          <p class="tiler-page-description">Endpoints that feed your dashboards. Manage via the API for now.</p>
+        </div>
+      </header>
+      ${list}
+    `;
+    return reply
+      .type("text/html")
+      .send(
+        renderShellHtml({ cssAsset, activeNav: "data-sources", title: "Data Sources" }, body),
+      );
+  });
+
+  // Settings — placeholder.
+  app.get("/settings", async (_req, reply) => {
+    const body = `
+      <header class="tiler-page-header">
+        <div>
+          <h1 class="tiler-page-title">Settings</h1>
+          <p class="tiler-page-description">Server-wide configuration. Coming in v0.1.</p>
+        </div>
+      </header>
+      <div class="tiler-card">
+        <h3 style="font-family:var(--font-display);font-size:var(--fs-h3);font-weight:600;margin:0">Configured via tiler.config.ts</h3>
+        <p class="t-body-sm" style="color:var(--ink-3);margin:0">
+          Auth mode, store backend, public URL, and write-key rotation are
+          configured at boot. Edit your <code class="t-mono">tiler.config.ts</code>
+          and restart the server to change them.
+        </p>
+      </div>
+    `;
+    return reply
+      .type("text/html")
+      .send(renderShellHtml({ cssAsset, activeNav: "settings", title: "Settings" }, body));
   });
 
   // Detail page (SSR'd editor).

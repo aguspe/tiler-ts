@@ -558,6 +558,43 @@
 }
 
 /* ============================================================
+   TV mode (kiosk) — fills viewport, hides nav + page header.
+   Use the dark theme by default since these displays are usually
+   on for hours; flip [data-theme] separately if a TV needs light.
+   ============================================================ */
+.tiler-shell.tiler-tv-mode .tiler-nav,
+.tiler-shell.tiler-tv-mode .tiler-page-header {
+  display: none;
+}
+.tiler-shell.tiler-tv-mode .tiler-page {
+  max-width: none;
+  padding: 0;
+}
+.tiler-shell.tiler-tv-mode .tiler-grid-wrap {
+  min-height: 100vh;
+}
+.tiler-tv-exit {
+  position: fixed;
+  top: 12px;
+  right: 12px;
+  z-index: 60;
+  background: var(--paper-2);
+  color: var(--ink);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-pill);
+  padding: 6px 12px;
+  font-family: var(--font-body);
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  opacity: 0.4;
+  transition: opacity var(--dur-fast) var(--ease-snap);
+}
+.tiler-tv-exit:hover {
+  opacity: 1;
+}
+
+/* ============================================================
    Theme editor
    ============================================================ */
 .tiler-theme-editor {

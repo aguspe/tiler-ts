@@ -86,8 +86,28 @@ export function TilerDashboardEditor({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [tick, dataSources, records, state.dashboard, state.panels]);
 
+  const tvMode = state.dashboard.settings.tv_mode;
+
+  const shellClasses = [
+    "tiler-shell",
+    paletteOpen ? "tiler-editing-mode" : "",
+    tvMode ? "tiler-tv-mode" : "",
+  ]
+    .filter(Boolean)
+    .join(" ");
+
   return (
-    <div className={`tiler-shell${paletteOpen ? " tiler-editing-mode" : ""}`}>
+    <div className={shellClasses}>
+      {tvMode && (
+        <button
+          type="button"
+          className="tiler-tv-exit"
+          onClick={() => store.getState().toggleTvMode()}
+          aria-label="Exit TV mode"
+        >
+          Exit TV
+        </button>
+      )}
       <TilerNav />
       <main className="tiler-page">
         <TilerToolbar
