@@ -14,3 +14,4 @@ export { MemoryStore } from "./memory_store";
 export * from "./lib/aggregate";
 export * from "./lib/time-window";
 export * from "./lib/filter";
+export * from "./lib/group-bucket";
