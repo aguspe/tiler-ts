@@ -5,6 +5,7 @@ build/
 .next/
 .cache/
 coverage/
+.storybook-static/
 *.tsbuildinfo
 .DS_Store
 .env

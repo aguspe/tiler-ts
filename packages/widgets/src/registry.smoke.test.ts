@@ -2,9 +2,6 @@ import { getWidget, listWidgets } from "@aguspe/tiler-core";
 import { describe, expect, it } from "vitest";
 import "./index";
 
-// Intermediate smoke test: asserts every widget the package barrel currently
-// imports is registered. As each Phase 2 widget lands, add its type to ALL_TYPES.
-// At the end of Phase 2 (Task 18), this is tightened to assert exactly 14.
 const ALL_TYPES = [
   "clock",
   "text",
@@ -22,12 +19,29 @@ const ALL_TYPES = [
   "pie_chart",
 ] as const;
 
-describe("registry smoke — registered widgets", () => {
+describe("registry smoke — all 14 widgets register", () => {
   it.each(ALL_TYPES)("%s is registered", (type) => {
     expect(getWidget(type)).toBeDefined();
   });
 
-  it("listWidgets count matches ALL_TYPES length", () => {
-    expect(listWidgets()).toHaveLength(ALL_TYPES.length);
+  it("listWidgets returns 14 widgets", () => {
+    expect(listWidgets()).toHaveLength(14);
+  });
+
+  it("data-backed widgets all expose a resolver", () => {
+    const dataBacked = listWidgets().filter((w) => w.meta.requires_data_source);
+    expect(dataBacked).toHaveLength(10);
+    expect(dataBacked.every((w) => typeof w.resolve === "function")).toBe(true);
+  });
+
+  it("config-only widgets are exactly 4", () => {
+    const configOnly = listWidgets().filter((w) => !w.meta.requires_data_source);
+    expect(configOnly).toHaveLength(4);
+    expect(configOnly.map((w) => w.meta.type).sort()).toEqual([
+      "clock",
+      "iframe",
+      "image",
+      "text",
+    ]);
   });
 });

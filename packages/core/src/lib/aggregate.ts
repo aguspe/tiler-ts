@@ -3,7 +3,8 @@ import type { Aggregation } from "../schema/time_window";
 
 export interface AggregateOpts {
   aggregation: Aggregation;
-  value_column?: string;
+  /** Column name in record payload. Required for all aggregations except `count`. */
+  value_column?: string | undefined;
 }
 
 /**
