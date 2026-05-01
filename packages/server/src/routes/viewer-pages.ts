@@ -1,22 +1,16 @@
+import { readdirSync } from "node:fs";
+import { createRequire } from "node:module";
 import { dirname, resolve } from "node:path";
 import { buildSnapshot, type ResolvedTilerConfig, type TilerStore } from "@aguspe/tiler-core";
 import "@aguspe/tiler-widgets"; // side effect: register all widgets
 import { renderToHtml } from "@aguspe/tiler-viewer";
 import fastifyStatic from "@fastify/static";
 import type { FastifyPluginAsync } from "fastify";
-import { readdirSync } from "node:fs";
 
 const RECORDS_LOOKBACK_MS = 30 * 24 * 3600_000;
 
 function resolveViewerClientDir(): string {
-  const isCjs = typeof require === "function";
-  if (isCjs) {
-    const serverEntry = require.resolve("@aguspe/tiler-viewer");
-    return resolve(dirname(serverEntry), "../client");
-  }
-  // biome-ignore lint/security/noGlobalEval: ESM require shim — tsup rewrites top-level require but not eval'd ones
-  const nodeModule = eval("require")("node:module") as typeof import("node:module");
-  const r = nodeModule.createRequire(import.meta.url);
+  const r = createRequire(import.meta.url);
   const serverEntry = r.resolve("@aguspe/tiler-viewer");
   return resolve(dirname(serverEntry), "../client");
 }

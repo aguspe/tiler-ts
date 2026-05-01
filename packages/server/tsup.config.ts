@@ -8,6 +8,7 @@ export default defineConfig({
   clean: true,
   target: "es2022",
   splitting: false,
+  shims: true,
   external: [
     "better-sqlite3",
     "fastify",
