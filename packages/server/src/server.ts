@@ -4,6 +4,7 @@ import { dashboardsPlugin } from "./routes/dashboards";
 import { ingestPlugin } from "./routes/ingest";
 import { panelsPlugin } from "./routes/panels";
 import { sourcesPlugin } from "./routes/sources";
+import { viewerPagesPlugin } from "./routes/viewer-pages";
 
 export interface CreateServerOptions extends TilerConfig {
   /** Skip auto-loading widget packages. Useful for tests. */
@@ -43,7 +44,7 @@ export async function createServer(opts: CreateServerOptions): Promise<TilerFast
   await app.register(panelsPlugin, { prefix: "/api/panels" });
   await app.register(sourcesPlugin, { prefix: "/api/data_sources" });
   await app.register(ingestPlugin, { prefix: "/ingest" });
-  // await app.register(viewerRoutes, { prefix: "/dashboards" });
+  await app.register(viewerPagesPlugin);
 
   return app;
 }
