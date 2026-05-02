@@ -3,9 +3,20 @@ slug: /
 title: tiler-ts × Playwright
 sidebar_label: Intro
 sidebar_position: 1
+hide_title: true
 ---
 
+<div style={{ textAlign: "center", marginBottom: "2rem" }}>
+  <img src="/tiler-ts/img/tiler-logo.svg" alt="tiler-ts" width="320" />
+</div>
+
 `tiler-ts` is a set of npm packages for building dashboards in TypeScript / Node.js — schema-first data, a 14-widget set, and a drag-and-drop editor. This site focuses on the **Playwright story**: how to surface your test runs as a tiler dashboard.
+
+<img
+  src="/tiler-ts/img/dashboard-light.png"
+  alt="The editor on its default test-automation dashboard"
+  style={{ width: "100%", borderRadius: "8px", boxShadow: "0 8px 24px rgba(14,15,20,0.12)" }}
+/>
 
 You have three options, increasing in commitment:
 

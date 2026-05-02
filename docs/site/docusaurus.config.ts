@@ -35,6 +35,7 @@ const config: Config = {
   themeConfig: {
     navbar: {
       title: "tiler-ts",
+      logo: { alt: "tiler-ts", src: "img/tiler-logo.svg" },
       items: [
         { to: "/", label: "Docs", position: "left" },
         {
