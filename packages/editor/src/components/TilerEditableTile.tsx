@@ -3,6 +3,7 @@ import { useEffect, useRef, useState } from "react";
 import type { StoreApi } from "zustand/vanilla";
 import type { TilerApiClient } from "../api/client";
 import type { EditorState } from "../state/editor-store";
+import { TilerConfirmDialog } from "./TilerConfirmDialog";
 import { TrashIcon } from "./Icons";
 
 export interface TilerEditableTileProps {
@@ -35,6 +36,7 @@ export function TilerEditableTile({
 }: TilerEditableTileProps): JSX.Element {
   const [editingTitle, setEditingTitle] = useState(false);
   const [titleDraft, setTitleDraft] = useState(panel.title);
+  const [confirmingDelete, setConfirmingDelete] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
   const widget = getWidget(panel.widget_type);
 
@@ -53,8 +55,8 @@ export function TilerEditableTile({
     setEditingTitle(false);
   }
 
-  async function handleDelete(): Promise<void> {
-    if (!window.confirm(`Delete "${panel.title}"?`)) return;
+  async function performDelete(): Promise<void> {
+    setConfirmingDelete(false);
     store.getState().removePanel(panel.id);
     try {
       await api.deletePanel(panel.id);
@@ -122,7 +124,7 @@ export function TilerEditableTile({
             className="tiler-panel-action"
             onClick={(e) => {
               e.stopPropagation();
-              void handleDelete();
+              setConfirmingDelete(true);
             }}
             aria-label={`Delete panel ${panel.title}`}
           >
@@ -158,6 +160,15 @@ export function TilerEditableTile({
           <div className="tiler-panel-empty">Unknown widget: {panel.widget_type}</div>
         )}
       </div>
+      <TilerConfirmDialog
+        open={confirmingDelete}
+        title={`Delete "${panel.title}"?`}
+        message="This panel and its config will be removed from the dashboard. This can't be undone."
+        confirmLabel="Delete"
+        danger
+        onConfirm={() => void performDelete()}
+        onCancel={() => setConfirmingDelete(false)}
+      />
     </section>
   );
 }

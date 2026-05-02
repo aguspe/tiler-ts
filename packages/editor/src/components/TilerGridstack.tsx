@@ -111,6 +111,9 @@ export function TilerGridstack({
           // Clicks that don't move propagate up to the panel header's own
           // onClick, which opens the config drawer.
           handle: ".grid-stack-item-content",
+          // Resize from any corner or any edge. Gridstack defaults to
+          // 'se' only, which the user can't discover.
+          resizable: { handles: "n,e,s,w,ne,se,sw,nw" },
         },
         gridRef.current,
       ) as unknown as GridLike;

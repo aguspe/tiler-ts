@@ -6,6 +6,13 @@ import type { TilerApiClient } from "../api/client";
 import { createEditorStore } from "../state/editor-store";
 import { TilerEditableTile } from "./TilerEditableTile";
 
+// Some FocusLock internals call into selection APIs that jsdom doesn't
+// implement. Stub them so the dialog can mount in tests.
+if (typeof window !== "undefined") {
+  // @ts-expect-error jsdom polyfill
+  if (!window.getSelection) window.getSelection = () => ({ removeAllRanges: () => {}, addRange: () => {} });
+}
+
 const NOW = "2026-01-01T00:00:00.000Z";
 const PANEL: Panel = {
   id: "p1",
@@ -77,17 +84,28 @@ describe("TilerEditableTile", () => {
     expect(store.getState().panels[0]?.title).toBe("New title");
   });
 
-  it("delete button asks for confirmation, calls api, and removes from store", async () => {
+  it("delete button opens a confirm dialog; confirming removes the panel and calls the api", () => {
     const store = createEditorStore({ dashboard: DASHBOARD, panels: [PANEL] });
     render(
       <TilerEditableTile panel={PANEL} data={{ resolved: null, empty: false }} store={store} api={mockApi} />,
     );
-    const deleteBtn = screen.getByRole("button", { name: /Delete panel/i });
-    fireEvent.click(deleteBtn);
-    expect(confirmSpy).toHaveBeenCalled();
+    fireEvent.click(screen.getByRole("button", { name: /Delete panel/i }));
+    // The dialog mounts with a "Delete" button distinct from the panel-action.
+    const confirm = screen.getByRole("button", { name: /^Delete$/ });
+    fireEvent.click(confirm);
     expect(store.getState().panels).toHaveLength(0);
-    // api.deletePanel is async; just verify the call shape
     expect(mockApi.deletePanel).toHaveBeenCalledWith("p1");
+  });
+
+  it("delete dialog Cancel keeps the panel intact", () => {
+    const store = createEditorStore({ dashboard: DASHBOARD, panels: [PANEL] });
+    render(
+      <TilerEditableTile panel={PANEL} data={{ resolved: null, empty: false }} store={store} api={mockApi} />,
+    );
+    fireEvent.click(screen.getByRole("button", { name: /Delete panel/i }));
+    fireEvent.click(screen.getByRole("button", { name: /Cancel/ }));
+    expect(store.getState().panels).toHaveLength(1);
+    expect(mockApi.deletePanel).not.toHaveBeenCalled();
   });
 
   it("clicking the body opens the drawer", () => {

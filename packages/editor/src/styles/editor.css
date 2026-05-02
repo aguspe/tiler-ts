@@ -256,6 +256,80 @@
   inset: 0 !important;
 }
 
+/* Resize handles — gridstack adds .ui-resizable-handle children (n/e/s/
+   w/ne/se/sw/nw). The defaults are 1×1 transparent stubs; we make them
+   discoverable on hover. The handles themselves stay see-through; only
+   the border-side gets a primary tint so it reads as a grab edge. */
+.grid-stack-item .ui-resizable-handle {
+  background: transparent;
+  z-index: 4;
+  opacity: 0;
+  transition: opacity var(--dur-fast) var(--ease-snap);
+}
+.grid-stack-item:hover .ui-resizable-handle,
+.grid-stack-item.ui-resizable-resizing .ui-resizable-handle {
+  opacity: 1;
+}
+.grid-stack-item .ui-resizable-n,
+.grid-stack-item .ui-resizable-s {
+  height: 6px;
+  cursor: ns-resize;
+}
+.grid-stack-item .ui-resizable-e,
+.grid-stack-item .ui-resizable-w {
+  width: 6px;
+  cursor: ew-resize;
+}
+.grid-stack-item .ui-resizable-ne,
+.grid-stack-item .ui-resizable-nw,
+.grid-stack-item .ui-resizable-se,
+.grid-stack-item .ui-resizable-sw {
+  width: 12px;
+  height: 12px;
+  background: var(--primary);
+  border-radius: 2px;
+}
+.grid-stack-item .ui-resizable-n {
+  top: -3px;
+  left: 0;
+  right: 0;
+}
+.grid-stack-item .ui-resizable-s {
+  bottom: -3px;
+  left: 0;
+  right: 0;
+}
+.grid-stack-item .ui-resizable-e {
+  top: 0;
+  bottom: 0;
+  right: -3px;
+}
+.grid-stack-item .ui-resizable-w {
+  top: 0;
+  bottom: 0;
+  left: -3px;
+}
+.grid-stack-item .ui-resizable-ne {
+  top: -6px;
+  right: -6px;
+  cursor: ne-resize;
+}
+.grid-stack-item .ui-resizable-nw {
+  top: -6px;
+  left: -6px;
+  cursor: nw-resize;
+}
+.grid-stack-item .ui-resizable-se {
+  bottom: -6px;
+  right: -6px;
+  cursor: se-resize;
+}
+.grid-stack-item .ui-resizable-sw {
+  bottom: -6px;
+  left: -6px;
+  cursor: sw-resize;
+}
+
 /* Drop preview — outlined cell highlight that snaps under the cursor as
    the user drags a palette item over the grid. Inherits the primary
    token so it tints with the active theme. */
@@ -751,6 +825,54 @@
   color: var(--ink-3);
   font-size: var(--fs-body-sm);
   text-align: center;
+}
+
+/* ============================================================
+   Modal (used for confirm dialogs)
+   ============================================================ */
+.tiler-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(20, 20, 28, 0.45);
+  z-index: 110;
+  animation: tiler-fade-in var(--dur-base) var(--ease-snap);
+}
+.tiler-modal {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: min(420px, 92vw);
+  background: var(--paper-2);
+  color: var(--ink);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-3);
+  padding: 24px;
+  z-index: 120;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.tiler-modal-title {
+  font-family: var(--font-display);
+  font-size: var(--fs-h3);
+  font-weight: 600;
+  color: var(--ink);
+  margin: 0;
+}
+.tiler-modal-message {
+  font-family: var(--font-body);
+  font-size: var(--fs-body-sm);
+  color: var(--ink-2);
+  margin: 0;
+  line-height: var(--lh-relaxed);
+}
+.tiler-modal-actions {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+  margin-top: var(--s-2);
 }
 
 /* ============================================================
