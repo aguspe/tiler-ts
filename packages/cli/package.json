@@ -1,0 +1,50 @@
+{
+  "name": "@aguspe/tiler-cli",
+  "version": "0.0.1",
+  "description": "Command-line interface for tiler-ts. `tiler init`, `tiler serve`, `tiler doctor`, `tiler import-playwright-json`.",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/aguspe/tiler-ts.git",
+    "directory": "packages/cli"
+  },
+  "homepage": "https://github.com/aguspe/tiler-ts/tree/main/packages/cli",
+  "publishConfig": {
+    "access": "public"
+  },
+  "type": "module",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "bin": {
+    "tiler": "./dist/bin/tiler.js"
+  },
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    }
+  },
+  "files": ["dist", "README.md"],
+  "scripts": {
+    "build": "tsup",
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit",
+    "dev": "tsx src/bin/tiler.ts"
+  },
+  "dependencies": {
+    "@aguspe/tiler-core": "workspace:*",
+    "@aguspe/tiler-server": "workspace:*",
+    "commander": "^12.0.0",
+    "jiti": "^2.0.0",
+    "kleur": "^4.1.5"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "tsup": "^8.0.0",
+    "tsx": "^4.0.0",
+    "typescript": "^5.5.0",
+    "vitest": "^2.0.0"
+  }
+}

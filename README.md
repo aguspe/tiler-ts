@@ -5,6 +5,28 @@
 A TypeScript port of [Tiler](https://github.com/aguspe/tiler) (Rails engine).
 Distributed as a set of npm packages under the `@aguspe/tiler-*` scope.
 
+## Status: Phase 6 — CLI (`v0.0.6-phase-6`)
+
+This release ships `@aguspe/tiler-cli`, the `tiler` binary. One install
+gets you `tiler init`, `tiler serve`, `tiler doctor`, and `tiler
+import-playwright-json` — no need to write a `start.ts` by hand.
+
+### What's in v0.0.6
+
+- `@aguspe/tiler-cli`:
+  - **`tiler init`** — scaffolds `tiler.config.ts` + `.env.example`
+    (sqlite or memory store, configurable port).
+  - **`tiler serve`** — loads the config via jiti (TS at runtime) and
+    boots the Fastify server. `--port` / `--host` override.
+  - **`tiler doctor`** — prints Node version, config path, store
+    backend, listening host/port, auth flags, registered widgets.
+  - **`tiler import-playwright-json <file>`** — flattens a Playwright
+    JSON report into ingest records and either writes to a file
+    (`--out`) or HMAC-signs and POSTs them to a running server
+    (`--server` + `--secret`).
+
+Phase 7 (v1.0.0) closes out: docs site, changesets, npm publish.
+
 ## Status: Phase 5 — Editor (`v0.0.5-phase-5`)
 
 This release ships the gridstack-based dashboard editor. The Rails
@@ -112,7 +134,7 @@ CI runs all of the above on every PR (Node 20 + 22, ubuntu + macos).
 
 ## Packages
 
-| Package | Status (v0.0.5-phase-5) |
+| Package | Status (v0.0.6-phase-6) |
 |---|---|
 | `@aguspe/tiler-core` | ✅ schemas + registry + MemoryStore + helpers + presets + buildSnapshot + defineConfig |
 | `@aguspe/tiler-widgets` | ✅ all 14 widgets + Storybook + Rails-parity token system |
@@ -120,7 +142,7 @@ CI runs all of the above on every PR (Node 20 + 22, ubuntu + macos).
 | `@aguspe/tiler-playwright` | ✅ Reporter + test_automation preset |
 | `@aguspe/tiler-server` | ✅ Fastify + sqlite + ingestion + WebSocket + editor SSR + diagnostics page |
 | `@aguspe/tiler-editor` | ✅ Drag/drop, drawer with preview, auto-save, undo/redo, TV mode, dark mode |
-| `@aguspe/tiler-cli` | ⏳ Phase 6 |
+| `@aguspe/tiler-cli` | ✅ `tiler init`/`serve`/`doctor`/`import-playwright-json` |
 
 ## Design + plans
 
