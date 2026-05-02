@@ -14,18 +14,28 @@ import { expect, test, type Page } from "@playwright/test";
 const DASHBOARD = "/dashboards/test_automation";
 
 async function goto(page: Page): Promise<void> {
-  await page.goto(DASHBOARD);
+  await page.goto(DASHBOARD, { waitUntil: "domcontentloaded" });
   // Wait for hydration: once gridstack lazy-loads and initializes, it
   // attaches itself to the .grid-stack root as `.gridstack`. We check
   // that property directly — `.ui-resizable-handle` children render
   // with zero size until hovered, so they're not a reliable readiness
-  // selector.
+  // selector. Bumped timeout so prior-test autosave flushes settle
+  // before this assertion gives up.
   await page.waitForFunction(
     () =>
       (document.querySelector(".grid-stack") as HTMLElement & { gridstack?: unknown })
         ?.gridstack !== undefined,
+    undefined,
+    { timeout: 15_000 },
   );
   // Let Google Fonts and chart libraries paint before snapshotting.
+  await page.waitForLoadState("networkidle");
+}
+
+// Destructive tests mutate the persisted db. Wait for any in-flight
+// auto-save request to land before the next test's `goto` so the new
+// page doesn't race with a write that's still queued.
+async function waitForAutosaveQuiet(page: Page): Promise<void> {
   await page.waitForLoadState("networkidle");
 }
 
@@ -100,6 +110,7 @@ test.describe("editor / interactions", () => {
     await expect(page.getByRole("alertdialog")).toBeVisible();
     await page.getByRole("button", { name: /^Delete$/ }).click();
     await expect(page.locator(".grid-stack-item")).toHaveCount(before - 1);
+    await waitForAutosaveQuiet(page);
   });
 
   test("delete confirm Cancel keeps the panel intact", async ({ page }) => {
@@ -142,6 +153,7 @@ test.describe("editor / interactions", () => {
       };
     });
     expect(survivorCoords).toEqual({ w: "5", h: "3" });
+    await waitForAutosaveQuiet(page);
   });
 
   test("palette closes when clicking outside it", async ({ page }) => {
