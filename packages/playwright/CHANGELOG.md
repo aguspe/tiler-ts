@@ -1,5 +1,24 @@
 # @aguspe/tiler-playwright
 
+## 1.0.1
+
+### Patch Changes
+
+- fix(viewer): stretch panel wrappers so charts have a measurable height
+
+  The static viewer rendered each panel inside a plain `<div>` whose
+  `display: block` content-sized to its child. Recharts'
+  `ResponsiveContainer` then mounted into a near-zero-height box and
+  the pie/line charts stayed invisible. The wrapper now uses
+  `display: flex; flex-direction: column` so descendants with
+  `height: 100%` measure against the full grid-cell height.
+
+  Bumping `@aguspe/tiler-playwright` too because its generated HTML
+  embeds the viewer's SSR output.
+
+- Updated dependencies
+  - @aguspe/tiler-viewer@1.0.1
+
 ## 1.0.0
 
 ### Major Changes

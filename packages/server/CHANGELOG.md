@@ -1,5 +1,13 @@
 # @aguspe/tiler-server
 
+## 1.0.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @aguspe/tiler-viewer@1.0.1
+  - @aguspe/tiler-editor@1.0.1
+
 ## 1.0.0
 
 ### Major Changes

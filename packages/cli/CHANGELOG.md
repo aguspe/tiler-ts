@@ -1,5 +1,11 @@
 # @aguspe/tiler-cli
 
+## 1.0.1
+
+### Patch Changes
+
+- @aguspe/tiler-server@1.0.1
+
 ## 1.0.0
 
 ### Major Changes

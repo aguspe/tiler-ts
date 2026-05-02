@@ -48,6 +48,12 @@ export function TilerDashboardViewer({
             style={{
               gridColumn: `${panel.x + 1} / span ${panel.width}`,
               gridRow: `${panel.y + 1} / span ${panel.height}`,
+              // Stretch the wrapper so descendants using `height: 100%`
+              // (`.tiler-panel`, Recharts ResponsiveContainer) measure
+              // against the full grid-cell height. Without this, charts
+              // mount into a 0-height container and stay invisible.
+              display: "flex",
+              flexDirection: "column",
             }}
           >
             <TilerWidgetTile

@@ -1,6 +1,6 @@
 {
   "name": "@aguspe/tiler-server",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Fastify server for tiler-ts. SQLite-backed, HMAC ingestion, WebSocket live updates.",
   "license": "MIT",
   "repository": {
@@ -28,7 +28,10 @@
       "require": "./dist/store/sqlite.cjs"
     }
   },
-  "files": ["dist", "README.md"],
+  "files": [
+    "dist",
+    "README.md"
+  ],
   "scripts": {
     "build": "tsup",
     "test": "vitest run",
