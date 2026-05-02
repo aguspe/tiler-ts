@@ -256,79 +256,44 @@
   inset: 0 !important;
 }
 
-/* Resize handles — gridstack adds .ui-resizable-handle children (n/e/s/
-   w/ne/se/sw/nw). The defaults are 1×1 transparent stubs; we make them
-   discoverable on hover. The handles themselves stay see-through; only
-   the border-side gets a primary tint so it reads as a grab edge. */
+/* Resize handles — gridstack adds invisible .ui-resizable-handle stubs
+   on each edge and corner. We size and position them but leave them
+   visually transparent; the only affordance is the cursor change.
+   Handles still need pointer-events to fire, so we keep them above the
+   panel body but with no fill. */
 .grid-stack-item .ui-resizable-handle {
   background: transparent;
   z-index: 4;
-  opacity: 0;
-  transition: opacity var(--dur-fast) var(--ease-snap);
-}
-.grid-stack-item:hover .ui-resizable-handle,
-.grid-stack-item.ui-resizable-resizing .ui-resizable-handle {
-  opacity: 1;
 }
 .grid-stack-item .ui-resizable-n,
 .grid-stack-item .ui-resizable-s {
   height: 6px;
   cursor: ns-resize;
+  left: 0;
+  right: 0;
 }
 .grid-stack-item .ui-resizable-e,
 .grid-stack-item .ui-resizable-w {
   width: 6px;
   cursor: ew-resize;
+  top: 0;
+  bottom: 0;
 }
+.grid-stack-item .ui-resizable-n { top: -3px; }
+.grid-stack-item .ui-resizable-s { bottom: -3px; }
+.grid-stack-item .ui-resizable-e { right: -3px; }
+.grid-stack-item .ui-resizable-w { left: -3px; }
 .grid-stack-item .ui-resizable-ne,
 .grid-stack-item .ui-resizable-nw,
 .grid-stack-item .ui-resizable-se,
 .grid-stack-item .ui-resizable-sw {
   width: 12px;
   height: 12px;
-  background: var(--primary);
-  border-radius: 2px;
 }
-.grid-stack-item .ui-resizable-n {
-  top: -3px;
-  left: 0;
-  right: 0;
-}
-.grid-stack-item .ui-resizable-s {
-  bottom: -3px;
-  left: 0;
-  right: 0;
-}
-.grid-stack-item .ui-resizable-e {
-  top: 0;
-  bottom: 0;
-  right: -3px;
-}
-.grid-stack-item .ui-resizable-w {
-  top: 0;
-  bottom: 0;
-  left: -3px;
-}
-.grid-stack-item .ui-resizable-ne {
-  top: -6px;
-  right: -6px;
-  cursor: ne-resize;
-}
-.grid-stack-item .ui-resizable-nw {
-  top: -6px;
-  left: -6px;
-  cursor: nw-resize;
-}
-.grid-stack-item .ui-resizable-se {
-  bottom: -6px;
-  right: -6px;
-  cursor: se-resize;
-}
-.grid-stack-item .ui-resizable-sw {
-  bottom: -6px;
-  left: -6px;
-  cursor: sw-resize;
-}
+.grid-stack-item .ui-resizable-ne { top: -6px; right: -6px; cursor: ne-resize; }
+.grid-stack-item .ui-resizable-nw { top: -6px; left: -6px; cursor: nw-resize; }
+.grid-stack-item .ui-resizable-se { bottom: -6px; right: -6px; cursor: se-resize; }
+.grid-stack-item .ui-resizable-sw { bottom: -6px; left: -6px; cursor: sw-resize; }
 
 /* Drop preview — outlined cell highlight that snaps under the cursor as
    the user drags a palette item over the grid. Inherits the primary

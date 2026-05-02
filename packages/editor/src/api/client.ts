@@ -24,8 +24,13 @@ export class ApiError extends Error {
 export function createApiClient(opts: TilerApiClientOptions = {}): TilerApiClient {
   const baseUrl = opts.baseUrl ?? "";
 
-  function headers(method: string): Record<string, string> {
-    const h: Record<string, string> = { "content-type": "application/json" };
+  function headers(method: string, hasBody: boolean): Record<string, string> {
+    const h: Record<string, string> = {};
+    // Only declare a JSON content-type when we actually send a body —
+    // Fastify's default body parser otherwise tries (and fails) to parse
+    // a zero-length stream as JSON and returns 400 on bodyless requests
+    // like DELETE.
+    if (hasBody) h["content-type"] = "application/json";
     if (opts.csrfToken && method !== "GET" && method !== "HEAD") {
       h["x-tiler-csrf"] = opts.csrfToken;
     }
@@ -37,10 +42,11 @@ export function createApiClient(opts: TilerApiClientOptions = {}): TilerApiClien
   }
 
   async function request<T>(method: string, path: string, body?: unknown): Promise<T> {
+    const hasBody = body !== undefined;
     const res = await fetch(`${baseUrl}${path}`, {
       method,
-      headers: headers(method),
-      ...(body !== undefined && { body: JSON.stringify(body) }),
+      headers: headers(method, hasBody),
+      ...(hasBody && { body: JSON.stringify(body) }),
       credentials: "include",
     });
     if (!res.ok) {

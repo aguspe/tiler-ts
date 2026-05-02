@@ -79,7 +79,11 @@ export function TilerGridstack({
 }: TilerGridstackProps): JSX.Element {
   const gridRef = useRef<HTMLDivElement>(null);
   const gridApiRef = useRef<GridLike | undefined>(undefined);
-  const registeredIdsRef = useRef<Set<string>>(new Set());
+  // Map id → DOM element so we can still tell gridstack about a node
+  // after React has already detached its DOM. Without this cached
+  // reference, deleting a panel would leave gridstack tracking a phantom
+  // node and break resizing on the surviving panels.
+  const registeredRef = useRef<Map<string, HTMLElement>>(new Map());
   const [ghost, setGhost] = useState<GhostBox | null>(null);
 
   // Keep a stable ref to the latest callback so the gridstack listener never
@@ -119,13 +123,13 @@ export function TilerGridstack({
       ) as unknown as GridLike;
       gridApiRef.current = g;
 
-      // Seed `registeredIdsRef` with whatever children gridstack just
-      // discovered on init — those are the SSR-rendered panels.
+      // Seed the cache with whatever children gridstack just discovered
+      // on init — those are the SSR-rendered panels.
       for (const el of gridRef.current.querySelectorAll<HTMLElement>(
         ".grid-stack-item",
       )) {
         const id = el.getAttribute("gs-id");
-        if (id) registeredIdsRef.current.add(id);
+        if (id) registeredRef.current.set(id, el);
       }
 
       g.on("change", (_event, items) => {
@@ -147,7 +151,7 @@ export function TilerGridstack({
       // reconciler owns the children and will clean them up itself.
       gridApiRef.current?.destroy(false);
       gridApiRef.current = undefined;
-      registeredIdsRef.current.clear();
+      registeredRef.current.clear();
     };
   }, []);
 
@@ -196,8 +200,9 @@ export function TilerGridstack({
   // Reconcile gridstack with the current panels list. When React mounts a
   // new `.grid-stack-item` (palette drop, undo/redo replay, etc.) gridstack
   // doesn't know about it until we call `makeWidget(el)`. Conversely, when
-  // a panel is removed we tell gridstack so it stops tracking the node
-  // (its tracking state is what positions / resizes the layout).
+  // React unmounts a panel we tell gridstack so it stops tracking the node
+  // — using a cached DOM reference because the live DOM node is already
+  // gone by the time this effect runs.
   useEffect(() => {
     const grid = gridApiRef.current;
     const root = gridRef.current;
@@ -209,18 +214,20 @@ export function TilerGridstack({
     for (const el of root.querySelectorAll<HTMLElement>(".grid-stack-item")) {
       const id = el.getAttribute("gs-id");
       if (!id) continue;
-      if (!registeredIdsRef.current.has(id)) {
+      if (!registeredRef.current.has(id)) {
         grid.makeWidget(el);
-        registeredIdsRef.current.add(id);
+        registeredRef.current.set(id, el);
       }
     }
 
-    // Drop tracking for panels that no longer exist in the store.
-    for (const id of registeredIdsRef.current) {
+    // Drop tracking for panels React already unmounted. We use the
+    // cached element reference (still valid even after detach) so the
+    // engine cleanly drops its node — without this, a stale node breaks
+    // collision-detection on resize for the surviving panels.
+    for (const [id, el] of registeredRef.current) {
       if (currentIds.has(id)) continue;
-      const el = root.querySelector<HTMLElement>(`[gs-id="${id}"]`);
-      if (el) grid.removeWidget(el, false, false);
-      registeredIdsRef.current.delete(id);
+      grid.removeWidget(el, false, false);
+      registeredRef.current.delete(id);
     }
   }, [panels]);
 
