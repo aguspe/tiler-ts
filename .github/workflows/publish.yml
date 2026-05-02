@@ -1,0 +1,64 @@
+name: Publish to npm
+
+# Manual-trigger workflow that publishes every workspace package whose
+# version isn't already on the registry. Reads NPM_TOKEN from repo
+# secrets (Granular Access Token with "Bypass 2FA" enabled).
+#
+# Use it for the first publish, and any time you've bumped versions
+# locally and want them up on npm without setting up the changesets PR
+# automation.
+
+on:
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: "Pack without publishing — for inspection."
+        required: false
+        type: boolean
+        default: false
+
+# Allow `changeset publish` to push tags back to the repo.
+permissions:
+  contents: write
+  # OIDC for `npm publish --provenance` if you flip it on later.
+  id-token: write
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          # Full history so changeset publish can push the per-package
+          # release tags it creates.
+          fetch-depth: 0
+
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+          # Configures ~/.npmrc with the NODE_AUTH_TOKEN env var below.
+          registry-url: "https://registry.npmjs.org"
+
+      - run: pnpm install --frozen-lockfile
+
+      - run: pnpm -r build
+
+      - name: Pack (dry run)
+        if: ${{ inputs.dry_run }}
+        run: pnpm -r exec npm pack --dry-run
+
+      - name: Publish via changesets
+        if: ${{ !inputs.dry_run }}
+        env:
+          # setup-node reads NODE_AUTH_TOKEN to populate ~/.npmrc.
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+          # Some tools also look at NPM_TOKEN directly.
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: pnpm exec changeset publish
+
+      - name: Push release tags
+        if: ${{ !inputs.dry_run }}
+        run: git push --follow-tags
