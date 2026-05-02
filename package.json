@@ -2,7 +2,7 @@
   "name": "tiler-ts",
   "private": true,
   "version": "0.0.0",
-  "description": "TypeScript port of Tiler — plug-and-play dashboards, Playwright-first.",
+  "description": "Plug-and-play dashboards for TypeScript / Node.js. Playwright-first.",
   "license": "MIT",
   "homepage": "https://github.com/aguspe/tiler-ts",
   "repository": "git+https://github.com/aguspe/tiler-ts.git",

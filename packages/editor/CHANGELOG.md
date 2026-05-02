@@ -12,7 +12,7 @@
 
   - Schema-first core with a pluggable `TilerStore` interface and
     `defineWidget()` for third-party widgets.
-  - 14 first-party widgets and the Rails-parity design-token CSS.
+  - 14 first-party widgets and the design-token CSS.
   - Read-only viewer with SSR + hydration.
   - Live Fastify server with sqlite, HMAC ingestion, manual entry / CSV
     import, and a WebSocket refresh loop.

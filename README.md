@@ -1,16 +1,25 @@
-# tiler-ts
+<p align="center">
+  <img src=".github/assets/tiler-logo.svg" alt="tiler-ts" width="320">
+</p>
 
-> Plug-and-play dashboards for TypeScript / Node.js. Playwright-first.
+<p align="center">
+  Plug-and-play dashboards for TypeScript / Node.js. Playwright-first.
+</p>
 
-A TypeScript port of [Tiler](https://github.com/aguspe/tiler) (Rails engine).
-Distributed as a set of npm packages under the `@aguspe/tiler-*` scope.
+<p align="center">
+  <a href="https://github.com/aguspe/tiler-ts/actions/workflows/ci.yml"><img alt="CI" src="https://github.com/aguspe/tiler-ts/actions/workflows/ci.yml/badge.svg"></a>
+  <a href="https://github.com/aguspe/tiler-ts/actions/workflows/docs.yml"><img alt="Docs" src="https://github.com/aguspe/tiler-ts/actions/workflows/docs.yml/badge.svg"></a>
+  <a href="https://aguspe.github.io/tiler-ts/"><img alt="Docs site" src="https://img.shields.io/badge/docs-aguspe.github.io%2Ftiler--ts-2b3bf6"></a>
+  <a href="LICENSE"><img alt="MIT license" src="https://img.shields.io/badge/license-MIT-green"></a>
+</p>
 
-## Status: `v1.0.0` — stable
+---
 
-Seven packages, one binary, drop-in Rails-parity design system. See
-[`CHANGELOG.md`](CHANGELOG.md) for the full v0.x → v1.0 narrative and
-[`MIGRATING_FROM_RAILS.md`](MIGRATING_FROM_RAILS.md) for porting from
-the Rails gem.
+`tiler-ts` is a set of npm packages for building dashboards in TypeScript / Node.js — schema-first data, 14 first-party widgets, and a drag-and-drop editor that auto-saves over the wire. The package set is Playwright-friendly out of the box: drop the reporter into `playwright.config.ts` and you get a self-contained HTML dashboard at the end of every test run, or run the live server and stream results in real time.
+
+<p align="center">
+  <img src=".github/assets/dashboard-light.png" alt="The editor on its default test-automation dashboard" width="900">
+</p>
 
 ## 30-second tour
 
@@ -19,10 +28,7 @@ npx @aguspe/tiler-cli init     # scaffolds tiler.config.ts + .env.example
 npx @aguspe/tiler-cli serve    # boots Fastify; opens http://localhost:4567/dashboards
 ```
 
-Drop a widget on the grid with the **+ Add Panel** button. The drawer
-shows a live preview that updates as you edit the JSON; **Use example**
-fills it with the widget's canonical config. Edits auto-save; ⌘Z
-undoes; **TV** flips into kiosk mode for displays; **🌙** toggles dark.
+Drop a widget on the grid with the **+ Add Panel** button. The drawer shows a live preview that updates as you edit the JSON; **Use example** fills it with the widget's canonical config. Edits auto-save; ⌘Z undoes; **TV** flips into kiosk mode for displays; **🌙** toggles dark.
 
 For Playwright runs (no server, just a static report):
 
@@ -38,7 +44,7 @@ export default defineConfig({
 });
 ```
 
-Per-package READMEs cover the deeper API for each entry point — start with [`packages/cli`](packages/cli/README.md) and [`packages/server`](packages/server/README.md) for the live story, [`packages/playwright`](packages/playwright/README.md) for the static-report story.
+The deeper how-to lives at **[aguspe.github.io/tiler-ts](https://aguspe.github.io/tiler-ts/)** — start with the [intro](https://aguspe.github.io/tiler-ts/), then pick a path (static reporter, live server, or the JSON-import bridge).
 
 ## Examples
 
@@ -50,7 +56,7 @@ Per-package READMEs cover the deeper API for each entry point — start with [`p
 
 | Command | What it does |
 |---|---|
-| `pnpm test` | Vitest across packages — 270+ tests covering schemas, resolvers, widgets, SSR, reporter, server routes, sqlite store, refresh manager |
+| `pnpm test` | Vitest across packages — 270+ tests covering schemas, resolvers, widgets, SSR, reporter, server routes, sqlite store, refresh manager, editor |
 | `pnpm typecheck` | `tsc --noEmit` across packages |
 | `pnpm lint` | Biome lint + format check |
 | `pnpm format` | Biome format --write |
@@ -65,23 +71,12 @@ CI runs all of the above on every PR (Node 20 + 22, ubuntu + macos).
 | Package | What it does |
 |---|---|
 | [`@aguspe/tiler-core`](packages/core/README.md) | Schemas, registry, MemoryStore, helpers, presets, `buildSnapshot`, `defineConfig` |
-| [`@aguspe/tiler-widgets`](packages/widgets/README.md) | 14 widgets + Rails-parity design tokens |
+| [`@aguspe/tiler-widgets`](packages/widgets/README.md) | 14 widgets + design tokens |
 | [`@aguspe/tiler-viewer`](packages/viewer/README.md) | Read-only SSR + hydration |
 | [`@aguspe/tiler-playwright`](packages/playwright/README.md) | Static-report Playwright reporter |
 | [`@aguspe/tiler-server`](packages/server/README.md) | Fastify + sqlite + ingestion + WebSocket |
 | [`@aguspe/tiler-editor`](packages/editor/README.md) | Drag/drop editor with auto-save + drawer preview |
 | [`@aguspe/tiler-cli`](packages/cli/README.md) | `tiler init`/`serve`/`doctor`/`import-playwright-json` |
-
-## Design + plans
-
-- Design spec: [`docs/superpowers/specs/2026-04-30-tiler-ts-design.md`](docs/superpowers/specs/2026-04-30-tiler-ts-design.md)
-- Phase 1 plan: [`docs/superpowers/plans/2026-04-30-tiler-ts-phase-1-foundation.md`](docs/superpowers/plans/2026-04-30-tiler-ts-phase-1-foundation.md)
-- Phase 2 plan: [`docs/superpowers/plans/2026-05-01-tiler-ts-phase-2-widgets.md`](docs/superpowers/plans/2026-05-01-tiler-ts-phase-2-widgets.md)
-- Phase 3 plan: [`docs/superpowers/plans/2026-05-01-tiler-ts-phase-3-viewer-and-reporter.md`](docs/superpowers/plans/2026-05-01-tiler-ts-phase-3-viewer-and-reporter.md)
-- Phase 4 plan: [`docs/superpowers/plans/2026-05-01-tiler-ts-phase-4-server.md`](docs/superpowers/plans/2026-05-01-tiler-ts-phase-4-server.md)
-- Phase 5 plan: [`docs/superpowers/plans/2026-05-01-tiler-ts-phase-5-editor.md`](docs/superpowers/plans/2026-05-01-tiler-ts-phase-5-editor.md)
-- Migration guide: [`MIGRATING_FROM_RAILS.md`](MIGRATING_FROM_RAILS.md)
-- Changelog: [`CHANGELOG.md`](CHANGELOG.md)
 
 ## License
 

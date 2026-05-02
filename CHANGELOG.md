@@ -19,8 +19,8 @@ v1.0 cut:
 - **`@aguspe/tiler-widgets`** — 14 first-party widgets (clock, text,
   image, iframe, metric, number_with_delta, meter, list, status_grid,
   comments, table, line_chart, bar_chart, pie_chart) and the
-  Rails-parity design-token CSS (warm-paper light theme +
-  `[data-theme="dark"]` flip; Space Grotesk + Inter + JetBrains Mono).
+  design-token CSS (warm-paper light theme + `[data-theme="dark"]` flip;
+  Space Grotesk + Inter + JetBrains Mono).
 - **`@aguspe/tiler-viewer`** — read-only React renderer with SSR
   (`renderTilerDashboardHtml`) and a hydration bundle.
 - **`@aguspe/tiler-playwright`** — reporter that turns a Playwright
@@ -65,6 +65,6 @@ v1.0 cut:
 | `0.0.2-phase-2` | Widgets | All 14 widgets + Storybook |
 | `0.0.3-phase-3` | Viewer + reporter | SSR viewer + Playwright reporter |
 | `0.0.4-phase-4` | Server | Fastify + sqlite + ingestion + WS |
-| `0.0.5-phase-5` | Editor | Drag/drop editor + Rails design parity |
+| `0.0.5-phase-5` | Editor | Drag/drop editor + design system |
 | `0.0.6-phase-6` | CLI | `tiler` binary |
 | `1.0.0` | GA | Releaseable npm packages |

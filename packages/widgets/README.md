@@ -36,7 +36,7 @@ defineWidget({
 });
 ```
 
-## Tokens (Rails-parity design system)
+## Tokens
 
 `@aguspe/tiler-widgets/styles/tokens.css` ships the warm-paper light theme + a `[data-theme="dark"]` flip. Imports Space Grotesk, Inter, and JetBrains Mono from Google Fonts.
 

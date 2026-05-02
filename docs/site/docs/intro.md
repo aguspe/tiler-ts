@@ -5,7 +5,7 @@ sidebar_label: Intro
 sidebar_position: 1
 ---
 
-`tiler-ts` is a TypeScript port of the Rails [`tiler`](https://github.com/aguspe/tiler) engine — plug-and-play dashboards built around schema-first data, a 14-widget set, and a drag-and-drop editor. This site focuses on the **Playwright story**: how to surface your test runs as a tiler dashboard.
+`tiler-ts` is a set of npm packages for building dashboards in TypeScript / Node.js — schema-first data, a 14-widget set, and a drag-and-drop editor. This site focuses on the **Playwright story**: how to surface your test runs as a tiler dashboard.
 
 You have three options, increasing in commitment:
 

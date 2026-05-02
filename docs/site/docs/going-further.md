@@ -47,10 +47,8 @@ Or replace the basic-auth check entirely with a custom `authorize` callback (SSO
 - **Widgets** — [`packages/widgets`](https://github.com/aguspe/tiler-ts/tree/main/packages/widgets)
 - **Schema + types** — [`packages/core/src/schema`](https://github.com/aguspe/tiler-ts/tree/main/packages/core/src/schema)
 - **CLI commands** — [`packages/cli/src/commands`](https://github.com/aguspe/tiler-ts/tree/main/packages/cli/src/commands)
-- **Migrating from Rails Tiler** — [`MIGRATING_FROM_RAILS.md`](https://github.com/aguspe/tiler-ts/blob/main/MIGRATING_FROM_RAILS.md)
 - **Changelog** — [`CHANGELOG.md`](https://github.com/aguspe/tiler-ts/blob/main/CHANGELOG.md)
 
 ## Get help
 
 - File issues at [github.com/aguspe/tiler-ts/issues](https://github.com/aguspe/tiler-ts/issues).
-- The Rails Tiler community (Slack, Discord) also covers the TS port.
