@@ -1,6 +1,6 @@
 {
   "name": "@aguspe/tiler-cli",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Command-line interface for tiler-ts. `tiler init`, `tiler serve`, `tiler doctor`, `tiler import-playwright-json`.",
   "license": "MIT",
   "repository": {

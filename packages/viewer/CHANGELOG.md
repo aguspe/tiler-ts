@@ -1,5 +1,22 @@
 # @aguspe/tiler-viewer
 
+## 1.0.3
+
+### Patch Changes
+
+- fix(viewer): inline panel layout styles so static reports don't need editor.css
+
+  The panel layout (`height: 100%; display: flex; flex-direction: column`)
+  lived only in `editor.css`, which the static viewer never ships. The
+  result was a panel that collapsed to its header height in static
+  reports — Recharts then mounted into a zero-height body and the pie /
+  line / bar charts stayed invisible.
+
+  Layout styles are now inlined on `TilerWidgetTile` via the `style`
+  prop. Visual tokens (colors, fonts, hairlines) still come from
+  `@aguspe/tiler-widgets/styles/tokens.css`, which the reporter does
+  ship.
+
 ## 1.0.2
 
 ### Patch Changes
