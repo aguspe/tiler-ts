@@ -5,7 +5,7 @@ const SUITES = ["checkout", "auth", "search", "billing", "profile"];
 const STATUSES = ["pass", "pass", "pass", "fail", "warn"]; // weighted toward pass
 
 async function main(): Promise<void> {
-  const store = new BetterSqliteStore({ path: "./tiler.db" });
+  const store = new BetterSqliteStore({ path: process.env.TILER_DB_PATH ?? "./tiler.db" });
   await store.migrate();
 
   // Idempotent: only seed if no dashboard with this slug exists yet.
