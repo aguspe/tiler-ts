@@ -1,6 +1,6 @@
 {
   "name": "@aguspe/tiler-playwright",
-  "version": "0.0.1",
+  "version": "1.0.0",
   "description": "Playwright reporter for tiler-ts. Replaces the HTML reporter with a Tiler dashboard.",
   "license": "MIT",
   "repository": {
@@ -23,7 +23,10 @@
       "require": "./dist/index.cjs"
     }
   },
-  "files": ["dist", "README.md"],
+  "files": [
+    "dist",
+    "README.md"
+  ],
   "scripts": {
     "build": "tsup",
     "test": "vitest run",

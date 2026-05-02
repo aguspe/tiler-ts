@@ -1,6 +1,6 @@
 {
   "name": "@aguspe/tiler-widgets",
-  "version": "0.0.1",
+  "version": "1.0.0",
   "description": "React widget components for tiler-ts.",
   "license": "MIT",
   "repository": {
@@ -24,7 +24,10 @@
     },
     "./styles/tokens.css": "./dist/styles/tokens.css"
   },
-  "files": ["dist", "README.md"],
+  "files": [
+    "dist",
+    "README.md"
+  ],
   "scripts": {
     "build": "tsup",
     "test": "vitest run",
