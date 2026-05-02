@@ -1,0 +1,67 @@
+name: Docs site
+
+# Builds the Docusaurus site under docs/site and publishes it to GitHub
+# Pages. Runs on every push to main that touches the docs (or this
+# workflow), plus on manual dispatch from the Actions tab.
+#
+# Setup once in the repo: Settings → Pages → Build and deployment →
+# Source: GitHub Actions. baseUrl in docusaurus.config.ts must match
+# the deployed path ("/tiler-ts/" for github.io/tiler-ts).
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "docs/site/**"
+      - "packages/*/README.md"
+      - "README.md"
+      - "CHANGELOG.md"
+      - "MIGRATING_FROM_RAILS.md"
+      - ".github/workflows/docs.yml"
+  workflow_dispatch:
+
+# A single in-flight deploy at a time; queued runs replace previous queued.
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+# OIDC + write permissions required by actions/deploy-pages.
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with: { version: 9 }
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile
+
+      - name: Build Docusaurus
+        run: pnpm --filter tiler-ts-docs-site build
+
+      - uses: actions/configure-pages@v5
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: docs/site/build
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4
