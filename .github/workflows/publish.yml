@@ -48,7 +48,9 @@ jobs:
 
       - name: Pack (dry run)
         if: ${{ inputs.dry_run }}
-        run: pnpm -r exec npm pack --dry-run
+        # Scope to publishable workspace packages — root and the
+        # private docs/site + e2e packages don't ship to npm.
+        run: pnpm --filter "./packages/*" exec npm pack --dry-run
 
       - name: Publish via changesets
         if: ${{ !inputs.dry_run }}
