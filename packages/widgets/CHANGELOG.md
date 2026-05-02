@@ -1,5 +1,22 @@
 # @aguspe/tiler-widgets
 
+## 1.0.2
+
+### Patch Changes
+
+- fix(widgets/clock): defer time render to client to avoid SSR hydration
+  mismatch.
+
+  The clock widget was reading `new Date()` during server render, so a
+  report SSR'd at 14:43 mismatched the client's current time at view
+  time. React 18 marks the whole tree as needing a full re-render on
+  that first mismatch, which broke Recharts' measurement-dependent
+  mounts and left the pie / line charts blank in static reports.
+
+  The clock now SSRs as a `--:--` placeholder and populates from
+  `useEffect`. Bumps every consuming package because the widget bundle
+  ships with each.
+
 ## 1.0.0
 
 ### Major Changes

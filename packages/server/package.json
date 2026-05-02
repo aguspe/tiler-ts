@@ -1,6 +1,6 @@
 {
   "name": "@aguspe/tiler-server",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Fastify server for tiler-ts. SQLite-backed, HMAC ingestion, WebSocket live updates.",
   "license": "MIT",
   "repository": {
