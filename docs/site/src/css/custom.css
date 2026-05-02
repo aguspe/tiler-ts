@@ -1,0 +1,29 @@
+/* Pull tiler's tokens into the docs so the brand carries through. */
+:root {
+  --ifm-color-primary: #2b3bf6;
+  --ifm-color-primary-dark: #1b29e0;
+  --ifm-color-primary-darker: #1623c8;
+  --ifm-color-primary-darkest: #0e1ac2;
+  --ifm-color-primary-light: #5a68f8;
+  --ifm-color-primary-lighter: #7a85f9;
+  --ifm-color-primary-lightest: #b3baff;
+
+  --ifm-font-family-base: "Inter", system-ui, -apple-system, sans-serif;
+  --ifm-heading-font-family: "Space Grotesk", system-ui, -apple-system, sans-serif;
+  --ifm-font-family-monospace: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
+
+  --ifm-background-color: #f7f5f1;
+  --ifm-color-content: #0e0f14;
+  --ifm-code-font-size: 90%;
+  --docusaurus-highlighted-code-line-bg: rgba(43, 59, 246, 0.08);
+}
+
+[data-theme="dark"] {
+  --ifm-color-primary: #7a85f9;
+  --ifm-background-color: #0e0f14;
+  --ifm-color-content: #f5f3ee;
+  --docusaurus-highlighted-code-line-bg: rgba(122, 133, 249, 0.18);
+}
+
+/* Google Fonts — match the editor exactly. */
+@import url("https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap");
