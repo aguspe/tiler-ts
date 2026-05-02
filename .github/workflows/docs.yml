@@ -49,12 +49,10 @@ jobs:
       - name: Build Docusaurus
         run: pnpm --filter tiler-ts-docs-site build
 
+      # Pages must be enabled once via Settings → Pages →
+      # Source: GitHub Actions before this step succeeds. The default
+      # GITHUB_TOKEN can't create the Pages site itself.
       - uses: actions/configure-pages@v5
-        with:
-          # Auto-flip the repo's Pages source to "GitHub Actions" the
-          # first time this workflow runs, so a fresh clone doesn't
-          # need a manual click in Settings → Pages.
-          enablement: true
 
       - uses: actions/upload-pages-artifact@v3
         with:
