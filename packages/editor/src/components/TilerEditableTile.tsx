@@ -132,11 +132,28 @@ export function TilerEditableTile({
       </header>
       <div className="tiler-panel-body">
         {widget ? (
-          data.empty || data.resolved == null ? (
-            <div className="tiler-panel-empty">No data</div>
-          ) : (
-            <widget.component panel={panel} data={data} />
-          )
+          (() => {
+            // Validate the panel's config against the widget's schema
+            // before rendering. Without this guard a stale panel with a
+            // half-filled config (e.g. an Iframe missing `url`) would
+            // crash the SSR render via the widget's own `parse()` call.
+            const cfg = widget.configSchema.safeParse(panel.config);
+            if (!cfg.success) {
+              return (
+                <div className="tiler-panel-empty">
+                  Invalid config — open this panel to fix it.
+                </div>
+              );
+            }
+            // Widgets without a resolver (clock, text, image, iframe)
+            // read straight from panel.config and always render. Only
+            // show the empty state for resolver-backed widgets that
+            // actually came back empty.
+            if (widget.resolve && (data.empty || data.resolved == null)) {
+              return <div className="tiler-panel-empty">No data</div>;
+            }
+            return <widget.component panel={panel} data={data} />;
+          })()
         ) : (
           <div className="tiler-panel-empty">Unknown widget: {panel.widget_type}</div>
         )}

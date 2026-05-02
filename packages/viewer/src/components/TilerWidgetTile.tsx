@@ -21,11 +21,16 @@ export function TilerWidgetTile({
       </header>
       <div className="tiler-panel-body">
         {widget ? (
-          data.empty || data.resolved == null ? (
-            <div className="tiler-panel-empty">No data</div>
-          ) : (
-            <widget.component panel={panel} data={data} />
-          )
+          (() => {
+            const cfg = widget.configSchema.safeParse(panel.config);
+            if (!cfg.success) {
+              return <div className="tiler-panel-empty">Invalid config</div>;
+            }
+            if (widget.resolve && (data.empty || data.resolved == null)) {
+              return <div className="tiler-panel-empty">No data</div>;
+            }
+            return <widget.component panel={panel} data={data} />;
+          })()
         ) : (
           <div className="tiler-panel-empty">Unknown widget: {panel.widget_type}</div>
         )}
