@@ -37,9 +37,9 @@ describe("tiler init", () => {
 
   it("refuses to overwrite without --force", async () => {
     writeFileSync(join(dir, "tiler.config.ts"), "// existing\n");
-    await expect(
-      initCommand({ force: false, store: "sqlite", port: 4567 }),
-    ).rejects.toThrow(/Refusing to overwrite/);
+    await expect(initCommand({ force: false, store: "sqlite", port: 4567 })).rejects.toThrow(
+      /Refusing to overwrite/,
+    );
   });
 
   it("--force overwrites existing files", async () => {

@@ -10,26 +10,26 @@
 
 :root {
   /* ----- Palette: warm paper light theme ----- */
-  --paper: #f7f5f1;        /* page background */
-  --paper-2: #ffffff;      /* surfaces (panels, cards, modals) */
-  --paper-3: #efece5;      /* sunken surfaces (inputs, code, hover bg) */
-  --ink: #0e0f14;          /* primary text */
-  --ink-2: #2a2c36;        /* secondary text */
-  --ink-3: #5b5e6b;        /* tertiary / meta */
-  --ink-4: #9a9ca6;        /* disabled / placeholder */
-  --border: #e2ded4;       /* hairline borders */
-  --border-2: #c9c4b7;     /* hover / emphasis */
+  --paper: #f7f5f1; /* page background */
+  --paper-2: #ffffff; /* surfaces (panels, cards, modals) */
+  --paper-3: #efece5; /* sunken surfaces (inputs, code, hover bg) */
+  --ink: #0e0f14; /* primary text */
+  --ink-2: #2a2c36; /* secondary text */
+  --ink-3: #5b5e6b; /* tertiary / meta */
+  --ink-4: #9a9ca6; /* disabled / placeholder */
+  --border: #e2ded4; /* hairline borders */
+  --border-2: #c9c4b7; /* hover / emphasis */
 
-  --primary: #2b3bf6;      /* electric cobalt */
+  --primary: #2b3bf6; /* electric cobalt */
   --primary-hover: #1b29e0;
   --primary-press: #0e1ac2;
   --primary-tint: #e2e5fd;
   --on-primary: #ffffff;
 
-  --secondary: #ff3d9a;    /* hot magenta */
+  --secondary: #ff3d9a; /* hot magenta */
   --secondary-tint: #ffe0ee;
 
-  --pop: #c7f53d;          /* live / brand pop */
+  --pop: #c7f53d; /* live / brand pop */
   --pop-ink: #1a2200;
 
   --success: #1fb875;
@@ -92,7 +92,7 @@
   --s-11: 96px;
 
   /* ----- Radii ----- */
-  --radius-0: 0;          /* panels are flush */
+  --radius-0: 0; /* panels are flush */
   --radius-sm: 6px;
   --radius-md: 8px;
   --radius-lg: 12px;

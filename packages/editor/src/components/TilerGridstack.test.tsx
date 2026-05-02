@@ -28,21 +28,12 @@ describe("TilerGridstack", () => {
   it("renders children inside the grid-stack container", () => {
     const { container } = render(
       <TilerGridstack panels={[]} paletteDrag={null} onPanelLayoutChanged={() => {}}>
-        <div
-          className="grid-stack-item"
-          gs-id="p1"
-          gs-x={0}
-          gs-y={0}
-          gs-w={3}
-          gs-h={2}
-        >
+        <div className="grid-stack-item" gs-id="p1" gs-x={0} gs-y={0} gs-w={3} gs-h={2}>
           <div data-testid="child-content">hello</div>
         </div>
       </TilerGridstack>,
     );
-    expect(
-      container.querySelector('[data-testid="child-content"]'),
-    ).toBeTruthy();
+    expect(container.querySelector('[data-testid="child-content"]')).toBeTruthy();
   });
 
   // (className test removed — gridstack's init mutates classList in jsdom in

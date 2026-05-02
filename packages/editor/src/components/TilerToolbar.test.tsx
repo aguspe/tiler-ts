@@ -83,13 +83,7 @@ describe("TilerToolbar", () => {
   it("Dark-mode button calls onToggleDarkMode", () => {
     const store = createEditorStore({ dashboard: DASHBOARD, panels: [] });
     const onToggleDarkMode = vi.fn();
-    render(
-      <TilerToolbar
-        store={store}
-        {...RENDER_PROPS}
-        onToggleDarkMode={onToggleDarkMode}
-      />,
-    );
+    render(<TilerToolbar store={store} {...RENDER_PROPS} onToggleDarkMode={onToggleDarkMode} />);
     fireEvent.click(screen.getByLabelText("Switch to dark mode"));
     expect(onToggleDarkMode).toHaveBeenCalled();
   });

@@ -73,7 +73,6 @@ export function createApiClient(opts: TilerApiClientOptions = {}): TilerApiClien
     deletePanel: async (id) => {
       await request("DELETE", `/api/panels/${id}`);
     },
-    patchDashboard: (id, updates) =>
-      request<Dashboard>("PATCH", `/api/dashboards/${id}`, updates),
+    patchDashboard: (id, updates) => request<Dashboard>("PATCH", `/api/dashboards/${id}`, updates),
   };
 }

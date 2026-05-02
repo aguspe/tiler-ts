@@ -23,7 +23,9 @@ export default defineConfig({
 });
 `;
 
-const MEMORY_CONFIG = (port: number): string => `import { defineConfig, MemoryStore } from "@aguspe/tiler-core";
+const MEMORY_CONFIG = (
+  port: number,
+): string => `import { defineConfig, MemoryStore } from "@aguspe/tiler-core";
 
 export default defineConfig({
   store: new MemoryStore(),
@@ -59,16 +61,15 @@ export async function initCommand(opts: InitOptions): Promise<void> {
     }
   }
 
-  const configBody =
-    opts.store === "memory" ? MEMORY_CONFIG(opts.port) : SQLITE_CONFIG(opts.port);
+  const configBody = opts.store === "memory" ? MEMORY_CONFIG(opts.port) : SQLITE_CONFIG(opts.port);
 
   writeFileSync(configPath, configBody, "utf8");
   writeFileSync(envPath, ENV_EXAMPLE, "utf8");
 
   process.stdout.write(
     [
-      kleur.green("✓") + " wrote " + kleur.cyan("tiler.config.ts"),
-      kleur.green("✓") + " wrote " + kleur.cyan(".env.example"),
+      `${kleur.green("✓")} wrote ${kleur.cyan("tiler.config.ts")}`,
+      `${kleur.green("✓")} wrote ${kleur.cyan(".env.example")}`,
       "",
       "Next steps:",
       `  ${kleur.dim("1.")} cp .env.example .env  ${kleur.dim("# fill in TILER_WEBHOOK_SECRET")}`,

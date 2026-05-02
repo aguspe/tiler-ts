@@ -11,9 +11,7 @@ import { createJiti } from "jiti";
 export async function loadTilerConfig(configPath: string): Promise<ResolvedTilerConfig> {
   const absolute = resolve(process.cwd(), configPath);
   if (!existsSync(absolute)) {
-    throw new Error(
-      `Config not found at ${absolute}. Run \`tiler init\` to scaffold one.`,
-    );
+    throw new Error(`Config not found at ${absolute}. Run \`tiler init\` to scaffold one.`);
   }
   const jiti = createJiti(import.meta.url, { fsCache: false, moduleCache: false });
   const mod = (await jiti.import(absolute)) as
@@ -23,9 +21,7 @@ export async function loadTilerConfig(configPath: string): Promise<ResolvedTiler
   // a particular export style on consumers.
   const cfg = "default" in mod && mod.default ? mod.default : (mod as ResolvedTilerConfig);
   if (!cfg || typeof cfg !== "object" || !("store" in cfg)) {
-    throw new Error(
-      `Config at ${absolute} did not export a tiler config (missing \`store\`).`,
-    );
+    throw new Error(`Config at ${absolute} did not export a tiler config (missing \`store\`).`);
   }
   return cfg;
 }

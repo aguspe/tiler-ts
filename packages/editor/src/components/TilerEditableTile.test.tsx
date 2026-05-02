@@ -1,7 +1,7 @@
 import "@aguspe/tiler-widgets";
-import { type Dashboard, type Panel } from "@aguspe/tiler-core";
+import type { Dashboard, Panel } from "@aguspe/tiler-core";
 import { fireEvent, render, screen } from "@testing-library/react";
-import { afterEach, beforeEach, describe, expect, it, vi, type Mock } from "vitest";
+import { type Mock, afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import type { TilerApiClient } from "../api/client";
 import { createEditorStore } from "../state/editor-store";
 import { TilerEditableTile } from "./TilerEditableTile";
@@ -10,7 +10,8 @@ import { TilerEditableTile } from "./TilerEditableTile";
 // implement. Stub them so the dialog can mount in tests.
 if (typeof window !== "undefined") {
   // @ts-expect-error jsdom polyfill
-  if (!window.getSelection) window.getSelection = () => ({ removeAllRanges: () => {}, addRange: () => {} });
+  if (!window.getSelection)
+    window.getSelection = () => ({ removeAllRanges: () => {}, addRange: () => {} });
 }
 
 const NOW = "2026-01-01T00:00:00.000Z";
@@ -59,14 +60,26 @@ afterEach(() => {
 describe("TilerEditableTile", () => {
   it("renders the panel via TilerWidgetTile", () => {
     const store = createEditorStore({ dashboard: DASHBOARD, panels: [PANEL] });
-    render(<TilerEditableTile panel={PANEL} data={{ resolved: null, empty: false }} store={store} api={mockApi} />);
+    render(
+      <TilerEditableTile
+        panel={PANEL}
+        data={{ resolved: null, empty: false }}
+        store={store}
+        api={mockApi}
+      />,
+    );
     expect(screen.getByText("Build clock")).toBeInTheDocument();
   });
 
   it("double-click on the body opens an inline title editor", () => {
     const store = createEditorStore({ dashboard: DASHBOARD, panels: [PANEL] });
     const { container } = render(
-      <TilerEditableTile panel={PANEL} data={{ resolved: null, empty: false }} store={store} api={mockApi} />,
+      <TilerEditableTile
+        panel={PANEL}
+        data={{ resolved: null, empty: false }}
+        store={store}
+        api={mockApi}
+      />,
     );
     fireEvent.doubleClick(screen.getByText("Build clock"));
     expect(container.querySelector('input[type="text"]')).toBeTruthy();
@@ -75,7 +88,12 @@ describe("TilerEditableTile", () => {
   it("Enter on the title input commits the new title to the store", () => {
     const store = createEditorStore({ dashboard: DASHBOARD, panels: [PANEL] });
     const { container } = render(
-      <TilerEditableTile panel={PANEL} data={{ resolved: null, empty: false }} store={store} api={mockApi} />,
+      <TilerEditableTile
+        panel={PANEL}
+        data={{ resolved: null, empty: false }}
+        store={store}
+        api={mockApi}
+      />,
     );
     fireEvent.doubleClick(screen.getByText("Build clock"));
     const input = container.querySelector('input[type="text"]')!;
@@ -87,7 +105,12 @@ describe("TilerEditableTile", () => {
   it("delete button opens a confirm dialog; confirming removes the panel and calls the api", () => {
     const store = createEditorStore({ dashboard: DASHBOARD, panels: [PANEL] });
     render(
-      <TilerEditableTile panel={PANEL} data={{ resolved: null, empty: false }} store={store} api={mockApi} />,
+      <TilerEditableTile
+        panel={PANEL}
+        data={{ resolved: null, empty: false }}
+        store={store}
+        api={mockApi}
+      />,
     );
     fireEvent.click(screen.getByRole("button", { name: /Delete panel/i }));
     // The dialog mounts with a "Delete" button distinct from the panel-action.
@@ -100,7 +123,12 @@ describe("TilerEditableTile", () => {
   it("delete dialog Cancel keeps the panel intact", () => {
     const store = createEditorStore({ dashboard: DASHBOARD, panels: [PANEL] });
     render(
-      <TilerEditableTile panel={PANEL} data={{ resolved: null, empty: false }} store={store} api={mockApi} />,
+      <TilerEditableTile
+        panel={PANEL}
+        data={{ resolved: null, empty: false }}
+        store={store}
+        api={mockApi}
+      />,
     );
     fireEvent.click(screen.getByRole("button", { name: /Delete panel/i }));
     fireEvent.click(screen.getByRole("button", { name: /Cancel/ }));
@@ -111,7 +139,12 @@ describe("TilerEditableTile", () => {
   it("clicking the body opens the drawer", () => {
     const store = createEditorStore({ dashboard: DASHBOARD, panels: [PANEL] });
     render(
-      <TilerEditableTile panel={PANEL} data={{ resolved: null, empty: false }} store={store} api={mockApi} />,
+      <TilerEditableTile
+        panel={PANEL}
+        data={{ resolved: null, empty: false }}
+        store={store}
+        api={mockApi}
+      />,
     );
     fireEvent.click(screen.getByText("Build clock"));
     expect(store.getState().drawerPanelId).toBe("p1");

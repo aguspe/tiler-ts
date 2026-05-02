@@ -32,8 +32,8 @@ export async function serveCommand(opts: ServeOptions): Promise<void> {
   process.stdout.write(
     [
       "",
-      kleur.green("✓") + " tiler is up at " + kleur.cyan(url),
-      "  open " + kleur.cyan(`${url}/dashboards`) + " to see your dashboards",
+      `${kleur.green("✓")} tiler is up at ${kleur.cyan(url)}`,
+      `  open ${kleur.cyan(`${url}/dashboards`)} to see your dashboards`,
       "",
     ].join("\n"),
   );

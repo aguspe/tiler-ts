@@ -1,5 +1,5 @@
-import type { Config } from "@docusaurus/types";
 import type * as Preset from "@docusaurus/preset-classic";
+import type { Config } from "@docusaurus/types";
 import { themes as prismThemes } from "prism-react-renderer";
 
 const config: Config = {
@@ -61,7 +61,10 @@ const config: Config = {
           title: "More",
           items: [
             { label: "GitHub", href: "https://github.com/aguspe/tiler-ts" },
-            { label: "npm: @aguspe/tiler-cli", href: "https://www.npmjs.com/package/@aguspe/tiler-cli" },
+            {
+              label: "npm: @aguspe/tiler-cli",
+              href: "https://www.npmjs.com/package/@aguspe/tiler-cli",
+            },
           ],
         },
       ],

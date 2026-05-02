@@ -61,8 +61,7 @@ export async function importPlaywrightJsonCommand(
     const outPath = resolve(process.cwd(), opts.out);
     writeFileSync(outPath, JSON.stringify(records, null, 2), "utf8");
     process.stdout.write(
-      kleur.green("✓") +
-        ` wrote ${records.length} records to ${kleur.cyan(opts.out)}\n`,
+      `${kleur.green("✓")} wrote ${records.length} records to ${kleur.cyan(opts.out)}\n`,
     );
     return;
   }
@@ -71,14 +70,12 @@ export async function importPlaywrightJsonCommand(
     throw new Error("Provide either --out <path> or --server <url> (or both).");
   }
   if (!opts.secret) {
-    throw new Error(
-      "Webhook secret missing. Pass --secret or set TILER_WEBHOOK_SECRET.",
-    );
+    throw new Error("Webhook secret missing. Pass --secret or set TILER_WEBHOOK_SECRET.");
   }
 
   await postIngest(opts.server, opts.sourceSlug, opts.secret, records);
   process.stdout.write(
-    kleur.green("✓") + ` ingested ${records.length} records to ${kleur.cyan(opts.server)}\n`,
+    `${kleur.green("✓")} ingested ${records.length} records to ${kleur.cyan(opts.server)}\n`,
   );
 }
 
@@ -87,9 +84,7 @@ function flattenReport(report: PlaywrightReport): IngestRecord[] {
   const now = new Date().toISOString();
   // Walk suite tree; specs hold the actual tests.
   function visit(suite: PlaywrightSuite, parentTitle: string): void {
-    const suiteTitle = parentTitle
-      ? `${parentTitle} > ${suite.title}`
-      : suite.title;
+    const suiteTitle = parentTitle ? `${parentTitle} > ${suite.title}` : suite.title;
     for (const spec of suite.specs ?? []) {
       for (const test of spec.tests ?? []) {
         const result = test.results?.[0];

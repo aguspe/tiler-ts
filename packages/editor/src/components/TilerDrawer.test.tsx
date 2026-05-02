@@ -1,11 +1,11 @@
 import "@aguspe/tiler-widgets"; // side effect: registers all widgets so getWidget("clock") works
-import { render, screen, fireEvent, waitFor } from "@testing-library/react";
-import { describe, expect, it, vi, beforeEach } from "vitest";
+import type { Dashboard, Panel } from "@aguspe/tiler-core";
+import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import type { Mock } from "vitest";
 import type { TilerApiClient } from "../api/client";
 import { createEditorStore } from "../state/editor-store";
 import { TilerDrawer } from "./TilerDrawer";
-import type { Panel, Dashboard } from "@aguspe/tiler-core";
 
 const NOW = "2024-01-01T00:00:00.000Z";
 
@@ -98,7 +98,11 @@ describe("TilerDrawer", () => {
     const titleInput = screen.getByLabelText("Title");
     fireEvent.change(titleInput, { target: { value: "My Clock" } });
 
-    const newConfig = JSON.stringify({ format: "12h", timezone: "UTC", show_seconds: true }, null, 2);
+    const newConfig = JSON.stringify(
+      { format: "12h", timezone: "UTC", show_seconds: true },
+      null,
+      2,
+    );
     const textarea = screen.getByLabelText("Config (JSON)");
     fireEvent.change(textarea, { target: { value: newConfig } });
 

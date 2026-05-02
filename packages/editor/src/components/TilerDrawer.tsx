@@ -1,6 +1,6 @@
 import { type Panel, type WidgetData, getWidget } from "@aguspe/tiler-core";
-import FocusLock from "react-focus-lock";
 import { useEffect, useMemo, useState } from "react";
+import FocusLock from "react-focus-lock";
 import type { StoreApi } from "zustand/vanilla";
 import type { TilerApiClient } from "../api/client";
 import type { EditorState } from "../state/editor-store";
@@ -64,10 +64,7 @@ function DrawerContent({ store, api, panelId }: DrawerContentProps): JSX.Element
   // an `example()` factory that produces a self-contained {panel, records}
   // tuple. We only use its `records` here; the panel's title and config
   // come from the drafts so the preview reflects the user's edits.
-  const exampleRecords = useMemo(
-    () => (widget ? widget.example().records : []),
-    [widget],
-  );
+  const exampleRecords = useMemo(() => (widget ? widget.example().records : []), [widget]);
 
   // Re-resolve the widget against the current draft config whenever it
   // changes, then re-render the component below the form.
@@ -107,9 +104,7 @@ function DrawerContent({ store, api, panelId }: DrawerContentProps): JSX.Element
     // every record falls inside the window the user expects.
     const now =
       exampleRecords.length > 0
-        ? new Date(
-            Math.max(...exampleRecords.map((r) => Date.parse(r.recorded_at))) + 1000,
-          )
+        ? new Date(Math.max(...exampleRecords.map((r) => Date.parse(r.recorded_at))) + 1000)
         : new Date();
 
     void (async () => {

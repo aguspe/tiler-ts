@@ -164,9 +164,7 @@ export const viewerPagesPlugin: FastifyPluginAsync = async (app) => {
     `;
     return reply
       .type("text/html")
-      .send(
-        renderShellHtml({ cssAsset, activeNav: "data-sources", title: "Data Sources" }, body),
-      );
+      .send(renderShellHtml({ cssAsset, activeNav: "data-sources", title: "Data Sources" }, body));
   });
 
   // Settings — read-only server diagnostics.

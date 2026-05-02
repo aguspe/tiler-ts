@@ -1,3 +1,4 @@
+import type { Panel } from "@aguspe/tiler-core";
 // Note: gridstack is loaded lazily inside `useEffect` so the module never
 // evaluates during SSR. Two reasons:
 //   1. The package only ships CJS (`main: dist/gridstack.js`, no `exports`
@@ -8,8 +9,7 @@
 //      in Node anyway.
 // The matching stylesheet is imported by `src/client/main.tsx` for the same
 // reason (Node can't load `.css` during SSR).
-import { useEffect, useRef, useState, type ReactNode } from "react";
-import type { Panel } from "@aguspe/tiler-core";
+import { type ReactNode, useEffect, useRef, useState } from "react";
 import type { PaletteDragMeta } from "./TilerPalette";
 
 const GRID_COLUMNS = 12;
@@ -17,7 +17,11 @@ const GRID_CELL_HEIGHT = 90;
 
 // Augment React's HTML attribute types so JSX accepts `gs-*` attributes that
 // gridstack reads directly from the DOM (e.g. gs-id, gs-x, gs-y, gs-w, gs-h).
+// The `T` type-parameter name must match React's own declaration for the
+// interface to merge — renaming it to `_T` would create a divergent
+// HTMLAttributes that drops `children`.
 declare module "react" {
+  // biome-ignore lint/correctness/noUnusedVariables: T must match React's own type-parameter name to merge
   interface HTMLAttributes<T> {
     "gs-id"?: string;
     "gs-x"?: number | string;
@@ -125,9 +129,7 @@ export function TilerGridstack({
 
       // Seed the cache with whatever children gridstack just discovered
       // on init — those are the SSR-rendered panels.
-      for (const el of gridRef.current.querySelectorAll<HTMLElement>(
-        ".grid-stack-item",
-      )) {
+      for (const el of gridRef.current.querySelectorAll<HTMLElement>(".grid-stack-item")) {
         const id = el.getAttribute("gs-id");
         if (id) registeredRef.current.set(id, el);
       }

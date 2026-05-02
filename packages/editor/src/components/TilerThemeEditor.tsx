@@ -23,11 +23,13 @@ export function TilerThemeEditor({ store, api, onClose }: TilerThemeEditorProps)
   const state = store.getState();
   const theme = state.dashboard.settings.theme ?? {};
 
-  function handleChange(key: TilerThemeEditorProps extends never ? never : keyof typeof theme, value: string): void {
-    store.getState().setThemeToken(
-      key as "page" | "tile" | "tile_header" | "gutter",
-      value || undefined,
-    );
+  function handleChange(
+    key: TilerThemeEditorProps extends never ? never : keyof typeof theme,
+    value: string,
+  ): void {
+    store
+      .getState()
+      .setThemeToken(key as "page" | "tile" | "tile_header" | "gutter", value || undefined);
   }
 
   async function handleSave(): Promise<void> {
@@ -43,24 +45,33 @@ export function TilerThemeEditor({ store, api, onClose }: TilerThemeEditorProps)
   return (
     <div
       className="tiler-theme-editor"
-      style={{
-        position: "fixed",
-        right: 16,
-        bottom: 16,
-        width: 280,
-        background: "var(--tiler-color-tile)",
-        color: "var(--tiler-color-text)",
-        borderRadius: "var(--tiler-radius)",
-        padding: 16,
-        boxShadow: "0 8px 24px rgba(0,0,0,0.4)",
-        zIndex: 50,
-        // tick is read so React subscribes; use it via a CSS custom property to silence "unused"
-        "--tiler-theme-editor-tick": String(tick),
-      } as React.CSSProperties}
+      style={
+        {
+          position: "fixed",
+          right: 16,
+          bottom: 16,
+          width: 280,
+          background: "var(--tiler-color-tile)",
+          color: "var(--tiler-color-text)",
+          borderRadius: "var(--tiler-radius)",
+          padding: 16,
+          boxShadow: "0 8px 24px rgba(0,0,0,0.4)",
+          zIndex: 50,
+          // tick is read so React subscribes; use it via a CSS custom property to silence "unused"
+          "--tiler-theme-editor-tick": String(tick),
+        } as React.CSSProperties
+      }
       role="dialog"
       aria-label="Theme editor"
     >
-      <header style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 12 }}>
+      <header
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          marginBottom: 12,
+        }}
+      >
         <h2 style={{ margin: 0, fontSize: "0.85rem", textTransform: "uppercase", opacity: 0.7 }}>
           Theme
         </h2>
@@ -69,7 +80,13 @@ export function TilerThemeEditor({ store, api, onClose }: TilerThemeEditorProps)
             type="button"
             onClick={onClose}
             aria-label="Close theme editor"
-            style={{ background: "transparent", color: "inherit", border: "none", cursor: "pointer", fontSize: "1rem" }}
+            style={{
+              background: "transparent",
+              color: "inherit",
+              border: "none",
+              cursor: "pointer",
+              fontSize: "1rem",
+            }}
           >
             ×
           </button>
@@ -79,7 +96,12 @@ export function TilerThemeEditor({ store, api, onClose }: TilerThemeEditorProps)
         {TOKEN_LABELS.map(({ key, label }) => (
           <label
             key={key}
-            style={{ display: "flex", justifyContent: "space-between", alignItems: "center", fontSize: "0.8rem" }}
+            style={{
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+              fontSize: "0.8rem",
+            }}
           >
             <span>{label}</span>
             <input
@@ -87,7 +109,13 @@ export function TilerThemeEditor({ store, api, onClose }: TilerThemeEditorProps)
               value={theme[key] ?? "#000000"}
               onChange={(e) => handleChange(key, e.target.value)}
               aria-label={label}
-              style={{ width: 32, height: 24, border: "none", background: "transparent", cursor: "pointer" }}
+              style={{
+                width: 32,
+                height: 24,
+                border: "none",
+                background: "transparent",
+                cursor: "pointer",
+              }}
             />
           </label>
         ))}

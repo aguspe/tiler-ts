@@ -1,3 +1,6 @@
+/* Google Fonts — match the editor exactly. Must come first per CSS spec. */
+@import url("https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap");
+
 /* Pull tiler's tokens into the docs so the brand carries through. */
 :root {
   --ifm-color-primary: #2b3bf6;
@@ -24,6 +27,3 @@
   --ifm-color-content: #f5f3ee;
   --docusaurus-highlighted-code-line-bg: rgba(122, 133, 249, 0.18);
 }
-
-/* Google Fonts — match the editor exactly. */
-@import url("https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap");

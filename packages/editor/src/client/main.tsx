@@ -2,12 +2,7 @@ import "@aguspe/tiler-widgets";
 import "@aguspe/tiler-widgets/styles/tokens.css";
 import "gridstack/dist/gridstack.min.css";
 import "../styles/editor.css";
-import type {
-  Dashboard,
-  DataSource,
-  Panel,
-  TilerSnapshot,
-} from "@aguspe/tiler-core";
+import type { Dashboard, DataSource, Panel, TilerSnapshot } from "@aguspe/tiler-core";
 import { hydrateRoot } from "react-dom/client";
 import { TilerDashboardEditor } from "../components/TilerDashboardEditor";
 

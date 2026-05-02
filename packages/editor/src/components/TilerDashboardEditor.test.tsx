@@ -37,11 +37,7 @@ const DATA_SOURCES: DataSource[] = [];
 describe("TilerDashboardEditor", () => {
   it("renders the page header, tiles, and shows the palette only when Add Panel is toggled", () => {
     render(
-      <TilerDashboardEditor
-        dashboard={DASHBOARD}
-        panels={[PANEL]}
-        dataSources={DATA_SOURCES}
-      />,
+      <TilerDashboardEditor dashboard={DASHBOARD} panels={[PANEL]} dataSources={DATA_SOURCES} />,
     );
     // Page header shows dashboard name
     expect(screen.getByText("QA")).toBeInTheDocument();

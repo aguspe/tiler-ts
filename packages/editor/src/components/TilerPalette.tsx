@@ -1,4 +1,4 @@
-import { listWidgets, newId, type Panel } from "@aguspe/tiler-core";
+import { type Panel, listWidgets, newId } from "@aguspe/tiler-core";
 import "@aguspe/tiler-widgets"; // side effect: register all widgets
 
 /**
@@ -54,10 +54,7 @@ export function TilerPalette({
   const widgets = listWidgets();
   const now = new Date().toISOString();
 
-  function handleDragStart(
-    event: React.DragEvent<HTMLLIElement>,
-    widgetType: string,
-  ): void {
+  function handleDragStart(event: React.DragEvent<HTMLLIElement>, widgetType: string): void {
     const widget = widgets.find((w) => w.meta.type === widgetType);
     if (!widget) return;
 
@@ -126,11 +123,7 @@ export function TilerPalette({
   return (
     <aside className="tiler-widget-palette" aria-label="Widget palette">
       <h2 className="tiler-widget-palette-title">Widgets</h2>
-      <ul
-        className="tiler-widget-palette-list"
-        role="listbox"
-        aria-label="Widget palette"
-      >
+      <ul className="tiler-widget-palette-list" role="listbox" aria-label="Widget palette">
         {widgets.map((w) => (
           <li
             key={w.meta.type}

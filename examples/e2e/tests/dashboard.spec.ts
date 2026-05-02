@@ -1,4 +1,4 @@
-import { expect, test, type Page } from "@playwright/test";
+import { type Page, expect, test } from "@playwright/test";
 
 /**
  * End-to-end + visual regression suite for the editor mounted at
@@ -56,9 +56,7 @@ test.describe("editor / light theme", () => {
 
   test("clicking a panel header opens the config drawer", async ({ page }) => {
     await goto(page);
-    await page
-      .getByRole("button", { name: /Configure panel Total runs/ })
-      .click();
+    await page.getByRole("button", { name: /Configure panel Total runs/ }).click();
     await expect(page.getByRole("dialog")).toBeVisible();
     await expect(page.getByLabel("Title")).toHaveValue("Total runs (24h)");
     await expect(page.getByRole("button", { name: "Use example" })).toBeVisible();
@@ -67,9 +65,7 @@ test.describe("editor / light theme", () => {
 
   test("drawer 'Use example' fills config and renders a live preview", async ({ page }) => {
     await goto(page);
-    await page
-      .getByRole("button", { name: /Configure panel Status breakdown/ })
-      .click();
+    await page.getByRole("button", { name: /Configure panel Status breakdown/ }).click();
     await page.getByRole("button", { name: "Use example" }).click();
     // Recharts SVG inside the preview pane confirms the widget rendered.
     await expect(page.locator(".tiler-drawer-preview svg")).toBeVisible();
@@ -100,10 +96,7 @@ test.describe("editor / interactions", () => {
   test("delete confirm modal removes the panel after confirm", async ({ page }) => {
     await goto(page);
     const before = await page.locator(".grid-stack-item").count();
-    const firstAction = page
-      .locator(".grid-stack-item")
-      .first()
-      .locator(".tiler-panel-action");
+    const firstAction = page.locator(".grid-stack-item").first().locator(".tiler-panel-action");
     // Hover so the delete affordance becomes visible (it has opacity:0
     // until the panel is hovered).
     await firstAction.evaluate((el) => (el as HTMLElement).click());
@@ -143,9 +136,11 @@ test.describe("editor / interactions", () => {
       const survivor = document.querySelector(".grid-stack-item") as HTMLElement & {
         gridstackNode?: unknown;
       };
-      const grid = (document.querySelector(".grid-stack") as HTMLElement & {
-        gridstack?: { update(el: HTMLElement, opts: { w: number; h: number }): unknown };
-      }).gridstack;
+      const grid = (
+        document.querySelector(".grid-stack") as HTMLElement & {
+          gridstack?: { update(el: HTMLElement, opts: { w: number; h: number }): unknown };
+        }
+      ).gridstack;
       grid?.update(survivor, { w: 5, h: 3 });
       return {
         w: survivor.getAttribute("gs-w"),

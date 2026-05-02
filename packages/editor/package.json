@@ -24,10 +24,7 @@
     },
     "./client/*": "./dist/client/*"
   },
-  "files": [
-    "dist",
-    "README.md"
-  ],
+  "files": ["dist", "README.md"],
   "scripts": {
     "build": "tsup && vite build",
     "build:server": "tsup",

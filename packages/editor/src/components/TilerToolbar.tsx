@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import type { StoreApi } from "zustand/vanilla";
 import type { EditorState } from "../state/editor-store";
-import { MoonIcon, MonitorIcon, PaletteIcon, PlusIcon, SunIcon, XIcon } from "./Icons";
+import { MonitorIcon, MoonIcon, PaletteIcon, PlusIcon, SunIcon, XIcon } from "./Icons";
 
 export interface TilerToolbarProps {
   store: StoreApi<EditorState>;

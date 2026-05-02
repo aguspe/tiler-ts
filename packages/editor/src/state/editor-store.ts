@@ -1,5 +1,5 @@
 import type { Dashboard, Panel } from "@aguspe/tiler-core";
-import { createStore, type StoreApi } from "zustand/vanilla";
+import { type StoreApi, createStore } from "zustand/vanilla";
 
 const UNDO_CAP = 50;
 
@@ -11,19 +11,13 @@ export interface EditorState {
   undoStack: Array<{ dashboard: Dashboard; panels: Panel[] }>;
   redoStack: Array<{ dashboard: Dashboard; panels: Panel[] }>;
 
-  setPanelLayout(
-    id: string,
-    layout: { x: number; y: number; width: number; height: number },
-  ): void;
+  setPanelLayout(id: string, layout: { x: number; y: number; width: number; height: number }): void;
   setPanelConfig(id: string, config: Record<string, unknown>): void;
   setPanelTitle(id: string, title: string): void;
   addPanel(panel: Panel): void;
   removePanel(id: string): void;
   setDashboardName(name: string): void;
-  setThemeToken(
-    key: "page" | "tile" | "tile_header" | "gutter",
-    value: string | undefined,
-  ): void;
+  setThemeToken(key: "page" | "tile" | "tile_header" | "gutter", value: string | undefined): void;
   toggleTvMode(): void;
   openDrawer(panelId: string): void;
   closeDrawer(): void;

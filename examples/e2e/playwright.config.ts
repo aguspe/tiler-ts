@@ -34,11 +34,9 @@ export default defineConfig({
     viewport: { width: 1440, height: 900 },
     trace: "on-first-retry",
   },
-  projects: [
-    { name: "chromium", use: { ...devices["Desktop Chrome"] } },
-  ],
+  projects: [{ name: "chromium", use: { ...devices["Desktop Chrome"] } }],
   webServer: {
-    command: `pnpm --filter tiler-ts-example-server-live start`,
+    command: "pnpm --filter tiler-ts-example-server-live start",
     url: `http://127.0.0.1:${PORT}/dashboards`,
     reuseExistingServer: !process.env.CI,
     timeout: 60_000,

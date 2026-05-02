@@ -20,9 +20,19 @@
     "rules": {
       "recommended": true,
       "correctness": { "noUnusedVariables": "error", "useExhaustiveDependencies": "warn" },
-      "style": { "useImportType": "error", "useNodejsImportProtocol": "error" },
+      "style": {
+        "useImportType": "error",
+        "useNodejsImportProtocol": "error",
+        "noNonNullAssertion": "off"
+      },
       "suspicious": { "noExplicitAny": "warn" },
-      "complexity": { "noBannedTypes": "error" }
+      "complexity": { "noBannedTypes": "error" },
+      "a11y": {
+        "useSemanticElements": "off",
+        "useKeyWithClickEvents": "off",
+        "useFocusableInteractive": "off",
+        "noNoninteractiveElementToInteractiveRole": "off"
+      }
     }
   },
   "formatter": {

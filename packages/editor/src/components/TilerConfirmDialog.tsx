@@ -1,5 +1,5 @@
-import FocusLock from "react-focus-lock";
 import { useEffect } from "react";
+import FocusLock from "react-focus-lock";
 
 export interface TilerConfirmDialogProps {
   open: boolean;

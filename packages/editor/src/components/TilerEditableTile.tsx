@@ -3,8 +3,8 @@ import { useEffect, useRef, useState } from "react";
 import type { StoreApi } from "zustand/vanilla";
 import type { TilerApiClient } from "../api/client";
 import type { EditorState } from "../state/editor-store";
-import { TilerConfirmDialog } from "./TilerConfirmDialog";
 import { TrashIcon } from "./Icons";
+import { TilerConfirmDialog } from "./TilerConfirmDialog";
 
 export interface TilerEditableTileProps {
   panel: Panel;
@@ -142,9 +142,7 @@ export function TilerEditableTile({
             const cfg = widget.configSchema.safeParse(panel.config);
             if (!cfg.success) {
               return (
-                <div className="tiler-panel-empty">
-                  Invalid config — open this panel to fix it.
-                </div>
+                <div className="tiler-panel-empty">Invalid config — open this panel to fix it.</div>
               );
             }
             // Widgets without a resolver (clock, text, image, iframe)

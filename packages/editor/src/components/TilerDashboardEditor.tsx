@@ -3,14 +3,14 @@ import type { Dashboard, DataRecord, DataSource, Panel } from "@aguspe/tiler-cor
 import { buildSnapshot } from "@aguspe/tiler-core";
 import type { WidgetData } from "@aguspe/tiler-core";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { createApiClient, type TilerApiClient } from "../api/client";
-import { createEditorStore, type EditorState } from "../state/editor-store";
+import { type TilerApiClient, createApiClient } from "../api/client";
+import { type EditorState, createEditorStore } from "../state/editor-store";
 import { TilerDrawer } from "./TilerDrawer";
 import { TilerEditableTile } from "./TilerEditableTile";
 import { TilerGridstack } from "./TilerGridstack";
 import { TilerHistoryBar } from "./TilerHistoryBar";
 import { TilerNav } from "./TilerNav";
-import { TilerPalette, type PaletteDragMeta } from "./TilerPalette";
+import { type PaletteDragMeta, TilerPalette } from "./TilerPalette";
 import { TilerThemeEditor } from "./TilerThemeEditor";
 import { TilerToolbar } from "./TilerToolbar";
 
@@ -171,9 +171,7 @@ export function TilerDashboardEditor({
               <TilerGridstack
                 panels={state.panels}
                 paletteDrag={paletteDrag}
-                onPanelLayoutChanged={(id, layout) =>
-                  store.getState().setPanelLayout(id, layout)
-                }
+                onPanelLayoutChanged={(id, layout) => store.getState().setPanelLayout(id, layout)}
               >
                 {state.panels.map((p) => (
                   <div
@@ -212,11 +210,7 @@ export function TilerDashboardEditor({
       {!tvMode && <TilerHistoryBar store={store} />}
       <TilerDrawer store={store} api={api} />
       {themeEditorOpen && (
-        <TilerThemeEditor
-          store={store}
-          api={api}
-          onClose={() => setThemeEditorOpen(false)}
-        />
+        <TilerThemeEditor store={store} api={api} onClose={() => setThemeEditorOpen(false)} />
       )}
     </div>
   );
@@ -230,10 +224,7 @@ export function TilerDashboardEditor({
  *
  * If the API call fails the store stays dirty so the next change retries.
  */
-function useAutosave(
-  store: ReturnType<typeof createEditorStore>,
-  api: TilerApiClient,
-): void {
+function useAutosave(store: ReturnType<typeof createEditorStore>, api: TilerApiClient): void {
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const inFlightRef = useRef(false);
 
