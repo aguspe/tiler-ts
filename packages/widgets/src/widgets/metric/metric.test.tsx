@@ -47,4 +47,16 @@ describe("MetricWidget", () => {
     );
     expect(screen.getByText("$1,234 runs")).toBeInTheDocument();
   });
+
+  it("applies color from config to the value text", () => {
+    const { panel } = MetricExample();
+    const { container } = render(
+      <MetricWidget
+        panel={{ ...panel, config: { aggregation: "count", time_window: "all", color: "#ef4444" } }}
+        data={{ resolved: 5, empty: false }}
+      />,
+    );
+    const value = container.querySelector(".tiler-metric__value") as HTMLElement;
+    expect(value.style.color).toBe("rgb(239, 68, 68)");
+  });
 });

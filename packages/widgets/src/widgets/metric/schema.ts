@@ -11,5 +11,6 @@ export const MetricConfig = z.object({
   prefix: z.string().default(""),
   suffix: z.string().default(""),
   decimals: z.number().int().min(0).max(6).default(0),
+  color: z.string().optional(),
 });
 export type MetricConfig = z.infer<typeof MetricConfig>;

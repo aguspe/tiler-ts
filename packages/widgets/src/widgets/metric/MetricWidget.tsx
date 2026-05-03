@@ -9,9 +9,6 @@ export function MetricWidget({
   data: WidgetData<number>;
 }): JSX.Element {
   const cfg = MetricConfig.parse(panel.config);
-  // `aggregate` returns null when the filtered record set is empty (e.g. no
-  // matching rows in the configured time window). Render a placeholder so
-  // the widget remains visible instead of crashing the SSR.
   const value = data.resolved;
   const formatted =
     value == null
@@ -33,7 +30,12 @@ export function MetricWidget({
     >
       <div
         className="tiler-metric__value"
-        style={{ fontSize: "clamp(1.5rem, 6vw, 3rem)", fontWeight: 600, lineHeight: 1.1 }}
+        style={{
+          fontSize: "clamp(1.5rem, 6vw, 3rem)",
+          fontWeight: 600,
+          lineHeight: 1.1,
+          color: cfg.color,
+        }}
       >
         {cfg.prefix}
         {formatted}
