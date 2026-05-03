@@ -4,21 +4,33 @@ import { testAutomationPreset } from "./test_automation";
 const NOW = new Date("2026-04-30T12:00:00.000Z");
 
 describe("testAutomationPreset", () => {
-  it("returns a dashboard, one data source, and 9 panels", () => {
+  it("returns a dashboard, one data source, and 8 panels", () => {
     const result = testAutomationPreset({ now: NOW });
     expect(result.dashboard.slug).toBe("test_automation");
     expect(result.dataSources).toHaveLength(1);
     expect(result.dataSources[0]?.slug).toBe("test_runs");
-    expect(result.panels).toHaveLength(9);
+    expect(result.panels).toHaveLength(8);
   });
 
-  it("data-backed panels reference the test_runs data source; clock is config-only", () => {
+  it("data source schema includes screenshot_data", () => {
+    const { dataSources } = testAutomationPreset({ now: NOW });
+    const fields = dataSources[0]?.schema_definition.map((f) => f.key) ?? [];
+    expect(fields).toContain("screenshot_data");
+  });
+
+  it("all panels reference the test_runs data source", () => {
     const { panels, dataSources } = testAutomationPreset({ now: NOW });
     const sourceId = dataSources[0]?.id ?? "";
-    const dataBacked = panels.filter((p) => p.data_source_id !== null);
-    const configOnly = panels.filter((p) => p.data_source_id === null);
-    expect(dataBacked.every((p) => p.data_source_id === sourceId)).toBe(true);
-    expect(configOnly.every((p) => p.widget_type === "clock")).toBe(true);
+    expect(panels.every((p) => p.data_source_id === sourceId)).toBe(true);
+  });
+
+  it("uses the four new widget types", () => {
+    const { panels } = testAutomationPreset({ now: NOW });
+    const types = new Set(panels.map((p) => p.widget_type));
+    expect(types.has("pass_rate")).toBe(true);
+    expect(types.has("test_timeline")).toBe(true);
+    expect(types.has("test_list")).toBe(true);
+    expect(types.has("suite_progress")).toBe(true);
   });
 
   it("respects the slug option", () => {
