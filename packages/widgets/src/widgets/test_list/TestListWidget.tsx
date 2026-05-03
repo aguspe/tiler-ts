@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import type { Panel, WidgetData } from "@aguspe/tiler-core";
 import type { TestListResolved } from "./resolve";
 import { TestListConfig } from "./schema";
@@ -8,6 +8,129 @@ const STATUS_COLOR: Record<string, string> = {
   fail: "#ef4444",
   skip: "#f59e0b",
 };
+
+interface LightboxState {
+  src: string;
+  alt: string;
+}
+
+function ScreenshotLightbox({
+  state,
+  onClose,
+}: {
+  state: LightboxState;
+  onClose: () => void;
+}): JSX.Element {
+  const [fit, setFit] = useState<"contain" | "actual">("contain");
+
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") onClose();
+    };
+    document.addEventListener("keydown", onKey);
+    const prevOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.removeEventListener("keydown", onKey);
+      document.body.style.overflow = prevOverflow;
+    };
+  }, [onClose]);
+
+  return (
+    <div
+      role="dialog"
+      aria-modal="true"
+      aria-label="Screenshot preview"
+      onClick={onClose}
+      style={{
+        position: "fixed",
+        inset: 0,
+        zIndex: 1000,
+        background: "rgba(0,0,0,0.85)",
+        display: "flex",
+        flexDirection: "column",
+        overflow: "auto",
+        WebkitOverflowScrolling: "touch",
+        touchAction: "pinch-zoom",
+      }}
+    >
+      <div
+        style={{
+          position: "sticky",
+          top: 0,
+          display: "flex",
+          justifyContent: "flex-end",
+          gap: 8,
+          padding: 12,
+          background: "linear-gradient(to bottom, rgba(0,0,0,0.6), transparent)",
+        }}
+        onClick={(e) => e.stopPropagation()}
+      >
+        <button
+          type="button"
+          onClick={() => setFit((f) => (f === "contain" ? "actual" : "contain"))}
+          style={{
+            background: "rgba(255,255,255,0.15)",
+            color: "#fff",
+            border: "1px solid rgba(255,255,255,0.3)",
+            borderRadius: 4,
+            padding: "6px 12px",
+            cursor: "pointer",
+            fontSize: "0.85rem",
+          }}
+        >
+          {fit === "contain" ? "Actual size" : "Fit to screen"}
+        </button>
+        <button
+          type="button"
+          aria-label="Close"
+          onClick={onClose}
+          style={{
+            background: "rgba(255,255,255,0.15)",
+            color: "#fff",
+            border: "1px solid rgba(255,255,255,0.3)",
+            borderRadius: 4,
+            padding: "6px 12px",
+            cursor: "pointer",
+            fontSize: "0.85rem",
+          }}
+        >
+          Close ✕
+        </button>
+      </div>
+      <div
+        style={{
+          flex: 1,
+          display: "flex",
+          alignItems: fit === "contain" ? "center" : "flex-start",
+          justifyContent: "center",
+          padding: fit === "contain" ? 24 : 0,
+        }}
+        onClick={(e) => e.stopPropagation()}
+      >
+        <img
+          src={state.src}
+          alt={state.alt}
+          style={
+            fit === "contain"
+              ? {
+                  maxWidth: "100%",
+                  maxHeight: "calc(100vh - 80px)",
+                  objectFit: "contain",
+                  display: "block",
+                  cursor: "zoom-in",
+                }
+              : {
+                  display: "block",
+                  cursor: "zoom-out",
+                }
+          }
+          onClick={() => setFit((f) => (f === "contain" ? "actual" : "contain"))}
+        />
+      </div>
+    </div>
+  );
+}
 
 export function TestListWidget({
   panel,
@@ -19,6 +142,7 @@ export function TestListWidget({
   const cfg = TestListConfig.parse(panel.config);
   const [expanded, setExpanded] = useState<Set<string>>(() => new Set());
   const [failOnly, setFailOnly] = useState(cfg.show_failures_only);
+  const [lightbox, setLightbox] = useState<LightboxState | null>(null);
 
   if (data.empty) {
     return (
@@ -172,17 +296,38 @@ export function TestListWidget({
                 >
                   {row.screenshot_data && (
                     <div style={{ flexShrink: 0 }}>
-                      <img
-                        src={row.screenshot_data}
-                        alt="screenshot"
+                      <button
+                        type="button"
+                        data-testid="screenshot-thumb"
+                        aria-label={`Open screenshot for ${row.test_name}`}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setLightbox({
+                            src: row.screenshot_data as string,
+                            alt: `Screenshot for ${row.test_name}`,
+                          });
+                        }}
                         style={{
-                          width: 120,
-                          height: 75,
-                          objectFit: "cover",
+                          padding: 0,
+                          border: "1px solid var(--border, rgba(0,0,0,0.12))",
+                          background: "transparent",
                           borderRadius: 4,
+                          cursor: "zoom-in",
                           display: "block",
                         }}
-                      />
+                      >
+                        <img
+                          src={row.screenshot_data}
+                          alt="screenshot"
+                          style={{
+                            width: 120,
+                            height: 75,
+                            objectFit: "cover",
+                            borderRadius: 3,
+                            display: "block",
+                          }}
+                        />
+                      </button>
                     </div>
                   )}
                   <div style={{ flex: 1, minWidth: 0 }}>
@@ -221,6 +366,7 @@ export function TestListWidget({
           );
         })}
       </div>
+      {lightbox && <ScreenshotLightbox state={lightbox} onClose={() => setLightbox(null)} />}
     </div>
   );
 }

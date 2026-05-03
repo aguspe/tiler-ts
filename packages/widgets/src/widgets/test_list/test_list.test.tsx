@@ -101,4 +101,41 @@ describe("TestListWidget", () => {
     render(<TestListWidget panel={panel} data={{ resolved: [], empty: true }} />);
     expect(screen.getByText("No test results.")).toBeInTheDocument();
   });
+
+  it("clicking a screenshot thumbnail opens a fullscreen lightbox", () => {
+    const { panel } = TestListExample();
+    const now = "2026-04-30T12:00:00.000Z";
+    const records = [
+      {
+        id: "f2",
+        data_source_id: "ds-1",
+        payload: {
+          test_name: "broken_visuals",
+          suite: "ui",
+          status: "fail",
+          duration_ms: 900,
+          error_message: "snapshot mismatch",
+          screenshot_data: "data:image/png;base64,zzz",
+        },
+        recorded_at: now,
+        source_ref: null,
+        ingested_via: "manual" as const,
+        created_at: now,
+      },
+    ];
+    const data = resolveTestList({ panel, records, now: new Date() });
+    render(<TestListWidget panel={panel} data={data} />);
+
+    fireEvent.click(screen.getByText("broken_visuals").closest("[data-testid='test-row-header']")!);
+    expect(screen.queryByRole("dialog", { name: /screenshot preview/i })).not.toBeInTheDocument();
+
+    fireEvent.click(screen.getByTestId("screenshot-thumb"));
+    const dialog = screen.getByRole("dialog", { name: /screenshot preview/i });
+    expect(dialog).toBeInTheDocument();
+    const fullImage = dialog.querySelector("img");
+    expect(fullImage?.getAttribute("src")).toBe("data:image/png;base64,zzz");
+
+    fireEvent.click(screen.getByLabelText("Close"));
+    expect(screen.queryByRole("dialog", { name: /screenshot preview/i })).not.toBeInTheDocument();
+  });
 });
