@@ -15,7 +15,7 @@ describe("resolveMetric", () => {
     expect(result.resolved).toBe(47);
     expect(result.empty).toBe(false);
   });
-  it("returns empty=true on empty record set", () => {
+  it("returns empty=false for count with zero records (0 is a valid count)", () => {
     const { panel } = MetricExample();
     const result = resolveMetric({
       panel,
@@ -23,7 +23,7 @@ describe("resolveMetric", () => {
       now: new Date("2026-04-30T12:00:00.000Z"),
     });
     expect(result.resolved).toBe(0);
-    expect(result.empty).toBe(true);
+    expect(result.empty).toBe(false);
   });
 });
 

@@ -9,9 +9,6 @@ export interface RenderToHtmlOptions {
   cssAssetPath?: string;
 }
 
-const CSP =
-  "default-src 'self'; script-src 'self' 'unsafe-inline'; img-src https: data:; style-src 'self' 'unsafe-inline'";
-
 export function renderToHtml(snapshot: TilerSnapshot, opts: RenderToHtmlOptions): string {
   const body = renderToString(<TilerDashboardViewer snapshot={snapshot} />);
   // Escape </script> so the embedded JSON cannot break out of the script tag.
@@ -21,7 +18,6 @@ export function renderToHtml(snapshot: TilerSnapshot, opts: RenderToHtmlOptions)
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="${CSP}">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>${escapeHtml(snapshot.dashboard.name)} — tiler-ts</title>
 ${opts.cssAssetPath ? `<link rel="stylesheet" href="${opts.cssAssetPath}">` : ""}

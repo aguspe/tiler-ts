@@ -15,5 +15,6 @@ export function resolveMetric({ panel, records, now }: WidgetResolverArgs): Widg
     aggregation: cfg.aggregation,
     value_column: cfg.value_column,
   });
-  return { resolved: value, empty: filtered.length === 0 };
+  const empty = cfg.aggregation === "count" ? false : filtered.length === 0;
+  return { resolved: value, empty };
 }
