@@ -1,3 +1,4 @@
+import { readFileSync } from "node:fs";
 import { type DataRecord, newId } from "@aguspe/tiler-core";
 
 type PwStatus = "passed" | "failed" | "timedOut" | "interrupted" | "skipped";
@@ -34,6 +35,8 @@ export interface BuildRecordInput {
 
 export function buildRecord(input: BuildRecordInput): DataRecord {
   const trace = input.result.attachments?.find((a) => a.name === "trace");
+  const screenshot = input.result.attachments?.find((a) => a.name === "screenshot");
+
   const payload: Record<string, unknown> = {
     suite: input.test.parent?.title ?? "",
     test_name: input.test.title,
@@ -42,10 +45,15 @@ export function buildRecord(input: BuildRecordInput): DataRecord {
     project: input.project,
     retry: input.result.retry,
   };
+
   if (input.test.location?.file) payload.file = input.test.location.file;
   if (input.test.location?.line) payload.line = input.test.location.line;
   if (input.result.error?.message) payload.error_message = input.result.error.message;
   if (trace?.path) payload.trace_path = trace.path;
+  if (screenshot?.path) {
+    const data = readFileSync(screenshot.path);
+    payload.screenshot_data = `data:image/png;base64,${data.toString("base64")}`;
+  }
 
   return {
     id: newId(),
