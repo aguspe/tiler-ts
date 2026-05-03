@@ -1,6 +1,6 @@
 {
   "name": "@aguspe/tiler-core",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Schemas, widget contract, and TilerStore interface for tiler-ts.",
   "license": "MIT",
   "repository": {
