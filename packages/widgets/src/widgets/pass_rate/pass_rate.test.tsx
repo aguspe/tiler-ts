@@ -27,6 +27,20 @@ describe("resolvePassRate", () => {
     const result = resolvePassRate({ panel, records: allPass, now: new Date() });
     expect(result.resolved.value).toBe(100);
   });
+
+  it("uses configured status_column and pass_value", () => {
+    const { panel } = PassRateExample();
+    const now = "2026-04-30T12:00:00.000Z";
+    const customPanel = { ...panel, config: { ...panel.config, status_column: "result", pass_value: "passed" } };
+    const records = [
+      { id: "r1", data_source_id: "ds-1", payload: { result: "passed" }, recorded_at: now, source_ref: null, ingested_via: "manual" as const, created_at: now },
+      { id: "r2", data_source_id: "ds-1", payload: { result: "failed" }, recorded_at: now, source_ref: null, ingested_via: "manual" as const, created_at: now },
+    ];
+    const result = resolvePassRate({ panel: customPanel, records, now: new Date() });
+    expect(result.resolved.passed).toBe(1);
+    expect(result.resolved.total).toBe(2);
+    expect(result.resolved.value).toBeCloseTo(50);
+  });
 });
 
 describe("PassRateWidget", () => {
