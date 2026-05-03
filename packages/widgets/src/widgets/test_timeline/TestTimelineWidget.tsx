@@ -60,7 +60,7 @@ export function TestTimelineWidget({
             <div
               style={{
                 flex: 1,
-                background: "var(--page-bg, #0f172a)",
+                background: "var(--page-bg, rgba(0,0,0,0.08))",
                 borderRadius: 2,
                 height: 12,
                 position: "relative",

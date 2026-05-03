@@ -50,7 +50,7 @@ export function SuiteProgressWidget({
             </div>
             <div
               style={{
-                background: "var(--page-bg, #0f172a)",
+                background: "var(--page-bg, rgba(0,0,0,0.08))",
                 borderRadius: 3,
                 height: 8,
               }}

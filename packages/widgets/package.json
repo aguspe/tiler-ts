@@ -1,6 +1,6 @@
 {
   "name": "@aguspe/tiler-widgets",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "React widget components for tiler-ts.",
   "license": "MIT",
   "repository": {
