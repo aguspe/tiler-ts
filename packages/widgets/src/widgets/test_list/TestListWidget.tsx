@@ -47,8 +47,8 @@ export function TestListWidget({
           style={{
             fontSize: "0.75rem",
             cursor: "pointer",
-            background: failOnly ? "transparent" : "var(--tile-bg, #1e293b)",
-            border: "1px solid var(--border, #334155)",
+            background: failOnly ? "transparent" : "var(--tile-bg, rgba(0,0,0,0.08))",
+            border: "1px solid var(--border, rgba(0,0,0,0.12))",
             borderRadius: 4,
             padding: "2px 8px",
             color: failOnly ? "var(--ink-3, #64748b)" : "currentColor",
@@ -62,8 +62,8 @@ export function TestListWidget({
           style={{
             fontSize: "0.75rem",
             cursor: "pointer",
-            background: failOnly ? "var(--tile-bg, #1e293b)" : "transparent",
-            border: "1px solid var(--border, #334155)",
+            background: failOnly ? "var(--tile-bg, rgba(0,0,0,0.08))" : "transparent",
+            border: "1px solid var(--border, rgba(0,0,0,0.12))",
             borderRadius: 4,
             padding: "2px 8px",
             color: failOnly ? "currentColor" : "var(--ink-3, #64748b)",
@@ -96,7 +96,7 @@ export function TestListWidget({
               style={{
                 borderRadius: 4,
                 overflow: "hidden",
-                border: isExpanded ? `1px solid ${color}40` : "1px solid transparent",
+                border: isExpanded ? `1px solid ${color}40` : "1px solid var(--border, rgba(0,0,0,0.08))",
               }}
             >
               <div
@@ -109,7 +109,7 @@ export function TestListWidget({
                   cursor: isFail ? "pointer" : "default",
                   background: isExpanded
                     ? `${color}10`
-                    : "var(--tile-bg, #1e293b)",
+                    : "var(--tile-bg, rgba(0,0,0,0.03))",
                 }}
                 onClick={() => isFail && toggle(row.id)}
               >
@@ -139,7 +139,7 @@ export function TestListWidget({
                       style={{
                         fontSize: "0.7rem",
                         color: "var(--ink-3, #64748b)",
-                        background: "var(--page-bg, #0f172a)",
+                        background: "var(--page-bg, rgba(0,0,0,0.06))",
                         padding: "1px 5px",
                         borderRadius: 3,
                         flexShrink: 0,
@@ -193,8 +193,8 @@ export function TestListWidget({
                           margin: 0,
                           whiteSpace: "pre-wrap",
                           wordBreak: "break-word",
-                          color: "var(--ink-1, #e2e8f0)",
-                          background: "var(--page-bg, #0f172a)",
+                          color: "var(--ink-1, currentColor)",
+                          background: "var(--page-bg, rgba(0,0,0,0.06))",
                           padding: 8,
                           borderRadius: 4,
                         }}
