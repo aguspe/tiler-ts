@@ -9,12 +9,16 @@ export default defineConfig({
     rollupOptions: {
       input: { viewer: "src/client/main.tsx" },
       output: {
+        // IIFE so the report works when opened directly from the filesystem
+        // (file:// URLs block ES module scripts in many browsers).
+        format: "iife",
+        name: "TilerViewer",
+        inlineDynamicImports: true,
         entryFileNames: "viewer-[hash].js",
         assetFileNames: "viewer-[hash].[ext]",
-        chunkFileNames: "viewer-[hash].js",
       },
     },
     sourcemap: true,
-    target: "es2022",
+    target: "es2020",
   },
 });

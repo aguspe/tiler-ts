@@ -46,6 +46,25 @@ describe("renderToHtml", () => {
     expect(html).toContain('href="./assets/viewer-abc.css"');
   });
 
+  it("uses a plain script tag (not type=module) for file:// compatibility", () => {
+    const html = renderToHtml(SNAPSHOT, { clientAssetPath: "./assets/viewer-abc.js" });
+    expect(html).toContain('<script src="./assets/viewer-abc.js">');
+    expect(html).not.toContain('type="module"');
+  });
+
+  it("injects CSS variable tokens and theme toggle in normal mode", () => {
+    const html = renderToHtml(SNAPSHOT, { clientAssetPath: "./assets/viewer-abc.js" });
+    expect(html).toContain("--tiler-color-page");
+    expect(html).toContain("tiler-theme-btn");
+  });
+
+  it("applies tv-mode class and hides toggle when tv_mode is true", () => {
+    const snap = { ...SNAPSHOT, dashboard: { ...SNAPSHOT.dashboard, settings: { tv_mode: true } } };
+    const html = renderToHtml(snap, { clientAssetPath: "./assets/viewer-abc.js" });
+    expect(html).toContain('class="tv-mode"');
+    expect(html).not.toContain("tiler-theme-btn");
+  });
+
   it("escapes </script> in the embedded snapshot", () => {
     const malicious = {
       ...SNAPSHOT,
