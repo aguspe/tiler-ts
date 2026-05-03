@@ -13,6 +13,10 @@ import "./widgets/table";
 import "./widgets/line_chart";
 import "./widgets/bar_chart";
 import "./widgets/pie_chart";
+import "./widgets/pass_rate";
+import "./widgets/test_timeline";
+import "./widgets/test_list";
+import "./widgets/suite_progress";
 
 export const TILER_WIDGETS_VERSION = "0.0.1" as const;
 export { chartColors } from "./lib/chart-colors";
@@ -30,3 +34,7 @@ export { TableConfig, TableWidget } from "./widgets/table";
 export { LineChartConfig, LineChartWidget } from "./widgets/line_chart";
 export { BarChartConfig, BarChartWidget } from "./widgets/bar_chart";
 export { PieChartConfig, PieChartWidget } from "./widgets/pie_chart";
+export { PassRateConfig, PassRateWidget } from "./widgets/pass_rate";
+export { TestTimelineConfig, TestTimelineWidget } from "./widgets/test_timeline";
+export { TestListConfig, TestListWidget } from "./widgets/test_list";
+export { SuiteProgressConfig, SuiteProgressWidget } from "./widgets/suite_progress";
