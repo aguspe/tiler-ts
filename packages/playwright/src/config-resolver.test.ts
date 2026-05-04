@@ -7,7 +7,6 @@ const NOW = new Date("2026-05-03T00:00:00.000Z");
 function baseOpts() {
   return {
     outDir: "tiler-report",
-    preset: "test_automation" as const,
     excludePanels: [],
     panels: [],
     dataSources: [],
@@ -334,5 +333,20 @@ describe("resolveConfig — file path + inline merge", () => {
     // appended panels from both: file ("From File") + inline ("From Inline")
     expect(titles).toContain("From File");
     expect(titles).toContain("From Inline");
+  });
+});
+
+describe("resolveConfig — file config validation", () => {
+  it("fills config={} default for file-loaded panels missing it", async () => {
+    const { resolve: pathResolve } = await import("node:path");
+    const r = resolveConfig({
+      rawOpts: {
+        ...baseOpts(),
+        config: pathResolve(__dirname, "__fixtures__/panel-without-config.ts"),
+      },
+      startedAt: NOW,
+    });
+    const placed = r.panels.find((p) => p.title === "No Config Defaulted")!;
+    expect(placed.config).toEqual({});
   });
 });

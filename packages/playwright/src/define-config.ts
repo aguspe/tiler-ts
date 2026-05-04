@@ -1,9 +1,6 @@
 import type { DataRecord, DataSourceInput, Panel } from "@aguspe/tiler-core";
 
 export interface PlaywrightTilerConfig {
-  /** Preset to seed the dashboard. Default "test_automation". */
-  preset?: "test_automation";
-
   /** Drop preset panels by exact title before merging user panels. */
   excludePanels?: string[];
 

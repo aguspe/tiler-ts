@@ -8,6 +8,7 @@ import {
 } from "@aguspe/tiler-core";
 import type { CollectContext } from "./define-config";
 import type { ReporterOptions } from "./options";
+import { PlaywrightTilerConfigSchema } from "./options";
 import { loadConfigFile } from "./config-loader";
 
 export interface ResolvedConfig {
@@ -31,15 +32,16 @@ export function resolveConfig({
 
   // If a config-file path is set, load it and merge with inline options.
   // Inline options append/overlay on the file's values.
-  const fileCfg = rawOpts.config ? loadConfigFile(rawOpts.config) : undefined;
+  const rawFileCfg = rawOpts.config ? loadConfigFile(rawOpts.config) : undefined;
+  const fileCfg = rawFileCfg ? PlaywrightTilerConfigSchema.parse(rawFileCfg) : undefined;
   const merged = {
     excludePanels: [
       ...(fileCfg?.excludePanels ?? []),
       ...rawOpts.excludePanels,
     ],
-    panels: [...(fileCfg?.panels ?? []) as typeof rawOpts.panels, ...rawOpts.panels],
+    panels: [...(fileCfg?.panels ?? []), ...rawOpts.panels],
     dataSources: [
-      ...(fileCfg?.dataSources ?? []) as typeof rawOpts.dataSources,
+      ...(fileCfg?.dataSources ?? []),
       ...rawOpts.dataSources,
     ],
     dashboard:

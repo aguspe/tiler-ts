@@ -20,6 +20,10 @@ forking it.
 | Add a new data source | `dataSources: [{ source, collect }]` |
 | Override dashboard title | `dashboard: { name: "..." }` |
 
+> `excludePanels` matches by exact title. Preset titles are stable
+> across patch releases of `@aguspe/tiler-core`; review them on minor
+> upgrades.
+
 ## Two surfaces
 
 **Inline** in `playwright.config.ts` — the simplest path. No new file.
@@ -27,7 +31,12 @@ forking it.
 **File path** — `config: "./tiler.config.ts"` — keeps the Playwright
 config tidy and makes the file shareable with `tiler-server` later.
 
-When both are set, inline values append to the file's values.
+When both are set, the resolver concatenates `panels`, `dataSources`,
+and `excludePanels` (file values first, inline values appended), and
+shallow-merges `dashboard` (inline keys win). Reporter-runtime
+options — `outDir`, `open`, `captureLogs`, `linkTraceFiles` — must
+live in `playwright.config.ts`; only dashboard structure travels in
+`tiler.config.ts`.
 
 ## Auto-placement
 

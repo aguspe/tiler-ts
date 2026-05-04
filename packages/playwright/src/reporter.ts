@@ -18,13 +18,12 @@ import { buildRecord } from "./record-builder";
 
 export interface TilerReporterOptions {
   outDir?: string;
-  preset?: "test_automation";
   excludePanels?: string[];
   panels?: unknown[];
   dataSources?: unknown[];
   dashboard?: { name?: string; slug?: string; description?: string };
   config?: string;
-  /** @deprecated — use `config` instead. */
+  /** @deprecated — use `config` instead. Kept indefinitely as an alias to avoid silent breakage on upgrade. */
   customConfig?: string;
   captureLogs?: boolean;
   linkTraceFiles?: boolean;
@@ -122,8 +121,10 @@ export default class TilerReporter implements PlaywrightReporter {
       try {
         extra = await collect({ outDir, startedAt: this.startedAt, endedAt });
       } catch (err) {
+        const ds = this.dataSources.find((d) => d.id === sourceId);
+        const label = ds?.slug ?? sourceId;
         console.warn(
-          `[tiler-playwright] collect() for data source ${sourceId} threw — skipping its records.`,
+          `[tiler-playwright] collect() for data source "${label}" (${sourceId}) threw — skipping its records.`,
           err,
         );
         continue;

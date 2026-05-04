@@ -5,7 +5,6 @@ describe("ReporterOptions", () => {
   it("applies all defaults when nothing provided", () => {
     const opts = ReporterOptions.parse({});
     expect(opts.outDir).toBe("tiler-report");
-    expect(opts.preset).toBe("test_automation");
     expect(opts.captureLogs).toBe(false);
     expect(opts.linkTraceFiles).toBe(true);
     expect(opts.excludePanels).toEqual([]);
@@ -39,10 +38,6 @@ describe("ReporterOptions", () => {
       panels: [{ widget_type: "metric", title: "Bad", x: 0, height: 2 }],
     });
     expect(r.success).toBe(false);
-  });
-
-  it("rejects an unknown preset name", () => {
-    expect(ReporterOptions.safeParse({ preset: "made_up" }).success).toBe(false);
   });
 
   it("accepts a config file path string", () => {

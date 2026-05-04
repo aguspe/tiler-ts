@@ -8,3 +8,4 @@ export type {
   UserPanel,
   CollectContext,
 } from "./define-config";
+export type { DataSourceWithCollect } from "./options";

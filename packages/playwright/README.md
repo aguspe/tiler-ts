@@ -81,6 +81,15 @@ export default definePlaywrightConfig({
 When both `config` and inline keys are set, inline values append to
 the file's values.
 
+Reporter-runtime options (`outDir`, `open`, `captureLogs`,
+`linkTraceFiles`) only live in `playwright.config.ts`. Dashboard
+structure (`panels`, `dataSources`, `excludePanels`, `dashboard`)
+can live inline or in `tiler.config.ts`.
+
+When both are set, `panels`/`dataSources`/`excludePanels` concatenate
+(file values first, inline values appended) and `dashboard` is
+shallow-merged with inline winning.
+
 A working example lives at `examples/playwright-extended/`.
 
 ## License

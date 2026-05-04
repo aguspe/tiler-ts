@@ -33,11 +33,24 @@ const DataSourceWithCollectSchema = z.object({
 
 export type DataSourceWithCollect = z.infer<typeof DataSourceWithCollectSchema>;
 
+export const PlaywrightTilerConfigSchema = z.object({
+  excludePanels: z.array(z.string()).default([]),
+  panels: z.array(UserPanelSchema).default([]),
+  dataSources: z.array(DataSourceWithCollectSchema).default([]),
+  dashboard: z
+    .object({
+      name: z.string().optional(),
+      slug: z.string().optional(),
+      description: z.string().optional(),
+    })
+    .optional(),
+});
+
+export type PlaywrightTilerConfigParsed = z.infer<typeof PlaywrightTilerConfigSchema>;
+
 export const ReporterOptions = z.object({
   /** Output directory. Relative paths resolve against `process.cwd()`. */
   outDir: z.string().min(1).default("tiler-report"),
-  /** Preset to seed the dashboard. Currently only "test_automation". */
-  preset: z.enum(["test_automation"]).default("test_automation"),
   /** Drop preset panels by exact title before merging user panels. */
   excludePanels: z.array(z.string()).default([]),
   /** Extra panels appended to the dashboard. */
@@ -54,7 +67,7 @@ export const ReporterOptions = z.object({
     .optional(),
   /** Path to a tiler.config.ts. Loaded with jiti. */
   config: z.string().optional(),
-  /** @deprecated — use `config` instead. Kept for one minor version. */
+  /** @deprecated — use `config` instead. Kept indefinitely as an alias to avoid silent breakage on upgrade. */
   customConfig: z.string().optional(),
   /** Capture stdout/stderr per test. */
   captureLogs: z.boolean().default(false),
