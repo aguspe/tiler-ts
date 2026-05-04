@@ -17,7 +17,7 @@
 | File | Status | Responsibility |
 |---|---|---|
 | `packages/playwright/package.json` | modify | Add `jiti` dep; bump version to 1.2.0 in the release task. |
-| `packages/playwright/src/define-config.ts` | create | `definePlaywrightConfig()` identity helper + types (`PlaywrightTilerConfig`, `PanelInput`, `CollectContext`). |
+| `packages/playwright/src/define-config.ts` | create | `definePlaywrightConfig()` identity helper + types (`PlaywrightTilerConfig`, `UserPanel`, `CollectContext`). |
 | `packages/playwright/src/define-config.test.ts` | create | Type round-trip + identity behavior. |
 | `packages/playwright/src/options.ts` | modify | Extend Zod schema with inline `panels`, `dataSources`, `excludePanels`, `dashboard`, `config`, `widgets`; deprecated `customConfig` alias. |
 | `packages/playwright/src/options.test.ts` | modify | Add coverage for new fields and the `customConfig` alias. |
@@ -114,7 +114,7 @@ Expected: FAIL — module `./define-config` cannot be found.
 Create `packages/playwright/src/define-config.ts`:
 
 ```ts
-import type { DataRecord, DataSource, Panel } from "@aguspe/tiler-core";
+import type { DataRecord, DataSourceInput, Panel } from "@aguspe/tiler-core";
 
 export interface PlaywrightTilerConfig {
   /** Preset to seed the dashboard. Default "test_automation". */
@@ -125,14 +125,14 @@ export interface PlaywrightTilerConfig {
 
   /** Extra panels appended after preset panels. `y` is optional —
    *  omitted panels are auto-placed below the lowest preset panel. */
-  panels?: PanelInput[];
+  panels?: UserPanel[];
 
   /** Extra data sources alongside the preset's `test_runs`.
    *  `collect()` runs at the end of the test run; its returned records
    *  are merged into the snapshot, with `data_source_id` rebound to the
    *  source you provided here. */
   dataSources?: Array<{
-    source: DataSource;
+    source: DataSourceInput;
     collect: (ctx: CollectContext) => Promise<DataRecord[]>;
   }>;
 
@@ -140,7 +140,7 @@ export interface PlaywrightTilerConfig {
   dashboard?: { name?: string; slug?: string; description?: string };
 }
 
-export interface PanelInput
+export interface UserPanel
   extends Omit<
     Panel,
     "id" | "dashboard_id" | "data_source_id" | "created_at" | "updated_at" | "y"
@@ -197,7 +197,7 @@ export type { TilerReporterOptions } from "./reporter";
 export { definePlaywrightConfig } from "./define-config";
 export type {
   PlaywrightTilerConfig,
-  PanelInput,
+  UserPanel,
   CollectContext,
 } from "./define-config";
 ```
@@ -301,7 +301,7 @@ Replace the contents of `packages/playwright/src/options.ts` with:
 import { DataRecord, DataSource } from "@aguspe/tiler-core";
 import { z } from "zod";
 
-const PanelInputSchema = z.object({
+const UserPanelSchema = z.object({
   widget_type: z.string().min(1),
   title: z.string().min(1).max(200),
   x: z.number().int().min(0).max(11),
@@ -313,10 +313,17 @@ const PanelInputSchema = z.object({
   data_source_slug: z.string().optional(),
 });
 
-export type PanelInputParsed = z.infer<typeof PanelInputSchema>;
+export type UserPanelParsed = z.infer<typeof UserPanelSchema>;
+
+// DataSource minus resolver-managed fields, with id optional.
+const DataSourceInputSchema = DataSource.omit({
+  id: true,
+  created_at: true,
+  updated_at: true,
+}).extend({ id: z.string().optional() });
 
 const DataSourceWithCollectSchema = z.object({
-  source: DataSource,
+  source: DataSourceInputSchema,
   collect: z
     .function()
     .args(z.any())
@@ -331,7 +338,7 @@ export const ReporterOptions = z.object({
   /** Drop preset panels by exact title before merging user panels. */
   excludePanels: z.array(z.string()).default([]),
   /** Extra panels appended to the dashboard. */
-  panels: z.array(PanelInputSchema).default([]),
+  panels: z.array(UserPanelSchema).default([]),
   /** Extra data sources, each with an async `collect()` hook. */
   dataSources: z.array(DataSourceWithCollectSchema).default([]),
   /** Override dashboard metadata (name/slug/description). */
@@ -1050,7 +1057,8 @@ Expected: 3 new tests FAIL.
 In `packages/playwright/src/config-resolver.ts`, **before** the `userPanels` block, add:
 
 ```ts
-  // Merge user data sources, collect their collectors, validate uniqueness.
+  // Merge user data sources, materialize the resolver-managed fields,
+  // collect their collectors, and validate uniqueness.
   const presetSlugs = new Set(preset.dataSources.map((d) => d.slug));
   const userSources: DataSource[] = [];
   const collectors: ResolvedConfig["collectors"] = new Map();
@@ -1065,8 +1073,14 @@ In `packages/playwright/src/config-resolver.ts`, **before** the `userPanels` blo
         `[tiler-playwright] duplicate data source slug "${entry.source.slug}" in user dataSources`,
       );
     }
-    userSources.push(entry.source);
-    collectors.set(entry.source.id, entry.collect);
+    const materialized: DataSource = {
+      ...entry.source,
+      id: entry.source.id ?? newId(),
+      created_at: iso,
+      updated_at: iso,
+    };
+    userSources.push(materialized);
+    collectors.set(materialized.id, entry.collect);
   }
   const allSources: DataSource[] = [...preset.dataSources, ...userSources];
 ```
@@ -1354,7 +1368,7 @@ In `resolveConfig`, **immediately after** the `preset` line and **before** `excl
 
 Replace every reference inside the resolver from `rawOpts.excludePanels`, `rawOpts.panels`, `rawOpts.dataSources`, `rawOpts.dashboard` to `merged.excludePanels`, `merged.panels`, `merged.dataSources`, `merged.dashboard`.
 
-> Note: the `merged.panels` items come from two type sources — the Zod-parsed inline list (full `PanelInputParsed`) and the file's `PanelInput` type. Both shapes are structurally compatible at the resolver. If TypeScript complains, widen the local type with `as PanelInputParsed[]` after concatenation.
+> Note: the `merged.panels` items come from two type sources — the Zod-parsed inline list (full `UserPanelParsed`) and the file's `UserPanel` type. Both shapes are structurally compatible at the resolver. If TypeScript complains, widen the local type with `as UserPanelParsed[]` after concatenation.
 
 - [ ] **Step 4: Run test to verify it passes**
 

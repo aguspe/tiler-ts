@@ -111,13 +111,13 @@ export interface PlaywrightTilerConfig {
 
   /** Extra panels appended after preset panels. `y` is optional —
    *  omitted panels are auto-placed below the lowest preset panel. */
-  panels?: PanelInput[];
+  panels?: UserPanel[];
 
   /** Extra data sources alongside the preset's `test_runs`.
    *  `collect()` runs at the end of the test run and its returned
    *  records are merged into the snapshot. */
   dataSources?: Array<{
-    source: DataSource;
+    source: DataSourceInput;
     collect: (ctx: CollectContext) => Promise<DataRecord[]>;
   }>;
 
@@ -125,7 +125,7 @@ export interface PlaywrightTilerConfig {
   dashboard?: { name?: string; slug?: string; description?: string };
 }
 
-export interface PanelInput
+export interface UserPanel
   extends Omit<Panel,
     "id" | "dashboard_id" | "data_source_id" |
     "created_at" | "updated_at" | "y"> {
@@ -232,7 +232,12 @@ overwritten so users cannot accidentally bind a coverage record to
 `PlaywrightTilerConfigSchema` (Zod) lives in `options.ts`:
 
 ```ts
-const PanelInputSchema = z.object({
+// DataSource minus resolver-managed fields, with id optional.
+const DataSourceInputSchema = DataSource
+  .omit({ id: true, created_at: true, updated_at: true })
+  .extend({ id: z.string().optional() });
+
+const UserPanelSchema = z.object({
   widget_type: z.string().min(1),
   title: z.string().min(1),
   x: z.number().int().min(0).max(11),
@@ -247,11 +252,11 @@ const PanelInputSchema = z.object({
 const PlaywrightTilerConfigSchema = z.object({
   preset: z.enum(["test_automation"]).default("test_automation"),
   excludePanels: z.array(z.string()).default([]),
-  panels: z.array(PanelInputSchema).default([]),
+  panels: z.array(UserPanelSchema).default([]),
   dataSources: z.array(z.object({
-    source: DataSourceSchema,
+    source: DataSourceInputSchema,
     collect: z.function().args(/* ctx */)
-                         .returns(z.promise(z.array(DataRecordSchema))),
+                         .returns(z.promise(z.array(DataRecord))),
   })).default([]),
   dashboard: z.object({
     name: z.string().optional(),
