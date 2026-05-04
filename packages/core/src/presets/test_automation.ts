@@ -68,43 +68,50 @@ export function testAutomationPreset(opts: PresetOptions = {}): PresetOutput {
   });
 
   const panels: Panel[] = [
-    // Row 0 (y=0, h=2): summary strip
-    panel("Total Tests", "metric", 0, 0, 3, 2, {
+    // Row 0 (y=0, h=4): Allure-style overview — donut chart + summary strip
+    panel("Status Distribution", "pie_chart", 0, 0, 4, 4, {
+      group_column: "status",
+      aggregation: "count",
+      time_window: "all",
+      donut: true,
+      palette: ["#10b981", "#ef4444", "#f59e0b", "#94a3b8"],
+    }),
+    panel("Total Tests", "metric", 4, 0, 2, 2, {
       aggregation: "count",
       time_window: "all",
     }),
-    panel("Passed", "metric", 3, 0, 2, 2, {
+    panel("Passed", "metric", 6, 0, 2, 2, {
       aggregation: "count",
       time_window: "all",
       filter: { status: "pass" },
       color: "#10b981",
     }),
-    panel("Failed", "metric", 5, 0, 2, 2, {
+    panel("Failed", "metric", 8, 0, 2, 2, {
       aggregation: "count",
       time_window: "all",
       filter: { status: "fail" },
       color: "#ef4444",
     }),
-    panel("Skipped", "metric", 7, 0, 2, 2, {
+    panel("Skipped", "metric", 10, 0, 2, 2, {
       aggregation: "count",
       time_window: "all",
       filter: { status: "skip" },
       color: "#f59e0b",
     }),
-    panel("Pass Rate", "pass_rate", 9, 0, 3, 2, {
+    panel("Pass Rate", "pass_rate", 4, 2, 8, 2, {
       good_threshold: 90,
       warn_threshold: 70,
     }),
-    // Row 1 (y=2, h=3): duration timeline
-    panel("Test Duration Timeline", "test_timeline", 0, 2, 12, 3, {
+    // Row 1 (y=4, h=3): duration timeline
+    panel("Test Duration Timeline", "test_timeline", 0, 4, 12, 3, {
       limit: 50,
     }),
-    // Row 2 (y=5, h=5): test list + suite progress
-    panel("All Tests", "test_list", 0, 5, 8, 5, {
+    // Row 2 (y=7, h=5): test list + suite progress
+    panel("All Tests", "test_list", 0, 7, 8, 5, {
       limit: 200,
       show_failures_only: false,
     }),
-    panel("Suite Pass Rate", "suite_progress", 8, 5, 4, 5, {
+    panel("Suite Pass Rate", "suite_progress", 8, 7, 4, 5, {
       good_threshold: 90,
       warn_threshold: 70,
     }),

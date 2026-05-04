@@ -4,12 +4,12 @@ import { testAutomationPreset } from "./test_automation";
 const NOW = new Date("2026-04-30T12:00:00.000Z");
 
 describe("testAutomationPreset", () => {
-  it("returns a dashboard, one data source, and 8 panels", () => {
+  it("returns a dashboard, one data source, and 9 panels", () => {
     const result = testAutomationPreset({ now: NOW });
     expect(result.dashboard.slug).toBe("test_automation");
     expect(result.dataSources).toHaveLength(1);
     expect(result.dataSources[0]?.slug).toBe("test_runs");
-    expect(result.panels).toHaveLength(8);
+    expect(result.panels).toHaveLength(9);
   });
 
   it("data source schema includes screenshot_data", () => {

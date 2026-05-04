@@ -67,7 +67,7 @@ describe("TestListWidget", () => {
     expect(screen.getByText(data.resolved[0]!.test_name)).toBeInTheDocument();
   });
 
-  it("clicking a failed row expands it to show error_message", () => {
+  it("clicking a failed row opens a details modal with the error and file location", () => {
     const { panel } = TestListExample();
     const now = "2026-04-30T12:00:00.000Z";
     const records = [
@@ -81,6 +81,8 @@ describe("TestListWidget", () => {
           duration_ms: 1200,
           error_message: "Element not found",
           screenshot_data: null,
+          file: "tests/checkout.spec.ts",
+          line: 42,
         },
         recorded_at: now,
         source_ref: null,
@@ -91,9 +93,41 @@ describe("TestListWidget", () => {
     const data = resolveTestList({ panel, records, now: new Date() });
     render(<TestListWidget panel={panel} data={data} />);
 
-    expect(screen.queryByText("Element not found")).not.toBeInTheDocument();
+    expect(screen.queryByRole("dialog", { name: /details for/i })).not.toBeInTheDocument();
     fireEvent.click(screen.getByText("failing_test").closest("[data-testid='test-row-header']")!);
+    const dialog = screen.getByRole("dialog", { name: /details for failing_test/i });
+    expect(dialog).toBeInTheDocument();
     expect(screen.getByText("Element not found")).toBeInTheDocument();
+    expect(screen.getByText(/tests\/checkout\.spec\.ts:42/)).toBeInTheDocument();
+
+    fireEvent.click(screen.getByLabelText("Close"));
+    expect(screen.queryByRole("dialog", { name: /details for/i })).not.toBeInTheDocument();
+  });
+
+  it("does not open a modal when clicking a passing row", () => {
+    const { panel } = TestListExample();
+    const now = "2026-04-30T12:00:00.000Z";
+    const records = [
+      {
+        id: "p1",
+        data_source_id: "ds-1",
+        payload: {
+          test_name: "happy_path",
+          suite: "checkout",
+          status: "pass",
+          duration_ms: 250,
+        },
+        recorded_at: now,
+        source_ref: null,
+        ingested_via: "manual" as const,
+        created_at: now,
+      },
+    ];
+    const data = resolveTestList({ panel, records, now: new Date() });
+    render(<TestListWidget panel={panel} data={data} />);
+
+    fireEvent.click(screen.getByText("happy_path").closest("[data-testid='test-row-header']")!);
+    expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
   });
 
   it("renders empty state when no records", () => {
@@ -102,7 +136,7 @@ describe("TestListWidget", () => {
     expect(screen.getByText("No test results.")).toBeInTheDocument();
   });
 
-  it("clicking a screenshot thumbnail opens a fullscreen lightbox", () => {
+  it("clicking the modal screenshot opens a fullscreen lightbox", () => {
     const { panel } = TestListExample();
     const now = "2026-04-30T12:00:00.000Z";
     const records = [
@@ -129,13 +163,10 @@ describe("TestListWidget", () => {
     fireEvent.click(screen.getByText("broken_visuals").closest("[data-testid='test-row-header']")!);
     expect(screen.queryByRole("dialog", { name: /screenshot preview/i })).not.toBeInTheDocument();
 
-    fireEvent.click(screen.getByTestId("screenshot-thumb"));
-    const dialog = screen.getByRole("dialog", { name: /screenshot preview/i });
-    expect(dialog).toBeInTheDocument();
-    const fullImage = dialog.querySelector("img");
+    fireEvent.click(screen.getByTestId("modal-screenshot"));
+    const lightbox = screen.getByRole("dialog", { name: /screenshot preview/i });
+    expect(lightbox).toBeInTheDocument();
+    const fullImage = lightbox.querySelector("img");
     expect(fullImage?.getAttribute("src")).toBe("data:image/png;base64,zzz");
-
-    fireEvent.click(screen.getByLabelText("Close"));
-    expect(screen.queryByRole("dialog", { name: /screenshot preview/i })).not.toBeInTheDocument();
   });
 });

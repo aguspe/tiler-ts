@@ -1,6 +1,6 @@
 {
   "name": "@aguspe/tiler-playwright",
-  "version": "1.2.1",
+  "version": "1.2.2",
   "description": "Playwright reporter for tiler-ts. Replaces the HTML reporter with a Tiler dashboard.",
   "license": "MIT",
   "repository": {

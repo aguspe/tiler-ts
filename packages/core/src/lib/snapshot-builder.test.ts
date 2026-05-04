@@ -55,7 +55,7 @@ describe("buildSnapshot", () => {
       now: NOW,
     });
     expect(snapshot.version).toBe(1);
-    expect(Object.keys(snapshot.resolved)).toHaveLength(8);
+    expect(Object.keys(snapshot.resolved)).toHaveLength(9);
     for (const panel of preset.panels) {
       expect(snapshot.resolved[panel.id]).toBeDefined();
     }

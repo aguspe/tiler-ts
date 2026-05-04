@@ -71,7 +71,7 @@ describe("TilerReporter", () => {
     expect(html).toContain("Test Automation");
     expect(snapshot.records).toHaveLength(2);
     expect(snapshot.dashboard.slug).toBe("test_automation");
-    expect(Object.keys(snapshot.resolved)).toHaveLength(8);
+    expect(Object.keys(snapshot.resolved)).toHaveLength(9);
   });
 
   it("renders extra panels declared inline in reporter options", async () => {
