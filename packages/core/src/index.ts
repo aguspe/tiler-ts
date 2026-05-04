@@ -19,3 +19,11 @@ export * from "./presets/types";
 export * from "./presets/test_automation";
 export * from "./lib/snapshot-builder";
 export * from "./config";
+export { getPreset, listPresets } from "./presets/registry";
+export type { PresetFactory } from "./presets/registry";
+export { playwrightConfigToPresetOutput } from "./presets/playwright-config";
+export type {
+  DashboardConfig,
+  UserPanelInput,
+  PlaywrightConfigToPresetArgs,
+} from "./presets/playwright-config";
