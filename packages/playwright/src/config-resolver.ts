@@ -8,6 +8,7 @@ import {
 } from "@aguspe/tiler-core";
 import type { CollectContext } from "./define-config";
 import type { ReporterOptions } from "./options";
+import { loadConfigFile } from "./config-loader";
 
 export interface ResolvedConfig {
   dashboard: Dashboard;
@@ -28,11 +29,30 @@ export function resolveConfig({
 }: ResolveConfigArgs): ResolvedConfig {
   const preset = testAutomationPreset({ now: startedAt });
 
-  const dashboard: Dashboard = rawOpts.dashboard
-    ? ({ ...preset.dashboard, ...rawOpts.dashboard } as Dashboard)
+  // If a config-file path is set, load it and merge with inline options.
+  // Inline options append/overlay on the file's values.
+  const fileCfg = rawOpts.config ? loadConfigFile(rawOpts.config) : undefined;
+  const merged = {
+    excludePanels: [
+      ...(fileCfg?.excludePanels ?? []),
+      ...rawOpts.excludePanels,
+    ],
+    panels: [...(fileCfg?.panels ?? []) as typeof rawOpts.panels, ...rawOpts.panels],
+    dataSources: [
+      ...(fileCfg?.dataSources ?? []) as typeof rawOpts.dataSources,
+      ...rawOpts.dataSources,
+    ],
+    dashboard:
+      fileCfg?.dashboard || rawOpts.dashboard
+        ? { ...fileCfg?.dashboard, ...rawOpts.dashboard }
+        : undefined,
+  };
+
+  const dashboard: Dashboard = merged.dashboard
+    ? ({ ...preset.dashboard, ...merged.dashboard } as Dashboard)
     : preset.dashboard;
 
-  const excludeSet = new Set(rawOpts.excludePanels);
+  const excludeSet = new Set(merged.excludePanels);
   const presetTitles = new Set(preset.panels.map((p) => p.title));
   for (const t of excludeSet) {
     if (!presetTitles.has(t)) {
@@ -49,7 +69,7 @@ export function resolveConfig({
   const presetSlugs = new Set(preset.dataSources.map((d) => d.slug));
   const userSources: DataSource[] = [];
   const collectors: ResolvedConfig["collectors"] = new Map();
-  for (const entry of rawOpts.dataSources) {
+  for (const entry of merged.dataSources) {
     if (presetSlugs.has(entry.source.slug)) {
       throw new Error(
         `[tiler-playwright] duplicate data source slug "${entry.source.slug}" — preset already defines it`,
@@ -78,7 +98,7 @@ export function resolveConfig({
     : 0;
   let cursorY = presetMaxY;
 
-  const userPanels: Panel[] = rawOpts.panels.map((p) => {
+  const userPanels: Panel[] = merged.panels.map((p) => {
     let dataSourceId: string | null = p.data_source_id ?? null;
     if (!dataSourceId && p.data_source_slug) {
       const match = allSources.find((s) => s.slug === p.data_source_slug);

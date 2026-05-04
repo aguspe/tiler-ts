@@ -312,3 +312,27 @@ describe("resolveConfig — dashboard overrides", () => {
     expect(r.dashboard.description).toMatch(/Playwright/);
   });
 });
+
+describe("resolveConfig — file path + inline merge", () => {
+  it("concatenates excludePanels and panels from both sources", async () => {
+    const { resolve: pathResolve } = await import("node:path");
+    const r = resolveConfig({
+      rawOpts: {
+        ...baseOpts(),
+        config: pathResolve(__dirname, "__fixtures__/valid-config.ts"),
+        excludePanels: ["Skipped"],
+        panels: [
+          { widget_type: "metric", title: "From Inline", x: 0, width: 3, height: 2, config: {} },
+        ],
+      },
+      startedAt: NOW,
+    });
+    const titles = r.panels.map((p) => p.title);
+    // exclusions from both: file ("Pass Rate") + inline ("Skipped")
+    expect(titles).not.toContain("Pass Rate");
+    expect(titles).not.toContain("Skipped");
+    // appended panels from both: file ("From File") + inline ("From Inline")
+    expect(titles).toContain("From File");
+    expect(titles).toContain("From Inline");
+  });
+});
