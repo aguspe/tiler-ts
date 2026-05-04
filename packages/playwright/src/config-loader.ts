@@ -14,7 +14,7 @@ export function loadConfigFile(path: string): PlaywrightTilerConfig {
   if (!existsSync(abs)) {
     throw new Error(`[tiler-playwright] config file not found: ${abs}`);
   }
-  const jiti = createJiti(abs, { interopDefault: false });
+  const jiti = createJiti(abs, { interopDefault: false, jsx: true });
   const mod = jiti(abs) as { default?: PlaywrightTilerConfig };
   if (!mod || typeof mod !== "object" || !("default" in mod) || mod.default == null) {
     throw new Error(

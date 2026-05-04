@@ -1,0 +1,7 @@
+{
+  "files": [
+    { "path": "src/auth.ts",  "pct": 92.4 },
+    { "path": "src/cart.ts",  "pct": 71.0 },
+    { "path": "src/payment.ts","pct": 88.7 }
+  ]
+}
