@@ -221,6 +221,7 @@ export function TestListWidget({
                 borderRadius: 4,
                 overflow: "hidden",
                 border: isExpanded ? `1px solid ${color}40` : "1px solid var(--border, rgba(0,0,0,0.08))",
+                flexShrink: 0,
               }}
             >
               <div
