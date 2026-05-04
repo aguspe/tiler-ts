@@ -90,19 +90,19 @@ export function testAutomationPreset(opts: PresetOptions = {}): PresetOutput {
       filter: { status: "pass" },
       color: "#10b981",
     }),
-    panel("Failed", "metric", 8, 0, 2, 2, {
+    panel("Failed", "metric", 4, 2, 2, 2, {
       aggregation: "count",
       time_window: "all",
       filter: { status: "fail" },
       color: "#ef4444",
     }),
-    panel("Skipped", "metric", 10, 0, 2, 2, {
+    panel("Skipped", "metric", 6, 2, 2, 2, {
       aggregation: "count",
       time_window: "all",
       filter: { status: "skip" },
       color: "#f59e0b",
     }),
-    panel("Pass Rate", "pass_rate", 4, 2, 8, 2, {
+    panel("Pass Rate", "pass_rate", 8, 0, 4, 4, {
       good_threshold: 90,
       warn_threshold: 70,
     }),
