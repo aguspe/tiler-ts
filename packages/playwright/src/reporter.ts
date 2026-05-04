@@ -7,17 +7,25 @@ import {
   MemoryStore,
   type Panel,
   buildSnapshot,
-  testAutomationPreset,
 } from "@aguspe/tiler-core";
 import "@aguspe/tiler-widgets"; // register all widgets
 import { renderToHtml } from "@aguspe/tiler-viewer";
+import { resolveConfig } from "./config-resolver";
 import { copyClientAssets } from "./copy-assets";
+import type { CollectContext } from "./define-config";
 import { ReporterOptions } from "./options";
 import { buildRecord } from "./record-builder";
 
 export interface TilerReporterOptions {
   outDir?: string;
-  preset?: string;
+  preset?: "test_automation";
+  excludePanels?: string[];
+  panels?: unknown[];
+  dataSources?: unknown[];
+  dashboard?: { name?: string; slug?: string; description?: string };
+  config?: string;
+  /** @deprecated — use `config` instead. */
+  customConfig?: string;
   captureLogs?: boolean;
   linkTraceFiles?: boolean;
   open?: boolean;
@@ -38,8 +46,6 @@ function resolveViewerClientDir(): string {
     const serverEntry = require.resolve("@aguspe/tiler-viewer");
     return resolve(dirname(serverEntry), "../client");
   }
-  // ESM path: createRequire from current module URL.
-  // eval("require") because tsup rewrites top-level require calls but not eval'd ones.
   // biome-ignore lint/security/noGlobalEval: standard ESM require shim
   const nodeModule = eval("require")("node:module") as typeof import("node:module");
   const r = nodeModule.createRequire(import.meta.url);
@@ -53,8 +59,10 @@ export default class TilerReporter implements PlaywrightReporter {
 
   private store!: MemoryStore;
   private dashboard!: Dashboard;
-  private dataSource!: DataSource;
+  private dataSources!: DataSource[];
+  private dataSourceTestRunsId!: string;
   private panels!: Panel[];
+  private collectors!: Map<string, (ctx: CollectContext) => Promise<DataRecord[]>>;
   private records: DataRecord[] = [];
   private startedAt!: Date;
 
@@ -71,18 +79,24 @@ export default class TilerReporter implements PlaywrightReporter {
   onBegin(_config: unknown, _suite: unknown): void {
     this.startedAt = new Date();
     this.store = new MemoryStore();
-    const preset = testAutomationPreset({ now: this.startedAt });
-    this.dashboard = preset.dashboard;
-    const ds = preset.dataSources[0];
-    if (!ds) throw new Error("[tiler-playwright] preset must include at least one data source");
-    this.dataSource = ds;
-    this.panels = preset.panels;
+    const resolved = resolveConfig({ rawOpts: this.opts, startedAt: this.startedAt });
+    this.dashboard = resolved.dashboard;
+    this.dataSources = resolved.dataSources;
+    const testRuns = resolved.dataSources.find((d) => d.slug === "test_runs");
+    if (!testRuns) {
+      throw new Error(
+        "[tiler-playwright] preset must include a `test_runs` data source",
+      );
+    }
+    this.dataSourceTestRunsId = testRuns.id;
+    this.panels = resolved.panels;
+    this.collectors = resolved.collectors;
     this.records = [];
   }
 
   onTestEnd(test: unknown, result: unknown): void {
     const record = buildRecord({
-      dataSourceId: this.dataSource.id,
+      dataSourceId: this.dataSourceTestRunsId,
       now: new Date(),
       test: test as Parameters<typeof buildRecord>[0]["test"],
       result: result as Parameters<typeof buildRecord>[0]["result"],
@@ -95,13 +109,29 @@ export default class TilerReporter implements PlaywrightReporter {
     const outDir = resolve(this.opts.outDir);
     mkdirSync(outDir, { recursive: true });
 
-    const viewerClientDir = this.viewerClientDirOverride ?? resolveViewerClientDir();
+    const endedAt = new Date();
+    for (const [sourceId, collect] of this.collectors) {
+      let extra: DataRecord[] = [];
+      try {
+        extra = await collect({ outDir, startedAt: this.startedAt, endedAt });
+      } catch (err) {
+        console.warn(
+          `[tiler-playwright] collect() for data source ${sourceId} threw — skipping its records.`,
+          err,
+        );
+        continue;
+      }
+      for (const r of extra) {
+        this.records.push({ ...r, data_source_id: sourceId });
+      }
+    }
 
+    const viewerClientDir = this.viewerClientDirOverride ?? resolveViewerClientDir();
     const { jsEntry, cssEntry } = copyClientAssets({ viewerClientDir, outDir });
 
     const snapshot = await buildSnapshot({
       dashboard: this.dashboard,
-      dataSources: [this.dataSource],
+      dataSources: this.dataSources,
       panels: this.panels,
       records: this.records,
       now: new Date(),
