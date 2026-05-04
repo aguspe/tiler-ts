@@ -6,6 +6,7 @@ import { panelsPlugin } from "./routes/panels";
 import { sourcesPlugin } from "./routes/sources";
 import { viewerPagesPlugin } from "./routes/viewer-pages";
 import { wsPlugin } from "./routes/ws";
+import { seedDashboards } from "./seed";
 
 export interface CreateServerOptions extends TilerConfig {
   /** Skip auto-loading widget packages. Useful for tests. */
@@ -35,6 +36,10 @@ export async function createServer(opts: CreateServerOptions): Promise<TilerFast
 
   // Ensure store schema is migrated. Idempotent for both MemoryStore and BetterSqliteStore.
   await cfg.store.migrate();
+
+  // Seed dashboards from cfg.presets / cfg.dashboards. Idempotent by slug;
+  // throws on unknown preset, duplicate slug, or store error.
+  await seedDashboards(cfg, cfg.store);
 
   app.get("/healthz", async () => ({ status: "ok" }));
   app.get("/", async (_req, reply) => {
