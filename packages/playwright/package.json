@@ -36,6 +36,7 @@
     "@aguspe/tiler-core": "workspace:*",
     "@aguspe/tiler-viewer": "workspace:*",
     "@aguspe/tiler-widgets": "workspace:*",
+    "jiti": "^2.4.0",
     "react": "^18.3.0",
     "react-dom": "^18.3.0",
     "zod": "^3.23.0"
