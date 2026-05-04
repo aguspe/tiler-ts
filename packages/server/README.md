@@ -53,6 +53,15 @@ Or skip `start.ts` entirely and run `npx tiler serve`.
 | `WS`   | `/ws` | Live WidgetData diffs |
 | `GET`  | `/healthz` | Liveness probe |
 
+## Seeded dashboards
+
+The server can seed dashboards into its store on first boot from
+`presets: ["..."]` (built-in by name) or `dashboards: [...]`
+(user-defined `definePlaywrightConfig({...})` exports). Idempotent by
+slug — editor edits are never overwritten. See the [Seeded dashboards
+guide](https://aguspe.github.io/tiler-ts/server/seeding) for the full
+workflow.
+
 ## License
 
 MIT — see [`LICENSE`](../../LICENSE).
