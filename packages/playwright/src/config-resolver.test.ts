@@ -60,3 +60,78 @@ describe("resolveConfig — excludePanels", () => {
     warn.mockRestore();
   });
 });
+
+describe("resolveConfig — append panels (explicit y)", () => {
+  it("appends user panels with id/dashboard_id/timestamps filled", () => {
+    const r = resolveConfig({
+      rawOpts: {
+        ...baseOpts(),
+        panels: [
+          {
+            widget_type: "metric",
+            title: "Custom",
+            x: 0,
+            y: 10,
+            width: 3,
+            height: 2,
+            config: {},
+          },
+        ],
+      },
+      startedAt: NOW,
+    });
+    const last = r.panels[r.panels.length - 1]!;
+    expect(last.title).toBe("Custom");
+    expect(last.dashboard_id).toBe(r.dashboard.id);
+    expect(last.id).toMatch(/^[0-9A-Z]{26}$/);
+    expect(last.created_at).toBe(NOW.toISOString());
+    expect(last.updated_at).toBe(NOW.toISOString());
+  });
+
+  it("defaults a panel's data_source_id to the preset's test_runs source", () => {
+    const r = resolveConfig({
+      rawOpts: {
+        ...baseOpts(),
+        panels: [
+          {
+            widget_type: "metric",
+            title: "Custom",
+            x: 0,
+            y: 10,
+            width: 3,
+            height: 2,
+            config: {},
+          },
+        ],
+      },
+      startedAt: NOW,
+    });
+    const last = r.panels[r.panels.length - 1]!;
+    const testRuns = r.dataSources.find((d) => d.slug === "test_runs");
+    expect(testRuns).toBeDefined();
+    expect(last.data_source_id).toBe(testRuns!.id);
+  });
+
+  it("uses an explicit data_source_id when provided", () => {
+    const explicitId = "01HEXPLICITDATASOURCEIDXX";
+    const r = resolveConfig({
+      rawOpts: {
+        ...baseOpts(),
+        panels: [
+          {
+            widget_type: "metric",
+            title: "Custom",
+            x: 0,
+            y: 10,
+            width: 3,
+            height: 2,
+            config: {},
+            data_source_id: explicitId,
+          },
+        ],
+      },
+      startedAt: NOW,
+    });
+    expect(r.panels[r.panels.length - 1]!.data_source_id).toBe(explicitId);
+  });
+});
