@@ -48,8 +48,20 @@ export function resolveConfig({
   let cursorY = presetMaxY;
 
   const userPanels: Panel[] = rawOpts.panels.map((p) => {
-    const dataSourceId =
-      p.data_source_id ?? (testRuns ? testRuns.id : null);
+    let dataSourceId: string | null = p.data_source_id ?? null;
+    if (!dataSourceId && p.data_source_slug) {
+      const allSources = preset.dataSources;
+      const match = allSources.find((s) => s.slug === p.data_source_slug);
+      if (!match) {
+        throw new Error(
+          `[tiler-playwright] panel "${p.title}" data_source_slug "${p.data_source_slug}" not found`,
+        );
+      }
+      dataSourceId = match.id;
+    }
+    if (!dataSourceId) {
+      dataSourceId = testRuns ? testRuns.id : null;
+    }
     if (!dataSourceId) {
       throw new Error(
         `[tiler-playwright] panel "${p.title}" needs a data_source_id (no preset test_runs source available)`,

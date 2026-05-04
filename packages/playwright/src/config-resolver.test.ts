@@ -184,3 +184,52 @@ describe("resolveConfig — auto-place", () => {
     expect(a2.y).toBe(presetMaxY + 2); // advanced by Auto1's height only
   });
 });
+
+describe("resolveConfig — data_source_slug", () => {
+  it("resolves a slug that exists in the preset", () => {
+    const r = resolveConfig({
+      rawOpts: {
+        ...baseOpts(),
+        panels: [
+          {
+            widget_type: "metric",
+            title: "ViaSlug",
+            x: 0,
+            y: 10,
+            width: 3,
+            height: 2,
+            config: {},
+            data_source_slug: "test_runs",
+          },
+        ],
+      },
+      startedAt: NOW,
+    });
+    const placed = r.panels.find((p) => p.title === "ViaSlug")!;
+    const testRuns = r.dataSources.find((d) => d.slug === "test_runs")!;
+    expect(placed.data_source_id).toBe(testRuns.id);
+  });
+
+  it("throws when the slug does not exist", () => {
+    expect(() =>
+      resolveConfig({
+        rawOpts: {
+          ...baseOpts(),
+          panels: [
+            {
+              widget_type: "metric",
+              title: "Missing",
+              x: 0,
+              y: 10,
+              width: 3,
+              height: 2,
+              config: {},
+              data_source_slug: "nope",
+            },
+          ],
+        },
+        startedAt: NOW,
+      }),
+    ).toThrow(/data_source_slug "nope"/);
+  });
+});
