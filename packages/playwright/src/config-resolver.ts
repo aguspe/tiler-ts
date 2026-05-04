@@ -28,6 +28,10 @@ export function resolveConfig({
 }: ResolveConfigArgs): ResolvedConfig {
   const preset = testAutomationPreset({ now: startedAt });
 
+  const dashboard: Dashboard = rawOpts.dashboard
+    ? ({ ...preset.dashboard, ...rawOpts.dashboard } as Dashboard)
+    : preset.dashboard;
+
   const excludeSet = new Set(rawOpts.excludePanels);
   const presetTitles = new Set(preset.panels.map((p) => p.title));
   for (const t of excludeSet) {
@@ -102,7 +106,7 @@ export function resolveConfig({
     }
     return {
       id: newId(),
-      dashboard_id: preset.dashboard.id,
+      dashboard_id: dashboard.id,
       data_source_id: dataSourceId,
       title: p.title,
       widget_type: p.widget_type,
@@ -117,7 +121,7 @@ export function resolveConfig({
   });
 
   return {
-    dashboard: preset.dashboard,
+    dashboard,
     dataSources: allSources,
     panels: [...keptPanels, ...userPanels],
     collectors,

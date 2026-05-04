@@ -296,3 +296,19 @@ describe("resolveConfig — user data sources", () => {
     ).toThrow(/duplicate data source slug "test_runs"/);
   });
 });
+
+describe("resolveConfig — dashboard overrides", () => {
+  it("shallow-merges name/slug/description on the preset dashboard", () => {
+    const r = resolveConfig({
+      rawOpts: {
+        ...baseOpts(),
+        dashboard: { name: "My Run", slug: "my_run" },
+      },
+      startedAt: NOW,
+    });
+    expect(r.dashboard.name).toBe("My Run");
+    expect(r.dashboard.slug).toBe("my_run");
+    // description not provided, preset default kept
+    expect(r.dashboard.description).toMatch(/Playwright/);
+  });
+});
