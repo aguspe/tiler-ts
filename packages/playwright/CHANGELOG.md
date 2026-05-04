@@ -1,5 +1,34 @@
 # @aguspe/tiler-playwright
 
+## 1.2.0
+
+### Minor Changes
+
+- feat(playwright): extensible reporter config
+
+  The reporter now accepts an extension surface so Playwright users can
+  switch from the HTML reporter to Tiler with one config change and
+  still get all Tiler features.
+
+  - Inline reporter options now accept `panels`, `dataSources`,
+    `excludePanels`, `dashboard` alongside the existing `outDir`,
+    `captureLogs`, etc.
+  - A new `config: "./tiler.config.ts"` option loads the same shape
+    from a separate file (transformed at runtime via `jiti`).
+  - `definePlaywrightConfig` is exported from `@aguspe/tiler-playwright`
+    for typed authoring of the file form.
+  - User-defined data sources are populated by an async `collect()`
+    hook that runs at end-of-test-run and merges records into the
+    snapshot. A throwing `collect()` warns to stderr and continues.
+  - `excludePanels: ["Pass Rate"]` drops preset panels by title with a
+    warn-on-miss. New panels with omitted `y` are auto-placed below
+    the lowest preset panel; explicit `y` values are placed verbatim
+    and don't advance the cursor.
+  - The legacy `customConfig` reporter option is accepted as an alias
+    for `config` with a one-time deprecation warning.
+
+  See `examples/playwright-extended/` for an end-to-end walkthrough.
+
 ## 1.0.3
 
 ### Patch Changes

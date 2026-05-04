@@ -1,6 +1,6 @@
 {
   "name": "@aguspe/tiler-playwright",
-  "version": "1.1.6",
+  "version": "1.2.0",
   "description": "Playwright reporter for tiler-ts. Replaces the HTML reporter with a Tiler dashboard.",
   "license": "MIT",
   "repository": {
@@ -36,6 +36,7 @@
     "@aguspe/tiler-core": "workspace:*",
     "@aguspe/tiler-viewer": "workspace:*",
     "@aguspe/tiler-widgets": "workspace:*",
+    "jiti": "^2.4.0",
     "react": "^18.3.0",
     "react-dom": "^18.3.0",
     "zod": "^3.23.0"

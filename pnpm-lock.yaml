@@ -70,6 +70,24 @@ importers:
         specifier: ^1.50.0
         version: 1.59.1
 
+  examples/playwright-extended:
+    dependencies:
+      '@aguspe/tiler-core':
+        specifier: workspace:*
+        version: link:../../packages/core
+      '@aguspe/tiler-playwright':
+        specifier: workspace:*
+        version: link:../../packages/playwright
+      '@aguspe/tiler-widgets':
+        specifier: workspace:*
+        version: link:../../packages/widgets
+      '@playwright/test':
+        specifier: ^1.50.0
+        version: 1.59.1
+      react:
+        specifier: ^18.3.0
+        version: 18.3.1
+
   examples/playwright-static:
     dependencies:
       '@aguspe/tiler-playwright':
@@ -229,6 +247,9 @@ importers:
       '@aguspe/tiler-widgets':
         specifier: workspace:*
         version: link:../widgets
+      jiti:
+        specifier: ^2.4.0
+        version: 2.6.1
       react:
         specifier: ^18.3.0
         version: 18.3.1
