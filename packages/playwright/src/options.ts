@@ -1,5 +1,6 @@
 import { DataRecord, DataSource } from "@aguspe/tiler-core";
 import { z } from "zod";
+import type { CollectContext } from "./define-config";
 
 const UserPanelSchema = z.object({
   widget_type: z.string().min(1),
@@ -24,11 +25,13 @@ const DataSourceInputSchema = DataSource.omit({
 
 const DataSourceWithCollectSchema = z.object({
   source: DataSourceInputSchema,
-  collect: z
-    .function()
-    .args(z.any())
-    .returns(z.promise(z.array(DataRecord))),
+  collect: z.custom<(ctx: CollectContext) => Promise<DataRecord[]>>(
+    (val) => typeof val === "function",
+    { message: "collect must be a function" },
+  ),
 });
+
+export type DataSourceWithCollect = z.infer<typeof DataSourceWithCollectSchema>;
 
 export const ReporterOptions = z.object({
   /** Output directory. Relative paths resolve against `process.cwd()`. */
