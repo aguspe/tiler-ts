@@ -558,6 +558,14 @@ export function TestListWidget({
         {rows.map((row) => {
           const color = STATUS_COLOR[row.status] ?? "currentColor";
           const isFail = row.status === "fail";
+          const hasArtifacts =
+            !!(
+              row.screenshot_data ||
+              row.video_data ||
+              row.actual_data ||
+              row.error_message
+            );
+          const clickable = isFail || hasArtifacts;
           const duration =
             row.status === "skip" ? "skip" : `${(row.duration_ms / 1000).toFixed(2)}s`;
           return (
@@ -565,13 +573,13 @@ export function TestListWidget({
               key={row.id}
               type="button"
               data-testid="test-row-header"
-              onClick={() => isFail && setOpenRow(row)}
-              disabled={!isFail}
+              onClick={() => clickable && setOpenRow(row)}
+              disabled={!clickable}
               style={{
                 all: "unset",
                 boxSizing: "border-box",
                 width: "100%",
-                cursor: isFail ? "pointer" : "default",
+                cursor: clickable ? "pointer" : "default",
                 padding: "6px 10px",
                 borderRadius: 4,
                 border: "1px solid var(--border, rgba(0,0,0,0.08))",
