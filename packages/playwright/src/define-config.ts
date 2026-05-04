@@ -1,4 +1,4 @@
-import type { DataRecord, DataSource, Panel } from "@aguspe/tiler-core";
+import type { DataRecord, DataSourceInput, Panel } from "@aguspe/tiler-core";
 
 export interface PlaywrightTilerConfig {
   /** Preset to seed the dashboard. Default "test_automation". */
@@ -9,14 +9,14 @@ export interface PlaywrightTilerConfig {
 
   /** Extra panels appended after preset panels. `y` is optional —
    *  omitted panels are auto-placed below the lowest preset panel. */
-  panels?: PanelInput[];
+  panels?: UserPanel[];
 
   /** Extra data sources alongside the preset's `test_runs`.
    *  `collect()` runs at the end of the test run; its returned records
    *  are merged into the snapshot, with `data_source_id` rebound to the
    *  source you provided here. */
   dataSources?: Array<{
-    source: DataSource;
+    source: DataSourceInput;
     collect: (ctx: CollectContext) => Promise<DataRecord[]>;
   }>;
 
@@ -24,7 +24,7 @@ export interface PlaywrightTilerConfig {
   dashboard?: { name?: string; slug?: string; description?: string };
 }
 
-export interface PanelInput
+export interface UserPanel
   extends Omit<
     Panel,
     "id" | "dashboard_id" | "data_source_id" | "created_at" | "updated_at" | "y"
