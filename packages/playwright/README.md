@@ -23,6 +23,23 @@ export default defineConfig({
 
 Run your tests, then open `tiler-report/index.html`.
 
+## Setting the report title
+
+The dashboard title shown at the top of the report comes from the preset by
+default (`"Test Automation"`). Override it three ways, in increasing
+precedence:
+
+1. `dashboard: { name }` in `definePlaywrightConfig({...})` — full control,
+   also lets you set `slug`/`description`.
+2. `title` reporter option — a shortcut for the dashboard name:
+   ```ts
+   reporter: [["@aguspe/tiler-playwright", { title: "My run", outDir: "tiler-report" }]]
+   ```
+3. `TILER_REPORT_NAME` env var — wins over both, ideal for CI:
+   ```bash
+   TILER_REPORT_NAME="Nightly e2e #${BUILD_NUMBER}" npx playwright test
+   ```
+
 ## What you get
 
 The reporter feeds Playwright's events into the `test_automation` preset's data source schema (`suite`, `test_name`, `status`, `duration_ms`, `environment`) and ships a dashboard with metric cards, a status pie, a per-suite grid, and a recent-failures table.

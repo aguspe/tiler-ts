@@ -51,6 +51,9 @@ export type PlaywrightTilerConfigParsed = z.infer<typeof PlaywrightTilerConfigSc
 export const ReporterOptions = z.object({
   /** Output directory. Relative paths resolve against `process.cwd()`. */
   outDir: z.string().min(1).default("tiler-report"),
+  /** Dashboard title shown at the top of the report. Overrides the preset's
+   *  default ("Test Automation"). Env var `TILER_REPORT_NAME` wins over this. */
+  title: z.string().optional(),
   /** Drop preset panels by exact title before merging user panels. */
   excludePanels: z.array(z.string()).default([]),
   /** Extra panels appended to the dashboard. */

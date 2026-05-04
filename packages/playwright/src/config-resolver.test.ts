@@ -310,6 +310,36 @@ describe("resolveConfig — dashboard overrides", () => {
     // description not provided, preset default kept
     expect(r.dashboard.description).toMatch(/Playwright/);
   });
+
+  it("title reporter option overrides preset dashboard.name", () => {
+    const r = resolveConfig({
+      rawOpts: { ...baseOpts(), title: "Nightly e2e" },
+      startedAt: NOW,
+    });
+    expect(r.dashboard.name).toBe("Nightly e2e");
+  });
+
+  it("TILER_REPORT_NAME env var overrides title and dashboard.name", () => {
+    const prev = process.env.TILER_REPORT_NAME;
+    process.env.TILER_REPORT_NAME = "From env";
+    try {
+      const r = resolveConfig({
+        rawOpts: {
+          ...baseOpts(),
+          title: "From option",
+          dashboard: { name: "From dashboard" },
+        },
+        startedAt: NOW,
+      });
+      expect(r.dashboard.name).toBe("From env");
+    } finally {
+      if (prev === undefined) {
+        delete process.env.TILER_REPORT_NAME;
+      } else {
+        process.env.TILER_REPORT_NAME = prev;
+      }
+    }
+  });
 });
 
 describe("resolveConfig — file path + inline merge", () => {

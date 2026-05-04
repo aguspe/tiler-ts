@@ -50,8 +50,13 @@ export function resolveConfig({
         : undefined,
   };
 
-  const dashboard: Dashboard = merged.dashboard
-    ? ({ ...preset.dashboard, ...merged.dashboard } as Dashboard)
+  // Title precedence: TILER_REPORT_NAME env var > rawOpts.title > merged.dashboard.name > preset.
+  const titleOverride = process.env.TILER_REPORT_NAME ?? rawOpts.title;
+  const dashboardOverlay = titleOverride
+    ? { ...merged.dashboard, name: titleOverride }
+    : merged.dashboard;
+  const dashboard: Dashboard = dashboardOverlay
+    ? ({ ...preset.dashboard, ...dashboardOverlay } as Dashboard)
     : preset.dashboard;
 
   const excludeSet = new Set(merged.excludePanels);

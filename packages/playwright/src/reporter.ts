@@ -18,6 +18,9 @@ import { buildRecord } from "./record-builder";
 
 export interface TilerReporterOptions {
   outDir?: string;
+  /** Dashboard title shown at the top of the report. Overrides the preset's
+   *  default. Env var `TILER_REPORT_NAME` wins over this. */
+  title?: string;
   excludePanels?: string[];
   panels?: unknown[];
   dataSources?: unknown[];
