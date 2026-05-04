@@ -9,6 +9,10 @@ export interface TestListRow {
   duration_ms: number;
   error_message: string | null;
   screenshot_data: string | null;
+  expected_data: string | null;
+  actual_data: string | null;
+  diff_data: string | null;
+  video_data: string | null;
   file: string | null;
   line: number | null;
 }
@@ -34,6 +38,10 @@ export function resolveTestList({
       duration_ms: Number(r.payload.duration_ms ?? 0),
       error_message: r.payload.error_message ? String(r.payload.error_message) : null,
       screenshot_data: r.payload.screenshot_data ? String(r.payload.screenshot_data) : null,
+      expected_data: r.payload.expected_data ? String(r.payload.expected_data) : null,
+      actual_data: r.payload.actual_data ? String(r.payload.actual_data) : null,
+      diff_data: r.payload.diff_data ? String(r.payload.diff_data) : null,
+      video_data: r.payload.video_data ? String(r.payload.video_data) : null,
       file: r.payload.file ? String(r.payload.file) : null,
       line: r.payload.line != null ? Number(r.payload.line) : null,
     }))

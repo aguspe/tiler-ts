@@ -121,6 +121,169 @@ function ScreenshotLightbox({
   );
 }
 
+type VisualMode = "slider" | "actual" | "expected" | "diff";
+
+function VisualComparison({
+  expected,
+  actual,
+  diff,
+  onZoom,
+}: {
+  expected: string;
+  actual: string;
+  diff: string | null;
+  onZoom: (src: string) => void;
+}): JSX.Element {
+  const [mode, setMode] = useState<VisualMode>("slider");
+  const [pos, setPos] = useState(50);
+  const tabBtn = (m: VisualMode, label: string, disabled = false) => (
+    <button
+      type="button"
+      onClick={() => setMode(m)}
+      disabled={disabled}
+      style={{
+        fontSize: "0.78rem",
+        cursor: disabled ? "not-allowed" : "pointer",
+        background: mode === m ? "var(--tile-bg, rgba(0,0,0,0.08))" : "transparent",
+        border: "1px solid var(--border, rgba(0,0,0,0.12))",
+        borderRadius: 4,
+        padding: "3px 10px",
+        color: disabled ? "var(--ink-3, #94a3b8)" : "currentColor",
+        fontWeight: mode === m ? 600 : 400,
+      }}
+    >
+      {label}
+    </button>
+  );
+
+  const imgStyle: React.CSSProperties = {
+    display: "block",
+    maxWidth: "100%",
+    maxHeight: "min(60vh, 520px)",
+    objectFit: "contain",
+    borderRadius: 5,
+  };
+
+  let body: JSX.Element;
+  if (mode === "slider") {
+    body = (
+      <div
+        style={{
+          position: "relative",
+          display: "inline-block",
+          maxWidth: "100%",
+          border: "1px solid var(--border, rgba(0,0,0,0.1))",
+          borderRadius: 6,
+          overflow: "hidden",
+          userSelect: "none",
+        }}
+      >
+        <img src={expected} alt="expected" style={imgStyle} />
+        <img
+          src={actual}
+          alt="actual"
+          style={{
+            ...imgStyle,
+            position: "absolute",
+            top: 0,
+            left: 0,
+            clipPath: `inset(0 0 0 ${pos}%)`,
+          }}
+        />
+        <div
+          aria-hidden="true"
+          style={{
+            position: "absolute",
+            top: 0,
+            bottom: 0,
+            left: `${pos}%`,
+            width: 2,
+            background: "rgba(255,255,255,0.85)",
+            boxShadow: "0 0 0 1px rgba(0,0,0,0.4)",
+            pointerEvents: "none",
+          }}
+        />
+        <input
+          aria-label="Visual comparison position"
+          type="range"
+          min={0}
+          max={100}
+          value={pos}
+          onChange={(e) => setPos(Number(e.target.value))}
+          style={{
+            position: "absolute",
+            inset: "auto 0 8px 0",
+            width: "calc(100% - 16px)",
+            margin: "0 8px",
+            cursor: "ew-resize",
+          }}
+        />
+        <div
+          style={{
+            position: "absolute",
+            top: 6,
+            left: 6,
+            background: "rgba(0,0,0,0.55)",
+            color: "#fff",
+            fontSize: "0.7rem",
+            padding: "2px 6px",
+            borderRadius: 3,
+          }}
+        >
+          expected
+        </div>
+        <div
+          style={{
+            position: "absolute",
+            top: 6,
+            right: 6,
+            background: "rgba(0,0,0,0.55)",
+            color: "#fff",
+            fontSize: "0.7rem",
+            padding: "2px 6px",
+            borderRadius: 3,
+          }}
+        >
+          actual
+        </div>
+      </div>
+    );
+  } else {
+    const src =
+      mode === "actual" ? actual : mode === "expected" ? expected : (diff as string);
+    body = (
+      <button
+        type="button"
+        data-testid={`visual-${mode}`}
+        onClick={() => onZoom(src)}
+        style={{
+          padding: 0,
+          background: "transparent",
+          border: "1px solid var(--border, rgba(0,0,0,0.1))",
+          borderRadius: 6,
+          cursor: "zoom-in",
+          alignSelf: "flex-start",
+          maxWidth: "100%",
+        }}
+      >
+        <img src={src} alt={mode} style={imgStyle} />
+      </button>
+    );
+  }
+
+  return (
+    <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+      <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
+        {tabBtn("slider", "Slider")}
+        {tabBtn("actual", "Actual")}
+        {tabBtn("expected", "Expected")}
+        {tabBtn("diff", "Diff", diff == null)}
+      </div>
+      {body}
+    </div>
+  );
+}
+
 function TestDetailsModal({
   row,
   onClose,
@@ -232,7 +395,30 @@ function TestDetailsModal({
               gap: 14,
             }}
           >
-            {row.screenshot_data && (
+            {row.expected_data && row.actual_data && (
+              <VisualComparison
+                expected={row.expected_data}
+                actual={row.actual_data}
+                diff={row.diff_data}
+                onZoom={setZoomedScreenshot}
+              />
+            )}
+            {row.video_data && (
+              <video
+                data-testid="modal-video"
+                src={row.video_data}
+                controls
+                style={{
+                  display: "block",
+                  maxWidth: "100%",
+                  maxHeight: "min(60vh, 520px)",
+                  borderRadius: 6,
+                  border: "1px solid var(--border, rgba(0,0,0,0.1))",
+                  background: "#000",
+                }}
+              />
+            )}
+            {row.screenshot_data && !row.actual_data && (
               <button
                 type="button"
                 data-testid="modal-screenshot"

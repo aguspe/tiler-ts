@@ -33,9 +33,19 @@ export interface BuildRecordInput {
   project: string;
 }
 
+function pngDataUri(path: string): string {
+  return `data:image/png;base64,${readFileSync(path).toString("base64")}`;
+}
+
 export function buildRecord(input: BuildRecordInput): DataRecord {
-  const trace = input.result.attachments?.find((a) => a.name === "trace");
-  const screenshot = input.result.attachments?.find((a) => a.name === "screenshot");
+  const attachments = input.result.attachments ?? [];
+  const trace = attachments.find((a) => a.name === "trace");
+  const screenshot = attachments.find((a) => a.name === "screenshot");
+  const video = attachments.find((a) => a.name === "video");
+  // toHaveScreenshot attachments — names look like "<basename>-expected.png", etc.
+  const visualExpected = attachments.find((a) => a.name?.endsWith("-expected.png"));
+  const visualActual = attachments.find((a) => a.name?.endsWith("-actual.png"));
+  const visualDiff = attachments.find((a) => a.name?.endsWith("-diff.png"));
 
   const payload: Record<string, unknown> = {
     suite: input.test.parent?.title ?? "",
@@ -50,9 +60,13 @@ export function buildRecord(input: BuildRecordInput): DataRecord {
   if (input.test.location?.line) payload.line = input.test.location.line;
   if (input.result.error?.message) payload.error_message = input.result.error.message;
   if (trace?.path) payload.trace_path = trace.path;
-  if (screenshot?.path) {
-    const data = readFileSync(screenshot.path);
-    payload.screenshot_data = `data:image/png;base64,${data.toString("base64")}`;
+  if (screenshot?.path) payload.screenshot_data = pngDataUri(screenshot.path);
+  if (visualExpected?.path) payload.expected_data = pngDataUri(visualExpected.path);
+  if (visualActual?.path) payload.actual_data = pngDataUri(visualActual.path);
+  if (visualDiff?.path) payload.diff_data = pngDataUri(visualDiff.path);
+  if (video?.path) {
+    const data = readFileSync(video.path);
+    payload.video_data = `data:video/webm;base64,${data.toString("base64")}`;
   }
 
   return {
