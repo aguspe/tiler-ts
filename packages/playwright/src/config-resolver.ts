@@ -39,7 +39,34 @@ export function resolveConfig({
   }
   const keptPanels = preset.panels.filter((p) => !excludeSet.has(p.title));
 
+  // Merge user data sources, materialize the resolver-managed fields,
+  // collect their collectors, and validate uniqueness.
   const iso = startedAt.toISOString();
+  const presetSlugs = new Set(preset.dataSources.map((d) => d.slug));
+  const userSources: DataSource[] = [];
+  const collectors: ResolvedConfig["collectors"] = new Map();
+  for (const entry of rawOpts.dataSources) {
+    if (presetSlugs.has(entry.source.slug)) {
+      throw new Error(
+        `[tiler-playwright] duplicate data source slug "${entry.source.slug}" — preset already defines it`,
+      );
+    }
+    if (userSources.some((s) => s.slug === entry.source.slug)) {
+      throw new Error(
+        `[tiler-playwright] duplicate data source slug "${entry.source.slug}" in user dataSources`,
+      );
+    }
+    const materialized: DataSource = {
+      ...entry.source,
+      id: entry.source.id ?? newId(),
+      created_at: iso,
+      updated_at: iso,
+    };
+    userSources.push(materialized);
+    collectors.set(materialized.id, entry.collect);
+  }
+  const allSources: DataSource[] = [...preset.dataSources, ...userSources];
+
   const testRuns = preset.dataSources.find((d) => d.slug === "test_runs");
 
   const presetMaxY = keptPanels.length
@@ -50,7 +77,6 @@ export function resolveConfig({
   const userPanels: Panel[] = rawOpts.panels.map((p) => {
     let dataSourceId: string | null = p.data_source_id ?? null;
     if (!dataSourceId && p.data_source_slug) {
-      const allSources = preset.dataSources;
       const match = allSources.find((s) => s.slug === p.data_source_slug);
       if (!match) {
         throw new Error(
@@ -92,8 +118,8 @@ export function resolveConfig({
 
   return {
     dashboard: preset.dashboard,
-    dataSources: preset.dataSources,
+    dataSources: allSources,
     panels: [...keptPanels, ...userPanels],
-    collectors: new Map(),
+    collectors,
   };
 }

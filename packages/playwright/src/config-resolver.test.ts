@@ -233,3 +233,66 @@ describe("resolveConfig — data_source_slug", () => {
     ).toThrow(/data_source_slug "nope"/);
   });
 });
+
+describe("resolveConfig — user data sources", () => {
+  function fakeSource(slug: string, id = `01HFAKE${slug.toUpperCase().padEnd(20, "X")}`) {
+    return {
+      id,
+      name: slug,
+      slug,
+      description: "",
+      schema_definition: [{ key: "v", type: "integer" as const }],
+      ingestion_methods: ["manual" as const],
+      webhook_token: null,
+      active: true,
+      created_at: NOW.toISOString(),
+      updated_at: NOW.toISOString(),
+    };
+  }
+
+  it("appends user sources after preset sources and registers their collectors", async () => {
+    const cov = fakeSource("coverage");
+    const collect = vi.fn(async () => []);
+    const r = resolveConfig({
+      rawOpts: { ...baseOpts(), dataSources: [{ source: cov, collect }] },
+      startedAt: NOW,
+    });
+    expect(r.dataSources.map((d) => d.slug)).toContain("coverage");
+    expect(r.collectors.size).toBe(1);
+    expect(r.collectors.get(cov.id)).toBe(collect);
+  });
+
+  it("resolves a panel slug to a user source", () => {
+    const cov = fakeSource("coverage");
+    const r = resolveConfig({
+      rawOpts: {
+        ...baseOpts(),
+        dataSources: [{ source: cov, collect: async () => [] }],
+        panels: [
+          {
+            widget_type: "metric",
+            title: "Coverage",
+            x: 0,
+            y: 10,
+            width: 3,
+            height: 2,
+            config: {},
+            data_source_slug: "coverage",
+          },
+        ],
+      },
+      startedAt: NOW,
+    });
+    expect(r.panels.find((p) => p.title === "Coverage")!.data_source_id).toBe(cov.id);
+  });
+
+  it("throws when a user source duplicates a preset slug", () => {
+    const dup = fakeSource("test_runs");
+    expect(() =>
+      resolveConfig({
+        rawOpts: { ...baseOpts(), dataSources: [{ source: dup, collect: async () => [] }] },
+        startedAt: NOW,
+      }),
+    ).toThrow(/duplicate data source slug "test_runs"/);
+  });
+});
