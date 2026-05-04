@@ -35,7 +35,10 @@ export function PieChartWidget({
             label={({ name }) => name}
           >
             {data.resolved.bars.map((slice, i) => (
-              <Cell key={slice.name} fill={colors[i % colors.length]} />
+              <Cell
+                key={slice.name}
+                fill={cfg.palette_map?.[slice.name] ?? colors[i % colors.length]}
+              />
             ))}
           </Pie>
           <Tooltip contentStyle={TOOLTIP_STYLE} />

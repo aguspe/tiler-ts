@@ -74,7 +74,11 @@ export function testAutomationPreset(opts: PresetOptions = {}): PresetOutput {
       aggregation: "count",
       time_window: "all",
       donut: true,
-      palette: ["#10b981", "#ef4444", "#f59e0b", "#94a3b8"],
+      palette_map: {
+        pass: "#10b981",
+        fail: "#ef4444",
+        skip: "#f59e0b",
+      },
     }),
     panel("Total Tests", "metric", 4, 0, 2, 2, {
       aggregation: "count",

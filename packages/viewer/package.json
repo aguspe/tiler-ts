@@ -1,6 +1,6 @@
 {
   "name": "@aguspe/tiler-viewer",
-  "version": "1.1.7",
+  "version": "1.1.8",
   "description": "Read-only React app for rendering Tiler dashboards. SSR + hydrate.",
   "license": "MIT",
   "repository": {
