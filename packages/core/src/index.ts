@@ -21,9 +21,9 @@ export * from "./lib/snapshot-builder";
 export * from "./config";
 export { getPreset, listPresets } from "./presets/registry";
 export type { PresetFactory } from "./presets/registry";
-export { playwrightConfigToPresetOutput } from "./presets/playwright-config";
+export { dashboardConfigToPresetOutput } from "./presets/dashboard-seed";
 export type {
-  DashboardConfig,
+  DashboardSeed,
   UserPanelInput,
-  PlaywrightConfigToPresetArgs,
-} from "./presets/playwright-config";
+  DashboardSeedToPresetArgs,
+} from "./presets/dashboard-seed";

@@ -27,9 +27,10 @@ export interface UserPanelInput
 /**
  * Same shape as `PlaywrightTilerConfig` from `@aguspe/tiler-playwright`,
  * declared standalone in core so server-side seeding does not require
- * tiler-playwright at runtime.
+ * tiler-playwright at runtime. This is the `DashboardSeed` type — the
+ * canonical name for a user-authored dashboard configuration in core.
  */
-export interface DashboardConfig {
+export interface DashboardSeed {
   /** Ignored on server seeding (no preset to exclude from). */
   excludePanels?: string[];
   panels?: UserPanelInput[];
@@ -41,22 +42,22 @@ export interface DashboardConfig {
   dashboard?: { name?: string; slug?: string; description?: string };
 }
 
-export interface PlaywrightConfigToPresetArgs {
-  config: DashboardConfig;
+export interface DashboardSeedToPresetArgs {
+  config: DashboardSeed;
   now: Date;
 }
 
 /**
- * Materialize a `DashboardConfig` (the shape produced by
+ * Materialize a `DashboardSeed` (the shape produced by
  * `definePlaywrightConfig({...})`) into a `PresetOutput` ready to seed
  * into the server's store. Fills ids, timestamps, dashboard defaults;
  * resolves panel `data_source_slug` against user-defined sources;
  * auto-places panels with omitted `y`.
  */
-export function playwrightConfigToPresetOutput({
+export function dashboardConfigToPresetOutput({
   config,
   now,
-}: PlaywrightConfigToPresetArgs): PresetOutput {
+}: DashboardSeedToPresetArgs): PresetOutput {
   const iso = now.toISOString();
 
   const dashId = newId();

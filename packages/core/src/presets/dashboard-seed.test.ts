@@ -1,11 +1,11 @@
 import { describe, expect, it } from "vitest";
-import { playwrightConfigToPresetOutput } from "./playwright-config";
+import { dashboardConfigToPresetOutput } from "./dashboard-seed";
 
 const NOW = new Date("2026-05-05T00:00:00.000Z");
 
-describe("playwrightConfigToPresetOutput", () => {
+describe("DashboardSeed materializes presets", () => {
   it("materializes a minimal dashboard with defaults", () => {
-    const out = playwrightConfigToPresetOutput({
+    const out = dashboardConfigToPresetOutput({
       config: { dashboard: { slug: "my_dash", name: "My Dash" } },
       now: NOW,
     });
@@ -19,7 +19,7 @@ describe("playwrightConfigToPresetOutput", () => {
   });
 
   it("synthesizes a slug when the user did not supply one", () => {
-    const out = playwrightConfigToPresetOutput({
+    const out = dashboardConfigToPresetOutput({
       config: { dashboard: { name: "no slug" } },
       now: NOW,
     });
@@ -27,7 +27,7 @@ describe("playwrightConfigToPresetOutput", () => {
   });
 
   it("materializes user data sources with fresh ids and timestamps", () => {
-    const out = playwrightConfigToPresetOutput({
+    const out = dashboardConfigToPresetOutput({
       config: {
         dashboard: { slug: "d1" },
         dataSources: [
@@ -55,7 +55,7 @@ describe("playwrightConfigToPresetOutput", () => {
 
   it("preserves a user-supplied data source id", () => {
     const id = "01HCUSTOMSOURCEIDXXXXXXXXX";
-    const out = playwrightConfigToPresetOutput({
+    const out = dashboardConfigToPresetOutput({
       config: {
         dashboard: { slug: "d2" },
         dataSources: [
@@ -80,7 +80,7 @@ describe("playwrightConfigToPresetOutput", () => {
   });
 
   it("fills panel id, dashboard_id, timestamps, and config defaults", () => {
-    const out = playwrightConfigToPresetOutput({
+    const out = dashboardConfigToPresetOutput({
       config: {
         dashboard: { slug: "d3" },
         panels: [
@@ -106,7 +106,7 @@ describe("playwrightConfigToPresetOutput", () => {
   });
 
   it("auto-places panels with omitted y starting at cursor 0", () => {
-    const out = playwrightConfigToPresetOutput({
+    const out = dashboardConfigToPresetOutput({
       config: {
         dashboard: { slug: "d4" },
         panels: [
@@ -151,7 +151,7 @@ describe("playwrightConfigToPresetOutput", () => {
   });
 
   it("resolves data_source_slug to a user source's id", () => {
-    const out = playwrightConfigToPresetOutput({
+    const out = dashboardConfigToPresetOutput({
       config: {
         dashboard: { slug: "d5" },
         dataSources: [
@@ -190,7 +190,7 @@ describe("playwrightConfigToPresetOutput", () => {
 
   it("throws when data_source_slug does not match any source", () => {
     expect(() =>
-      playwrightConfigToPresetOutput({
+      dashboardConfigToPresetOutput({
         config: {
           dashboard: { slug: "d6" },
           panels: [

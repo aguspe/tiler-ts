@@ -1,4 +1,4 @@
-import type { DashboardConfig } from "./presets/playwright-config";
+import type { DashboardSeed } from "./presets/dashboard-seed";
 import type { TilerStore } from "./store";
 
 export interface AuthConfig {
@@ -26,7 +26,7 @@ export interface TilerConfig {
   /** Built-in presets to seed on first boot if their slug doesn't exist yet. */
   presets?: string[];
   /** User-defined dashboards (definePlaywrightConfig shape) to seed alongside presets. */
-  dashboards?: DashboardConfig[];
+  dashboards?: DashboardSeed[];
   /** Path to @aguspe/tiler-viewer's dist/client. Auto-resolved from node_modules if omitted. */
   viewerClientDir?: string;
 }
@@ -38,7 +38,7 @@ export interface ResolvedTilerConfig {
   auth: AuthConfig;
   widgets: string[];
   presets: string[];
-  dashboards: DashboardConfig[];
+  dashboards: DashboardSeed[];
   viewerClientDir?: string;
 }
 

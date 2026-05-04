@@ -34,7 +34,7 @@ import "@aguspe/tiler-widgets";
 import { createServer } from "@aguspe/tiler-server";
 import config from "./tiler.config";
 
-const app = await createServer({ store: config.store, auth: config.auth });
+const app = await createServer(config);
 await app.listen({ host: config.host, port: config.port });
 ```
 

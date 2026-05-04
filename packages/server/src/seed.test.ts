@@ -1,6 +1,7 @@
 import {
-  type DashboardConfig,
+  type DashboardSeed,
   type ResolvedTilerConfig,
+  type TilerStore,
   MemoryStore,
 } from "@aguspe/tiler-core";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
@@ -54,7 +55,7 @@ describe("seedDashboards", () => {
 
   it("seeds a user dashboard from cfg.dashboards", async () => {
     const store = new MemoryStore();
-    const dash: DashboardConfig = {
+    const dash: DashboardSeed = {
       dashboard: { slug: "custom", name: "My custom" },
       panels: [
         {
@@ -92,7 +93,7 @@ describe("seedDashboards", () => {
 
   it("throws when two seeds in the same config share a slug", async () => {
     const store = new MemoryStore();
-    const dup: DashboardConfig = { dashboard: { slug: "test_automation" } };
+    const dup: DashboardSeed = { dashboard: { slug: "test_automation" } };
     const cfg = baseCfg({ store, presets: ["test_automation"], dashboards: [dup] });
     await expect(seedDashboards(cfg, store)).rejects.toThrow(
       /duplicate dashboard slug "test_automation"/,
@@ -120,7 +121,7 @@ describe("seedDashboards", () => {
         created_at: new Date().toISOString(),
       },
     ]);
-    const dash: DashboardConfig = {
+    const dash: DashboardSeed = {
       dashboard: { slug: "with-collect" },
       dataSources: [
         {
@@ -143,5 +144,26 @@ describe("seedDashboards", () => {
     const src = (await store.getDataSource("s"))!;
     const records = await store.queryRecords({ dataSourceId: src.id });
     expect(records).toEqual([]);
+  });
+
+  it("propagates store errors and rolls the dashboard row back", async () => {
+    const store = new MemoryStore();
+    let panelCalls = 0;
+    const wrapped: TilerStore = new Proxy(store, {
+      get(t, k, r) {
+        if (k === "upsertPanel") {
+          return async (input: Parameters<TilerStore["upsertPanel"]>[0]) => {
+            if (++panelCalls === 2) throw new Error("DB down");
+            return store.upsertPanel(input);
+          };
+        }
+        return Reflect.get(t, k, r);
+      },
+    });
+    const cfg = baseCfg({ store: wrapped, presets: ["test_automation"] });
+    await expect(seedDashboards(cfg, wrapped)).rejects.toThrow(/DB down/);
+    // After failure, the dashboard row must be cleaned up so the next
+    // boot retries cleanly.
+    expect(await store.getDashboard("test_automation")).toBeNull();
   });
 });

@@ -3,7 +3,7 @@ import {
   type ResolvedTilerConfig,
   type TilerStore,
   getPreset,
-  playwrightConfigToPresetOutput,
+  dashboardConfigToPresetOutput,
 } from "@aguspe/tiler-core";
 
 /**
@@ -30,7 +30,7 @@ export async function seedDashboards(
   }
 
   for (const dash of cfg.dashboards) {
-    seeds.push(playwrightConfigToPresetOutput({ config: dash, now }));
+    seeds.push(dashboardConfigToPresetOutput({ config: dash, now }));
   }
 
   // Pre-flight: error on duplicate slugs in the seed list itself.
@@ -52,15 +52,38 @@ export async function seedDashboards(
       );
       continue;
     }
-    await store.upsertDashboard(seed.dashboard);
-    for (const ds of seed.dataSources) {
-      await store.upsertDataSource(ds);
+    const writtenDataSourceIds: string[] = [];
+    let dashboardWritten = false;
+    try {
+      await store.upsertDashboard(seed.dashboard);
+      dashboardWritten = true;
+      for (const ds of seed.dataSources) {
+        await store.upsertDataSource(ds);
+        writtenDataSourceIds.push(ds.id);
+      }
+      for (const p of seed.panels) {
+        await store.upsertPanel(p);
+      }
+      console.info(
+        `[tiler-server] seeded "${seed.dashboard.slug}" — ${seed.panels.length} panels, ${seed.dataSources.length} sources`,
+      );
+    } catch (err) {
+      // Roll back so the next boot retries cleanly.
+      if (dashboardWritten) {
+        try {
+          await store.deleteDashboard(seed.dashboard.id);
+        } catch {
+          /* best-effort */
+        }
+      }
+      for (const id of writtenDataSourceIds) {
+        try {
+          await store.deleteDataSource(id);
+        } catch {
+          /* best-effort */
+        }
+      }
+      throw err;
     }
-    for (const p of seed.panels) {
-      await store.upsertPanel(p);
-    }
-    console.info(
-      `[tiler-server] seeded "${seed.dashboard.slug}" — ${seed.panels.length} panels, ${seed.dataSources.length} sources`,
-    );
   }
 }

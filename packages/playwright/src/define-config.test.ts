@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { definePlaywrightConfig } from "./define-config";
-import type { DashboardConfig } from "@aguspe/tiler-core";
+import type { DashboardSeed } from "@aguspe/tiler-core";
 import type { PlaywrightTilerConfig } from "./define-config";
 
 describe("definePlaywrightConfig", () => {
@@ -15,9 +15,9 @@ describe("definePlaywrightConfig", () => {
 });
 
 describe("PlaywrightTilerConfig structural drift guard", () => {
-  it("a PlaywrightTilerConfig value is assignable to core's DashboardConfig", () => {
+  it("a PlaywrightTilerConfig value is assignable to core's DashboardSeed", () => {
     // Type-level check: if PlaywrightTilerConfig drifts away from
-    // DashboardConfig, the assignment below stops compiling.
+    // DashboardSeed, the assignment below stops compiling.
     const sample: PlaywrightTilerConfig = {
       excludePanels: ["Pass Rate"],
       panels: [
@@ -26,7 +26,18 @@ describe("PlaywrightTilerConfig structural drift guard", () => {
       dataSources: [],
       dashboard: { name: "X" },
     };
-    const asCore: DashboardConfig = sample;
+    const asCore: DashboardSeed = sample;
     expect(asCore).toBe(sample);
+  });
+
+  it("a DashboardSeed value is assignable to PlaywrightTilerConfig", () => {
+    // The reverse direction: anything core declares should also be
+    // valid playwright input. Catches narrowing of the playwright type.
+    const sample: DashboardSeed = {
+      excludePanels: ["X"],
+      dashboard: { name: "Y" },
+    };
+    const asPw: PlaywrightTilerConfig = sample;
+    expect(asPw).toBe(sample);
   });
 });
