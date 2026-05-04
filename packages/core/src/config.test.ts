@@ -40,4 +40,15 @@ describe("defineConfig", () => {
     });
     expect(cfg2.viewerClientDir).toBe("/custom/path");
   });
+
+  it("defaults dashboards to []", () => {
+    const cfg = defineConfig({ store: new MemoryStore() });
+    expect(cfg.dashboards).toEqual([]);
+  });
+
+  it("preserves a passed dashboards array", () => {
+    const dash = { dashboard: { slug: "x" } };
+    const cfg = defineConfig({ store: new MemoryStore(), dashboards: [dash] });
+    expect(cfg.dashboards).toEqual([dash]);
+  });
 });
