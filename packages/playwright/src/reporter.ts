@@ -69,7 +69,14 @@ export default class TilerReporter implements PlaywrightReporter {
   constructor(rawOpts: TilerReporterOptions = {}) {
     const { viewerClientDir, ...rest } = rawOpts;
     this.viewerClientDirOverride = viewerClientDir;
-    this.opts = ReporterOptions.parse(rest);
+    const parsed = ReporterOptions.parse(rest);
+    if (parsed.customConfig && !parsed.config) {
+      console.warn(
+        "[tiler-playwright] `customConfig` is deprecated — use `config` instead. Forwarding for now.",
+      );
+      parsed.config = parsed.customConfig;
+    }
+    this.opts = parsed;
   }
 
   printsToStdio(): boolean {

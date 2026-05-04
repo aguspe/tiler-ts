@@ -169,4 +169,26 @@ describe("TilerReporter", () => {
     );
     warn.mockRestore();
   });
+
+  it("accepts the deprecated customConfig alias and warns once", async () => {
+    const warn = vi.spyOn(console, "warn").mockImplementation(() => {});
+    const { resolve: pathResolve } = await import("node:path");
+    const cfgPath = pathResolve(__dirname, "__fixtures__/valid-config.ts");
+    const reporter = new TilerReporter({
+      outDir,
+      viewerClientDir,
+      customConfig: cfgPath,
+    } as never);
+    reporter.onBegin({} as never, {} as never);
+    await reporter.onEnd({ status: "passed" } as never);
+    expect(warn).toHaveBeenCalledWith(
+      expect.stringContaining("customConfig"),
+    );
+    const snapshot = JSON.parse(readFileSync(join(outDir, "snapshot.json"), "utf8")) as {
+      panels: Array<{ title: string }>;
+    };
+    // The fixture appends a "From File" panel; assert it is present.
+    expect(snapshot.panels.map((p) => p.title)).toContain("From File");
+    warn.mockRestore();
+  });
 });
