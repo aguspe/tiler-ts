@@ -135,3 +135,52 @@ describe("resolveConfig — append panels (explicit y)", () => {
     expect(r.panels[r.panels.length - 1]!.data_source_id).toBe(explicitId);
   });
 });
+
+describe("resolveConfig — auto-place", () => {
+  it("places a panel with omitted y below the lowest preset panel", () => {
+    const preset = testAutomationPreset({ now: NOW });
+    const presetMaxY = Math.max(...preset.panels.map((p) => p.y + p.height));
+
+    const r = resolveConfig({
+      rawOpts: {
+        ...baseOpts(),
+        panels: [
+          {
+            widget_type: "metric",
+            title: "Auto Placed",
+            x: 0,
+            width: 3,
+            height: 2,
+            config: {},
+          },
+        ],
+      },
+      startedAt: NOW,
+    });
+    const placed = r.panels.find((p) => p.title === "Auto Placed")!;
+    expect(placed.y).toBe(presetMaxY);
+  });
+
+  it("advances the cursor for each auto-placed panel; explicit y panels do not advance it", () => {
+    const preset = testAutomationPreset({ now: NOW });
+    const presetMaxY = Math.max(...preset.panels.map((p) => p.y + p.height));
+
+    const r = resolveConfig({
+      rawOpts: {
+        ...baseOpts(),
+        panels: [
+          { widget_type: "metric", title: "Auto1", x: 0, width: 3, height: 2, config: {} },
+          { widget_type: "metric", title: "Pinned", x: 0, y: 100, width: 3, height: 2, config: {} },
+          { widget_type: "metric", title: "Auto2", x: 0, width: 3, height: 4, config: {} },
+        ],
+      },
+      startedAt: NOW,
+    });
+    const a1 = r.panels.find((p) => p.title === "Auto1")!;
+    const pin = r.panels.find((p) => p.title === "Pinned")!;
+    const a2 = r.panels.find((p) => p.title === "Auto2")!;
+    expect(a1.y).toBe(presetMaxY);
+    expect(pin.y).toBe(100);
+    expect(a2.y).toBe(presetMaxY + 2); // advanced by Auto1's height only
+  });
+});

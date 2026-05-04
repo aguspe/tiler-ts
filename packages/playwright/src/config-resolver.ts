@@ -42,14 +42,25 @@ export function resolveConfig({
   const iso = startedAt.toISOString();
   const testRuns = preset.dataSources.find((d) => d.slug === "test_runs");
 
+  const presetMaxY = keptPanels.length
+    ? Math.max(...keptPanels.map((p) => p.y + p.height))
+    : 0;
+  let cursorY = presetMaxY;
+
   const userPanels: Panel[] = rawOpts.panels.map((p) => {
     const dataSourceId =
-      p.data_source_id ??
-      (testRuns ? testRuns.id : null);
+      p.data_source_id ?? (testRuns ? testRuns.id : null);
     if (!dataSourceId) {
       throw new Error(
         `[tiler-playwright] panel "${p.title}" needs a data_source_id (no preset test_runs source available)`,
       );
+    }
+    let y: number;
+    if (p.y !== undefined) {
+      y = p.y;
+    } else {
+      y = cursorY;
+      cursorY += p.height;
     }
     return {
       id: newId(),
@@ -58,7 +69,7 @@ export function resolveConfig({
       title: p.title,
       widget_type: p.widget_type,
       x: p.x,
-      y: p.y ?? 0, // auto-place comes in Task 8
+      y,
       width: p.width,
       height: p.height,
       config: p.config,
