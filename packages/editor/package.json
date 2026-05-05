@@ -1,6 +1,6 @@
 {
   "name": "@aguspe/tiler-editor",
-  "version": "1.0.3",
+  "version": "1.1.0",
   "description": "Gridstack-based authoring UX for tiler-ts. Drag/resize panels, drawer config editor, palette, theme tokens.",
   "license": "MIT",
   "repository": {
