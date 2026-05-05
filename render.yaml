@@ -1,0 +1,37 @@
+# Render Blueprint for the Tiler live demo.
+#
+# Apply via https://dashboard.render.com → New → Blueprint, point at this repo.
+# Render reads this file and provisions a Web Service that runs the seeded
+# `test_automation` dashboard with API + WebSocket live updates.
+#
+# Free tier: ephemeral storage. SQLite is wiped on cold restart (~15 min idle),
+# but the server reseeds the preset on every boot — fine for a demo. For real
+# persistence, attach a Render Disk (commented below) and upgrade to a paid
+# plan ($7/mo).
+
+services:
+  - type: web
+    name: tiler-demo
+    runtime: node
+    plan: free
+    region: oregon
+    rootDir: deploy/render
+    buildCommand: npm install
+    startCommand: npm start
+    healthCheckPath: /healthz
+    autoDeploy: true
+    envVars:
+      - key: NODE_VERSION
+        value: 20
+      - key: TILER_DB_PATH
+        value: ./tiler.db
+      - key: TILER_WEBHOOK_SECRET
+        generateValue: true
+      # Render injects PORT automatically — start.ts reads it.
+
+    # Uncomment to enable persistent storage on a paid plan:
+    # disk:
+    #   name: tiler-data
+    #   mountPath: /data
+    #   sizeGB: 1
+    # And change TILER_DB_PATH above to /data/tiler.db.
