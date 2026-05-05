@@ -10,9 +10,9 @@ import { BetterSqliteStore } from "@aguspe/tiler-server/sqlite";
  * - Binds to 0.0.0.0 so Render's reverse proxy can reach it.
  * - Stores SQLite at TILER_DB_PATH (mount a Render Disk for persistence;
  *   defaults to ./tiler.db which is ephemeral on the free tier).
- * - Seeds the `test_automation` preset on first boot. On free-tier Render
- *   the disk is wiped on cold-restart, so the seed runs every cold boot —
- *   that's fine, it's idempotent within a boot.
+ * - Seeds the `test_automation` preset on first boot. Idempotent by slug.
+ *   Add per-tenant dashboards with `playwrightDashboard()` from
+ *   ./dashboards/playwright-dashboard.
  */
 const config = defineConfig({
   store: new BetterSqliteStore({

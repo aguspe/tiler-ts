@@ -9,6 +9,7 @@
   },
   "dependencies": {
     "@aguspe/tiler-core": "1.3.0",
+    "@aguspe/tiler-playwright": "1.4.2",
     "@aguspe/tiler-server": "1.1.1",
     "@aguspe/tiler-widgets": "1.2.2",
     "tsx": "^4.19.0"
