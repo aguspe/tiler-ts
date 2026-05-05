@@ -2,6 +2,7 @@ import "@aguspe/tiler-widgets"; // register all widgets so resolvers run server-
 import { defineConfig } from "@aguspe/tiler-core";
 import { createServer } from "@aguspe/tiler-server";
 import { BetterSqliteStore } from "@aguspe/tiler-server/sqlite";
+import { playwrightDashboard } from "./dashboards/playwright-dashboard";
 
 /**
  * Tiler server entry for Render.
@@ -10,9 +11,8 @@ import { BetterSqliteStore } from "@aguspe/tiler-server/sqlite";
  * - Binds to 0.0.0.0 so Render's reverse proxy can reach it.
  * - Stores SQLite at TILER_DB_PATH (mount a Render Disk for persistence;
  *   defaults to ./tiler.db which is ephemeral on the free tier).
- * - Seeds the `test_automation` preset on first boot. On free-tier Render
- *   the disk is wiped on cold-restart, so the seed runs every cold boot —
- *   that's fine, it's idempotent within a boot.
+ * - Seeds the `test_automation` preset PLUS three per-tenant dashboards
+ *   (Merkle, Novo, NetCompany) on first boot. Idempotent by slug.
  */
 const config = defineConfig({
   store: new BetterSqliteStore({
@@ -25,6 +25,29 @@ const config = defineConfig({
   },
   widgets: ["@aguspe/tiler-widgets"],
   presets: ["test_automation"],
+  dashboards: [
+    playwrightDashboard({
+      slug: "merkle",
+      name: "Merkle e2e",
+      description: "Playwright tests against merkle.com — accessibility, visual, navigation.",
+      sourceSlug: "merkle_runs",
+      sourceName: "Merkle Runs",
+    }),
+    playwrightDashboard({
+      slug: "novo",
+      name: "Novo e2e",
+      description: "Playwright tests against novonordisk.com — accessibility, visual, navigation.",
+      sourceSlug: "novo_runs",
+      sourceName: "Novo Runs",
+    }),
+    playwrightDashboard({
+      slug: "netcompany",
+      name: "NetCompany e2e",
+      description: "Playwright tests against netcompany.com — accessibility, visual, navigation.",
+      sourceSlug: "netcompany_runs",
+      sourceName: "NetCompany Runs",
+    }),
+  ],
 });
 
 async function main(): Promise<void> {
