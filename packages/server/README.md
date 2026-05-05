@@ -34,7 +34,7 @@ import "@aguspe/tiler-widgets";
 import { createServer } from "@aguspe/tiler-server";
 import config from "./tiler.config";
 
-const app = await createServer({ store: config.store, auth: config.auth });
+const app = await createServer(config);
 await app.listen({ host: config.host, port: config.port });
 ```
 
@@ -52,6 +52,15 @@ Or skip `start.ts` entirely and run `npx tiler serve`.
 | `POST` | `/ingest/:source_slug` | HMAC webhook ingestion |
 | `WS`   | `/ws` | Live WidgetData diffs |
 | `GET`  | `/healthz` | Liveness probe |
+
+## Seeded dashboards
+
+The server can seed dashboards into its store on first boot from
+`presets: ["..."]` (built-in by name) or `dashboards: [...]`
+(user-defined `definePlaywrightConfig({...})` exports). Idempotent by
+slug — editor edits are never overwritten. See the [Seeded dashboards
+guide](https://aguspe.github.io/tiler-ts/server/seeding) for the full
+workflow.
 
 ## License
 

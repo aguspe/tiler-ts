@@ -30,4 +30,16 @@ describe("createServer", () => {
     expect(app.tilerConfig.port).toBe(4567);
     expect(app.tilerConfig.host).toBe("127.0.0.1");
   });
+
+  it("seeds dashboards from config on createServer", async () => {
+    const store = new MemoryStore();
+    const app = await createServer({
+      store,
+      presets: ["test_automation"],
+      logger: false,
+    });
+    const dash = await store.getDashboard("test_automation");
+    expect(dash).not.toBeNull();
+    await app.close();
+  });
 });
